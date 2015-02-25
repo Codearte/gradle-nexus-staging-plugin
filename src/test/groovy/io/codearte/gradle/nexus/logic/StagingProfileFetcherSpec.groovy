@@ -15,10 +15,10 @@ class StagingProfileFetcherSpec extends Specification {
     private static final String GET_STAGING_PROFILES_FULL_URL = MOCK_SERVER_HOST + GET_STAGING_PROFILES_PATH
 
     @Ignore
-    def "should getstaging profile id from server e2e"() {
+    def "should get staging profile id from server e2e"() {
         given:
             def client = new SimplifiedHttpJsonRestClient(new RESTClient(), "codearte", PasswordUtil.tryToReadNexusPassword())
-            StagingProfileFetcher fetcher = new StagingProfileFetcher(client, "https://oss.sonatype.org/")
+            def fetcher = new StagingProfileFetcher(client, "https://oss.sonatype.org/")
         when:
             String stagingProfileId = fetcher.getStagingProfileIdForPackageGroup("io.codearte")
         then:

@@ -1,0 +1,14 @@
+{
+  "data": [
+    {
+      "policy": "release",
+      "profileId": "93c08fdebde1ff",
+      "profileName": "io.codearte",
+      "profileType": "repository",
+      "releaseRepositoryId": "releases",
+      "releaseRepositoryName": "Releases",
+      "repositoryId": "iocodearte-1011",
+      "type": "open"
+    }
+  ]
+}
