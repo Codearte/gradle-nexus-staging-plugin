@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "deployURI": "https://oss.sonatype.org/service/local/staging/deploy/maven2",
+      "id": "430bafbe963e40",
+      "inProgress": false,
+      "mode": "BOTH",
+      "name": "eu.codearte",
+      "order": 6445,
+      "promotionTargetRepository": "releases",
+      "repositoryType": "maven2",
+      "resourceURI": "https://oss.sonatype.org/service/local/staging/profiles/430bafbe963e40",
+      "targetGroups": ["staging"]
+    },
+    {
+      "deployURI": "https://oss.sonatype.org/service/local/staging/deploy/maven2",
+      "id": "93c08fdebde1ff",
+      "inProgress": false,
+      "mode": "BOTH",
+      "name": "io.codearte",
+      "order": 8981,
+      "promotionTargetRepository": "releases",
+      "repositoryType": "maven2",
+      "resourceURI": "https://oss.sonatype.org/service/local/staging/profiles/93c08fdebde1ff",
+      "targetGroups": ["staging"]
+    }
+  ]
+}
