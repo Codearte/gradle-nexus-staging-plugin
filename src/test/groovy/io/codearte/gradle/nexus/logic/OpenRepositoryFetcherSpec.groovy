@@ -39,5 +39,4 @@ class OpenRepositoryFetcherSpec extends Specification {
             println repositoryId
             repositoryId == "iocodearte-1011"
     }
-
 }
