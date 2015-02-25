@@ -20,6 +20,9 @@ abstract class BaseStagingTask extends DefaultTask {
     @Optional
     String password
 
+    @Input
+    String packageGroup
+
     @PackageScope
     SimplifiedHttpJsonRestClient createClient() {
         new SimplifiedHttpJsonRestClient(new RESTClient(), getUsername(), getPassword())

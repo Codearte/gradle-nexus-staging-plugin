@@ -8,6 +8,7 @@ import groovy.util.logging.Slf4j
 class OpenRepositoryFetcher extends BaseOperationExecuter {
 
     String getOpenRepositoryIdForStagingProfileId(String stagingProfileId) {
+        log.info("Getting open repository for staging profile $stagingProfileId")
         Map responseAsMap = client.get(nexusUrl + "/service/local/staging/profile_repositories/$stagingProfileId")    //TODO: Constant
         return parseResponseAndGetOpenRepository(responseAsMap)
     }

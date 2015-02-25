@@ -9,11 +9,11 @@ class GetStagingProfileTask2 extends BaseStagingTask {
     @TaskAction
     void doAction() {
         StagingProfileFetcher stagingProfileFetcher = createFetcherWithGivenClient(createClient())
-        String stagingProfileId = stagingProfileFetcher.getStagingProfileIdForPackageGroup("io.codearte")
+        String stagingProfileId = stagingProfileFetcher.getStagingProfileIdForPackageGroup(getPackageGroup())
         ext.stagingProfileId = stagingProfileId
     }
 
     private StagingProfileFetcher createFetcherWithGivenClient(SimplifiedHttpJsonRestClient client) {
-        return new StagingProfileFetcher(client, nexusUrl)
+        return new StagingProfileFetcher(client, getNexusUrl())
     }
 }
