@@ -18,7 +18,7 @@ class OpenRepositoryFetcherSpec extends Specification {
     def "should get open repository id from server e2e"() {
         given:
             def client = new SimplifiedHttpJsonRestClient(new RESTClient(), "codearte", PasswordUtil.tryToReadNexusPassword())
-            def fetcher = new OpenRepositoryFetcher(client, "https://oss.sonatype.org/")
+            def fetcher = new RepositoryFetcher(client, "https://oss.sonatype.org/")
         when:
             String stagingProfileId = fetcher.getOpenRepositoryIdForStagingProfileId(STAGING_PROFILE_ID)
         then:
@@ -32,7 +32,7 @@ class OpenRepositoryFetcherSpec extends Specification {
             client.get(GET_REPOSITORY_ID_FULL_URL) >> {
                 new JsonSlurper().parse(this.getClass().getResource("openRepositoryShrunkResponse.json"))
             }
-            def fetcher = new OpenRepositoryFetcher(client, MOCK_SERVER_HOST)
+            def fetcher = new RepositoryFetcher(client, MOCK_SERVER_HOST)
         when:
             String repositoryId = fetcher.getOpenRepositoryIdForStagingProfileId(STAGING_PROFILE_ID)
         then:

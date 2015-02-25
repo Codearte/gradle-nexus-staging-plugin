@@ -14,6 +14,7 @@ class NexusStagingPlugin implements Plugin<Project> {
         this.extension = createExtension(project)
         createAndConfigureGetStagingProfileTask2(project)
         createAndConfigureCloseRepositoryTask(project)
+        createAndConfigurePromoteRepositoryTask(project)
     }
 
     NexusStagingExtension createExtension(Project project) {
@@ -33,6 +34,15 @@ class NexusStagingPlugin implements Plugin<Project> {
         CloseRepositoryTask task = project.tasks.create("closeRepository", CloseRepositoryTask)
         task.with {
             description = "TODO closeRepository"
+            group = "release"
+        }
+        setTaskDefaults(task)
+    }
+
+    void createAndConfigurePromoteRepositoryTask(Project project) {
+        PromoteRepositoryTask task = project.tasks.create("promoteRepository", PromoteRepositoryTask)
+        task.with {
+            description = "TODO promoteRepository"
             group = "release"
         }
         setTaskDefaults(task)

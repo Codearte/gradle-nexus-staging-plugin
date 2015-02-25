@@ -79,4 +79,30 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
         and:
             result.standardOutput.contains("has been closed")   //TODO: Match with regexp
     }
+
+    @Ignore
+    def "should promote closed repository"() {
+        given:
+            buildFile << """
+                apply plugin: 'io.codearte.nexus-staging'
+
+                buildscript {
+                    repositories {
+                        mavenCentral()
+                    }
+                }
+                nexusStaging {
+                    nexusUrl = "https://oss.sonatype.org/"
+                    username = "codearte"
+                    password = '$nexusPassword'
+                    packageGroup = "io.codearte"
+                }
+            """.stripIndent()
+        when:
+            def result = runTasksSuccessfully('promoteRepository')
+        then:
+            result.wasExecuted(':promoteRepository')
+        and:
+            result.standardOutput.contains("has been promotted")   //TODO: Match with regexp
+    }
 }

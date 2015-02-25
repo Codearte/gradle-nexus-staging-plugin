@@ -45,6 +45,7 @@ class SimplifiedHttpJsonRestClient {
     void post(String uri, Map content) {
         setUriAndAuthentication(uri)
         params.body = content
+        //TODO: Add better error handling (e.g. display error message received from server, not only 500)
         HttpResponseDecorator response = (HttpResponseDecorator)restClient.post(params)
         log.warn("POST response data: ${response.data}")
         log.debug("POST response data as JSON: ${new JsonBuilder(response.data).toString()}")    //TODO: Remove
