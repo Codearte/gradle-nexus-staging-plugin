@@ -5,7 +5,7 @@ import groovy.util.logging.Slf4j
 
 @InheritConstructors
 @Slf4j
-class RepositoryFetcher extends BaseOperationExecuter {
+class RepositoryFetcher extends BaseOperationExecutor {
 
     String getOpenRepositoryIdForStagingProfileId(String stagingProfileId) {
         log.info("Getting open repository for staging profile $stagingProfileId")

@@ -1,9 +1,11 @@
 package io.codearte.gradle.nexus.functional
 
 import spock.lang.Ignore
+import spock.lang.IgnoreIf
 
 class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
 
+    @IgnoreIf({ !env.containsKey("nexusPassword") })
     def "should run"() {
         given:
             buildFile << """
@@ -30,6 +32,7 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
             result.standardOutput.contains("autoStagingDisabled:false")
     }
 
+    @IgnoreIf({ !env.containsKey("nexusPassword") })
     def "should pass parameter to other task"() {
         given:
             buildFile << """

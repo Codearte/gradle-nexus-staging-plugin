@@ -8,9 +8,8 @@ import io.codearte.gradle.nexus.infra.WrongNumberOfStagingProfiles
 import spock.lang.Ignore
 import spock.lang.Specification
 
-class StagingProfileFetcherSpec extends Specification {
+class StagingProfileFetcherSpec extends BaseOperationExecutorSpec {
 
-    private static final String MOCK_SERVER_HOST = "https://mock.server/"
     private static final String GET_STAGING_PROFILES_PATH = "/service/local/staging/profiles"
     private static final String GET_STAGING_PROFILES_FULL_URL = MOCK_SERVER_HOST + GET_STAGING_PROFILES_PATH
 
@@ -23,7 +22,7 @@ class StagingProfileFetcherSpec extends Specification {
             String stagingProfileId = fetcher.getStagingProfileIdForPackageGroup("io.codearte")
         then:
             println stagingProfileId
-            stagingProfileId == "93c08fdebde1ff"
+            stagingProfileId == TEST_STAGING_PROFILE_ID
     }
 
     def "should get staging profile id from server"() {
@@ -37,7 +36,7 @@ class StagingProfileFetcherSpec extends Specification {
             String stagingProfileId = fetcher.getStagingProfileIdForPackageGroup("io.codearte")
         then:
             println stagingProfileId
-            stagingProfileId == "93c08fdebde1ff"
+            stagingProfileId == TEST_STAGING_PROFILE_ID
     }
 
     def "should throw meaningful exception for not matching profiles for package group"() {

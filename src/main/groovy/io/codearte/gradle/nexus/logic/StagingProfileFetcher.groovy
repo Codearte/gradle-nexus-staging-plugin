@@ -6,7 +6,7 @@ import io.codearte.gradle.nexus.infra.WrongNumberOfStagingProfiles
 
 @InheritConstructors
 @Slf4j
-class StagingProfileFetcher extends BaseOperationExecuter {
+class StagingProfileFetcher extends BaseOperationExecutor {
 
     String getStagingProfileIdForPackageGroup(String packageGroup) {
         log.info("Getting staging profile for package group $packageGroup")
