@@ -8,14 +8,14 @@ import spock.lang.Ignore
 
 class OpenRepositoryFetcherSpec extends BaseOperationExecutorSpec {
 
-    private static final String GET_REPOSITORY_ID_PATH = "/service/local/staging/profile_repositories/"
+    private static final String GET_REPOSITORY_ID_PATH = "/staging/profile_repositories/"
     private static final String GET_REPOSITORY_ID_FULL_URL = MOCK_SERVER_HOST + GET_REPOSITORY_ID_PATH + TEST_STAGING_PROFILE_ID
 
     @Ignore
     def "should get open repository id from server e2e"() {
         given:
             def client = new SimplifiedHttpJsonRestClient(new RESTClient(), "codearte", PasswordUtil.tryToReadNexusPassword())
-            def fetcher = new RepositoryFetcher(client, "https://oss.sonatype.org/")
+            def fetcher = new RepositoryFetcher(client, E2E_TEST_SERVER_BASE_PATH)
         when:
             String stagingProfileId = fetcher.getOpenRepositoryIdForStagingProfileId(TEST_STAGING_PROFILE_ID)
         then:

@@ -6,18 +6,17 @@ import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.PasswordUtil
 import io.codearte.gradle.nexus.infra.WrongNumberOfStagingProfiles
 import spock.lang.Ignore
-import spock.lang.Specification
 
 class StagingProfileFetcherSpec extends BaseOperationExecutorSpec {
 
-    private static final String GET_STAGING_PROFILES_PATH = "/service/local/staging/profiles"
+    private static final String GET_STAGING_PROFILES_PATH = "/staging/profiles"
     private static final String GET_STAGING_PROFILES_FULL_URL = MOCK_SERVER_HOST + GET_STAGING_PROFILES_PATH
 
     @Ignore
     def "should get staging profile id from server e2e"() {
         given:
             def client = new SimplifiedHttpJsonRestClient(new RESTClient(), "codearte", PasswordUtil.tryToReadNexusPassword())
-            def fetcher = new StagingProfileFetcher(client, "https://oss.sonatype.org/")
+            def fetcher = new StagingProfileFetcher(client, E2E_TEST_SERVER_BASE_PATH)
         when:
             String stagingProfileId = fetcher.getStagingProfileIdForPackageGroup("io.codearte")
         then:

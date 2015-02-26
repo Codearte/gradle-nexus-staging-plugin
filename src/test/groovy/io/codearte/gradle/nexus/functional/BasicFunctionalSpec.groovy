@@ -17,7 +17,7 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
                     }
                 }
                 nexusStaging {
-                    nexusUrl = "https://oss.sonatype.org/"
+                    nexusUrl = "https://oss.sonatype.org/service/local/"
                     username = "codearte"
                     password = '$nexusPassword'
                     packageGroup = "io.codearte"
@@ -44,7 +44,7 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
                     }
                 }
                 nexusStaging {
-                    nexusUrl = "https://oss.sonatype.org/"
+                    nexusUrl = "https://oss.sonatype.org/service/local/"
                     username = "codearte"
                     password = '$nexusPassword'
                     packageGroup = "io.codearte"
@@ -69,7 +69,7 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
                     }
                 }
                 nexusStaging {
-                    nexusUrl = "https://oss.sonatype.org/"
+                    nexusUrl = "https://oss.sonatype.org/service/local/"
                     username = "codearte"
                     password = '$nexusPassword'
                     packageGroup = "io.codearte"
@@ -95,7 +95,7 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
                     }
                 }
                 nexusStaging {
-                    nexusUrl = "https://oss.sonatype.org/"
+                    nexusUrl = "https://oss.sonatype.org/service/local/"
                     username = "codearte"
                     password = '$nexusPassword'
                     packageGroup = "io.codearte"

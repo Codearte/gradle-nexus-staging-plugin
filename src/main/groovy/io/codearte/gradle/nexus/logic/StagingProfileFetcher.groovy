@@ -10,7 +10,7 @@ class StagingProfileFetcher extends BaseOperationExecutor {
 
     String getStagingProfileIdForPackageGroup(String packageGroup) {
         log.info("Getting staging profile for package group $packageGroup")
-        Map responseAsMap = client.get(nexusUrl + "/service/local/staging/profiles")    //TODO: Constant
+        Map responseAsMap = client.get(nexusUrl + "/staging/profiles")    //TODO: Constant
         return parseResponseAndGetStagingProfileIdForPackageGroup(responseAsMap, packageGroup)
     }
 

@@ -10,6 +10,10 @@ abstract class BaseOperationExecutor {
 
     BaseOperationExecutor(SimplifiedHttpJsonRestClient client, String nexusUrl) {
         this.client = client
-        this.nexusUrl = nexusUrl
+        this.nexusUrl = removeTrailingSlashIfAvailable(nexusUrl)
+    }
+
+    private String removeTrailingSlashIfAvailable(String nexusUrl) {
+        nexusUrl.endsWith("/") ? nexusUrl[0..-2] : nexusUrl
     }
 }

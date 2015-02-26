@@ -8,21 +8,13 @@ import groovy.util.logging.Slf4j
 @CompileStatic
 @InheritConstructors
 @Slf4j
-class RepositoryCloser extends BaseOperationExecutor {
+class RepositoryCloser extends AbstractStagingOperationExecutor {
 
     void closeRepositoryWithIdAndStagingProfileId(String repositoryId, String stagingProfileId) {
         log.info("Closing repository $repositoryId with staging profile $stagingProfileId")
-        Map postContent = preparePostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId)
+        Map postContent = prepareStagingPostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId)
         println new JsonBuilder(postContent).toString()
-        client.post(nexusUrl + "service/local/staging/profiles/$stagingProfileId/finish", postContent)    //TODO: move service/local to URL
+        client.post(nexusUrl + "/staging/profiles/$stagingProfileId/finish", postContent)
         log.info("Repository $repositoryId with staging profile $stagingProfileId has been closed")
-    }
-
-    private Map preparePostContentWithGivenRepositoryIdAndStagingId(String repositoryId, String stagingProfileId) {
-        return [data: [
-                        stagedRepositoryId: repositoryId,
-                        description: 'Automatically released/promoted with gradle-nexus-staging-plugin!',
-                        targetRepositoryId: stagingProfileId
-                ]]
     }
 }

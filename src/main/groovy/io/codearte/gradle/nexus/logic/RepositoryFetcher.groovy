@@ -8,15 +8,17 @@ import groovy.util.logging.Slf4j
 class RepositoryFetcher extends BaseOperationExecutor {
 
     String getOpenRepositoryIdForStagingProfileId(String stagingProfileId) {
-        log.info("Getting open repository for staging profile $stagingProfileId")
-        Map responseAsMap = client.get(nexusUrl + "/service/local/staging/profile_repositories/$stagingProfileId")    //TODO: Constant
-        return parseResponseAndGetRepositoryInGivenState(responseAsMap, "open")
+        return getRepositoryIdWithGivenStateForStagingProfileId("open", stagingProfileId)
     }
 
     String getClosedRepositoryIdForStagingProfileId(String stagingProfileId) {
-        log.info("Getting closed repository for staging profile $stagingProfileId")
-        Map responseAsMap = client.get(nexusUrl + "/service/local/staging/profile_repositories/$stagingProfileId")    //TODO: Constant
-        return parseResponseAndGetRepositoryInGivenState(responseAsMap, "closed")
+        return getRepositoryIdWithGivenStateForStagingProfileId("closed", stagingProfileId)
+    }
+
+    private String getRepositoryIdWithGivenStateForStagingProfileId(String state, String stagingProfileId) {
+        log.info("Getting " + state + " repository for staging profile $stagingProfileId")
+        Map responseAsMap = client.get(nexusUrl + "/staging/profile_repositories/$stagingProfileId")    //TODO: Constant
+        return parseResponseAndGetRepositoryInGivenState(responseAsMap, state)
     }
 
     private String parseResponseAndGetRepositoryInGivenState(Map responseAsMap, String repositoryState) {
