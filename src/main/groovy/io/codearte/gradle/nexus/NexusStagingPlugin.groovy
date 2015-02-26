@@ -13,8 +13,9 @@ class NexusStagingPlugin implements Plugin<Project> {
         this.project = project
         this.extension = createExtension(project)
         createAndConfigureGetStagingProfileTask2(project)
-        createAndConfigureCloseRepositoryTask(project)
-        createAndConfigurePromoteRepositoryTask(project)
+        def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)
+        def promoteRepositoryTask = createAndConfigurePromoteRepositoryTask(project)
+        promoteRepositoryTask.mustRunAfter(closeRepositoryTask)
     }
 
     NexusStagingExtension createExtension(Project project) {
@@ -24,28 +25,30 @@ class NexusStagingPlugin implements Plugin<Project> {
     void createAndConfigureGetStagingProfileTask2(Project project) {
         GetStagingProfileTask2 task = project.tasks.create("getStagingProfileTask", GetStagingProfileTask2)
         task.with {
-            description = "TODO getStagingProfileTask"
+            description = "Gets staging profile id in Nexus - diagnostic tasks"
             group = "release"
         }
         setTaskDefaults(task)
     }
 
-    void createAndConfigureCloseRepositoryTask(Project project) {
+    CloseRepositoryTask createAndConfigureCloseRepositoryTask(Project project) {
         CloseRepositoryTask task = project.tasks.create("closeRepository", CloseRepositoryTask)
         task.with {
-            description = "TODO closeRepository"
+            description = "Closes open artifacts repository in Nexus"
             group = "release"
         }
         setTaskDefaults(task)
+        return task
     }
 
-    void createAndConfigurePromoteRepositoryTask(Project project) {
+    PromoteRepositoryTask createAndConfigurePromoteRepositoryTask(Project project) {
         PromoteRepositoryTask task = project.tasks.create("promoteRepository", PromoteRepositoryTask)
         task.with {
-            description = "TODO promoteRepository"
+            description = "Promotes/releases closed artifacts repository in Nexus"
             group = "release"
         }
         setTaskDefaults(task)
+        return task
     }
 
     void setTaskDefaults(BaseStagingTask task) {

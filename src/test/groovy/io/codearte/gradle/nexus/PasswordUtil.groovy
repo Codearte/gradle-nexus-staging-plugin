@@ -1,5 +1,8 @@
 package io.codearte.gradle.nexus
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class PasswordUtil {
 
     //Temporary hack to read nexus password in e2e tests

@@ -1,5 +1,8 @@
 package io.codearte.gradle.nexus.infra
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class WrongNumberOfStagingProfiles extends NexusStagingException {
 
     final int numberOfProfiles

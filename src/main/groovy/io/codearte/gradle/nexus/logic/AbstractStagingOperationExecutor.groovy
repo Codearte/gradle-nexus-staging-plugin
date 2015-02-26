@@ -1,8 +1,10 @@
 package io.codearte.gradle.nexus.logic
 
+import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 
 @InheritConstructors
+@CompileStatic
 abstract class AbstractStagingOperationExecutor extends BaseOperationExecutor {
 
     protected Map prepareStagingPostContentWithGivenRepositoryIdAndStagingId(String repositoryId, String stagingProfileId) {

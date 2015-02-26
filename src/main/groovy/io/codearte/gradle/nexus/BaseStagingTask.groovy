@@ -1,5 +1,6 @@
 package io.codearte.gradle.nexus
 
+import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import groovyx.net.http.RESTClient
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
@@ -11,6 +12,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 
+@CompileStatic
 abstract class BaseStagingTask extends DefaultTask {
 
     @Input

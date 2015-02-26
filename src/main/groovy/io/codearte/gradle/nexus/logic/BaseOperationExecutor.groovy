@@ -1,8 +1,10 @@
 package io.codearte.gradle.nexus.logic
 
+import groovy.transform.CompileStatic
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 
-//@TupleConstructor //TODO: Hmm?
+//@TupleConstructor //TODO: Does not want to work
+@CompileStatic
 abstract class BaseOperationExecutor {
 
     protected final SimplifiedHttpJsonRestClient client

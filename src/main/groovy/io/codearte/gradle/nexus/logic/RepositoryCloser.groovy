@@ -1,6 +1,5 @@
 package io.codearte.gradle.nexus.logic
 
-import groovy.json.JsonBuilder
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
@@ -13,7 +12,6 @@ class RepositoryCloser extends AbstractStagingOperationExecutor {
     void closeRepositoryWithIdAndStagingProfileId(String repositoryId, String stagingProfileId) {
         log.info("Closing repository $repositoryId with staging profile $stagingProfileId")
         Map postContent = prepareStagingPostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId)
-        println new JsonBuilder(postContent).toString()
         client.post(nexusUrl + "/staging/profiles/$stagingProfileId/finish", postContent)
         log.info("Repository $repositoryId with staging profile $stagingProfileId has been closed")
     }
