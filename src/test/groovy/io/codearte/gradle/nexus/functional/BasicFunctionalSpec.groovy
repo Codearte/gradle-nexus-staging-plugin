@@ -29,7 +29,7 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
             result.wasExecuted(':getStagingProfileTask')
         and:
 //            println result.standardOutput   //TODO: How to redirect stdout to show on console (works with 2.2.1)
-            result.standardOutput.contains("autoStagingDisabled:false")
+            result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
     }
 
     @IgnoreIf({ !env.containsKey("nexusPassword") })
