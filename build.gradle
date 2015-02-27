@@ -49,7 +49,6 @@ dependencies {
 }
 
 nexusStaging {
-    nexusUrl = "https://oss.sonatype.org/service/local/"
     username = project.hasProperty('nexusUsername') ? project.getProperty('nexusUsername') : null   //TODO: Temporary
     password = project.hasProperty('nexusPassword') ? project.getProperty('nexusPassword') : null
     packageGroup = "io.codearte"

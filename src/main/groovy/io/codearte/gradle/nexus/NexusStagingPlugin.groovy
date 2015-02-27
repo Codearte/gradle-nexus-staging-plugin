@@ -11,15 +11,19 @@ class NexusStagingPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         this.project = project
-        this.extension = createExtension(project)
+        this.extension = createAndConfigureExtension(project)
         createAndConfigureGetStagingProfileTask2(project)
         def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)
         def promoteRepositoryTask = createAndConfigurePromoteRepositoryTask(project)
         promoteRepositoryTask.mustRunAfter(closeRepositoryTask)
     }
 
-    NexusStagingExtension createExtension(Project project) {
-        project.extensions.create("nexusStaging", NexusStagingExtension)
+    NexusStagingExtension createAndConfigureExtension(Project project) {
+        def extension = project.extensions.create("nexusStaging", NexusStagingExtension)
+        extension.with {
+            nexusUrl = "https://oss.sonatype.org/service/local/"
+        }
+        return extension
     }
 
     void createAndConfigureGetStagingProfileTask2(Project project) {
