@@ -6,12 +6,14 @@ buildscript {
         classpath 'org.hibernate.build.gradle:gradle-maven-publish-auth:2.0.1'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath 'pl.allegro.tech.build:axion-release-plugin:1.2.0'
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.4.0'
     }
 }
 
 apply plugin: 'groovy'
 apply plugin: 'pl.allegro.tech.build.axion-release'
 apply plugin: 'com.bmuschko.nexus'
+apply plugin: 'io.codearte.nexus-staging'
 
 scmVersion {
     tag { prefix = '' }
@@ -46,6 +48,14 @@ dependencies {
     }
 }
 
+nexusStaging {
+    nexusUrl = "https://oss.sonatype.org/service/local/"
+    username = project.hasProperty('nexusUsername') ? project.getProperty('nexusUsername') : null   //TODO: Temporary
+    password = project.hasProperty('nexusPassword') ? project.getProperty('nexusPassword') : null
+    packageGroup = "io.codearte"
+}
+
+
 modifyPom {
     project {
         name 'Gradle Nexus staging plugin'
@@ -72,6 +82,10 @@ modifyPom {
                 id 'szpak'
                 name 'Marcin Zajączkowski'
                 email 'mszpak ATT wp DOTT pl'
+                roles {
+                    role 'developer'
+                    role 'despot'
+                }
             }
         }
     }
