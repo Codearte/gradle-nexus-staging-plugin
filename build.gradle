@@ -46,6 +46,9 @@ dependencies {
     /*funcT*/testCompile('com.netflix.nebula:nebula-test:2.0.5') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
+    /*funcT*/testCompile('com.github.tomakehurst:wiremock:1.50') {  //1.51+ requires httpclient 4.3+ which conflicts with version distributed with Gradle
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    }
 }
 
 nexusStaging {

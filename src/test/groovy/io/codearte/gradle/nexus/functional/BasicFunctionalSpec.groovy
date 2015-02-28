@@ -1,10 +1,15 @@
 package io.codearte.gradle.nexus.functional
 
+import io.codearte.gradle.nexus.PasswordUtil
 import spock.lang.Ignore
 import spock.lang.IgnoreIf
-import spock.lang.Unroll
 
 class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
+
+    @Override
+    void setup() {
+        nexusPassword = PasswordUtil.tryToReadNexusPassword()
+    }
 
     @IgnoreIf({ !env.containsKey("nexusPassword") })
     def "should run"() {
@@ -64,50 +69,5 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
             result.wasExecuted(':promoteRepository')
         and:
             result.standardOutput.contains("has been promotted")   //TODO: Match with regexp
-    }
-
-    //TODO: Could be switched to Wiremock server to do not have errors in logs
-    @Unroll
-    def "should not do request for staging profile when provided in configuration on #testedTaskName task"() {
-        given:
-            def incorrectProfileId = "incorrectProfileId"
-            buildFile << """
-                ${getApplyPluginBlock()}
-                ${getDefaultConfigurationClosure()}
-                nexusStaging {
-                    serverUrl = "http://localhost/invalid/"
-                    stagingProfileId = "incorrectProfileId"
-                }
-            """.stripIndent()
-        when:
-            def result = runTasksWithFailure(testedTaskName)
-        then:
-            result.wasExecuted(testedTaskName)
-            result.standardOutput.contains("Using configured staging profile id: $incorrectProfileId")
-            !result.standardOutput.contains("Getting staging profile for package group")
-        where:
-            testedTaskName << ["closeRepository", "promoteRepository"]
-    }
-
-    private String getApplyPluginBlock() {
-        return """
-                apply plugin: 'io.codearte.nexus-staging'
-
-                buildscript {
-                    repositories {
-                        mavenCentral()
-                    }
-                }
-        """
-    }
-
-    private String getDefaultConfigurationClosure() {
-        return """
-                nexusStaging {
-                    username = "codearte"
-                    password = '$nexusPassword'
-                    packageGroup = "io.codearte"
-                }
-        """
     }
 }

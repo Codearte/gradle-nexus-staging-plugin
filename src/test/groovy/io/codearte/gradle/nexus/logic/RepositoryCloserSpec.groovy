@@ -12,7 +12,7 @@ class RepositoryCloserSpec extends BaseOperationExecutorSpec {
     private static final String CLOSE_REPOSITORY_FULL_URL = MOCK_SERVER_HOST + CLOSE_REPOSITORY_PATH
 
     @Ignore
-    def "should close repository e2e"() {
+    def "should close open repository e2e"() {
         given:
             def client = new SimplifiedHttpJsonRestClient(new RESTClient(), "codearte", PasswordUtil.tryToReadNexusPassword())
             def closer = new RepositoryCloser(client, E2E_TEST_SERVER_BASE_PATH)
@@ -22,7 +22,7 @@ class RepositoryCloserSpec extends BaseOperationExecutorSpec {
             noExceptionThrown()
     }
 
-    def "should get open repository id from server"() {
+    def "should close open repository"() {
         given:
             def client = Mock(SimplifiedHttpJsonRestClient)
             def closer = new RepositoryCloser(client, MOCK_SERVER_HOST)

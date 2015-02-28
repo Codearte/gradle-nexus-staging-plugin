@@ -26,6 +26,8 @@ class SimplifiedHttpJsonRestClient {
         this.password = password
         params = [:]
         params.contentType = ContentType.JSON
+//        params.requestContentType = ContentType.JSON  //Does not set Content-Type header as required by WireMock
+        restClient.headers["Content-Type"] = "application/json"
     }
 
     Map get(String uri) {

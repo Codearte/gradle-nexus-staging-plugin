@@ -7,7 +7,7 @@ import io.codearte.gradle.nexus.infra.WrongNumberOfRepositories
 import spock.lang.Ignore
 import spock.lang.Unroll
 
-class RepositoryFetcherSpec extends BaseOperationExecutorSpec {
+class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements FetcherResponseTrait {
 
     private static final String GET_REPOSITORY_ID_PATH = "/staging/profile_repositories/"
     private static final String GET_REPOSITORY_ID_FULL_URL = MOCK_SERVER_HOST + GET_REPOSITORY_ID_PATH + TEST_STAGING_PROFILE_ID
@@ -98,32 +98,15 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec {
             "closed"      || "open"
     }
 
-    private static Map createResponseMapWithGivenRepos(List<Map> repositories) {
-        return [data: repositories]
-    }
-
-    private static Map anOpenRepo() {
+    private Map anOpenRepo() {
         return aRepoInStateAndId("open", TEST_REPOSITORY_ID)
     }
 
-    private static Map aClosedRepo() {
+    private Map aClosedRepo() {
         return aRepoInStateAndId("closed", TEST_REPOSITORY_ID)
     }
 
-    private static Map aRepoInState(String type) {
+    private Map aRepoInState(String type) {
         return aRepoInStateAndId(type, TEST_REPOSITORY_ID)
-    }
-
-    private static Map aRepoInStateAndId(String type, String id) {
-        return [
-                policy               : "release",
-                profileId            : "93c08fdebde1ff",
-                profileName          : "io.codearte",
-                profileType          : "repository",
-                releaseRepositoryId  : "releases",
-                releaseRepositoryName: "Releases",
-                repositoryId         : id,
-                type                 : type
-        ]
     }
 }
