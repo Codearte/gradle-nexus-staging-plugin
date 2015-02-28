@@ -12,10 +12,17 @@ class NexusStagingPlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
         this.extension = createAndConfigureExtension(project)
+        emitWarningIfAppliedNotToRootProject(project)
         createAndConfigureGetStagingProfileTask2(project)
         def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)
         def promoteRepositoryTask = createAndConfigurePromoteRepositoryTask(project)
         promoteRepositoryTask.mustRunAfter(closeRepositoryTask)
+    }
+
+    void emitWarningIfAppliedNotToRootProject(Project project) {
+        if (project != project.rootProject) {
+            project.logger.warn("Warning. Nexus staging plugin should only be applied to the root project in build.")
+        }
     }
 
     NexusStagingExtension createAndConfigureExtension(Project project) {
