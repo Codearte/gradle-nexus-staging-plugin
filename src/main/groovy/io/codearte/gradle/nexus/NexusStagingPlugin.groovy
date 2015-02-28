@@ -21,14 +21,14 @@ class NexusStagingPlugin implements Plugin<Project> {
 
     void emitWarningIfAppliedNotToRootProject(Project project) {
         if (project != project.rootProject) {
-            project.logger.warn("Warning. Nexus staging plugin should only be applied to the root project in build.")
+            project.logger.warn("WARNING. Nexus staging plugin should only be applied to the root project in build.")
         }
     }
 
     NexusStagingExtension createAndConfigureExtension(Project project) {
         def extension = project.extensions.create("nexusStaging", NexusStagingExtension)
         extension.with {
-            nexusUrl = "https://oss.sonatype.org/service/local/"
+            serverUrl = "https://oss.sonatype.org/service/local/"
         }
         return extension
     }
@@ -64,7 +64,7 @@ class NexusStagingPlugin implements Plugin<Project> {
 
     void setTaskDefaults(BaseStagingTask task) {
         task.conventionMapping.with {
-            nexusUrl = { extension.nexusUrl }
+            serverUrl = { extension.serverUrl }
             username = { extension.username }
             password = { extension.password }
             packageGroup = { extension.packageGroup }

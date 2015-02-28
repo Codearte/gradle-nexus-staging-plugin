@@ -16,7 +16,7 @@ import org.gradle.api.tasks.Optional
 abstract class BaseStagingTask extends DefaultTask {
 
     @Input
-    String nexusUrl
+    String serverUrl
 
     @Input
     @Optional
@@ -35,18 +35,18 @@ abstract class BaseStagingTask extends DefaultTask {
     }
 
     protected StagingProfileFetcher createFetcherWithGivenClient(SimplifiedHttpJsonRestClient client) {
-        return new StagingProfileFetcher(client, getNexusUrl())
+        return new StagingProfileFetcher(client, getServerUrl())
     }
 
     protected RepositoryFetcher createRepositoryFetcherWithGivenClient(SimplifiedHttpJsonRestClient client) {
-        return new RepositoryFetcher(client, getNexusUrl())
+        return new RepositoryFetcher(client, getServerUrl())
     }
 
     protected RepositoryCloser createRepositoryCloserWithGivenClient(SimplifiedHttpJsonRestClient client) {
-        return new RepositoryCloser(client, getNexusUrl())
+        return new RepositoryCloser(client, getServerUrl())
     }
 
     protected RepositoryPromoter createRepositoryPromoterWithGivenClient(SimplifiedHttpJsonRestClient client) {
-        return new RepositoryPromoter(client, getNexusUrl())
+        return new RepositoryPromoter(client, getServerUrl())
     }
 }
