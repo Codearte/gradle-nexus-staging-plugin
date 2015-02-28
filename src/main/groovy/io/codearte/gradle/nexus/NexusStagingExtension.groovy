@@ -11,6 +11,7 @@ class NexusStagingExtension {
     String username
     String password
     String packageGroup
+    String stagingProfileId //since 0.4.1
 
     //Deprecated since 0.4.1.
     void setNexusUrl(String nexusUrl) {

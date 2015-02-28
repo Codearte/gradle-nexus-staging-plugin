@@ -11,11 +11,11 @@ public class CloseRepositoryTask extends BaseStagingTask {
 
     @TaskAction
     void doAction() {
-        StagingProfileFetcher stagingProfileFetcher = createFetcherWithGivenClient(createClient())
+        StagingProfileFetcher stagingProfileFetcher = createFetcherWithGivenClient(createClient())  //Here or in fetchAndCacheStagingProfileId()?
         RepositoryFetcher openRepositoryFetcher = createRepositoryFetcherWithGivenClient(createClient())
         RepositoryCloser repositoryCloser = createRepositoryCloserWithGivenClient(createClient())
 
-        String stagingProfileId = stagingProfileFetcher.getStagingProfileIdForPackageGroup(getPackageGroup())
+        String stagingProfileId = fetchAndCacheStagingProfileId(stagingProfileFetcher)
         String repositoryId = openRepositoryFetcher.getOpenRepositoryIdForStagingProfileId(stagingProfileId)
         repositoryCloser.closeRepositoryWithIdAndStagingProfileId(repositoryId, stagingProfileId)
     }

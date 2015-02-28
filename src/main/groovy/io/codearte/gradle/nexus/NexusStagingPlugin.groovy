@@ -34,7 +34,7 @@ class NexusStagingPlugin implements Plugin<Project> {
     }
 
     void createAndConfigureGetStagingProfileTask2(Project project) {
-        GetStagingProfileTask2 task = project.tasks.create("getStagingProfileTask", GetStagingProfileTask2)
+        GetStagingProfileTask2 task = project.tasks.create("getStagingProfile", GetStagingProfileTask2)
         task.with {
             description = "Gets staging profile id in Nexus - diagnostic tasks"
             group = "release"
@@ -68,6 +68,7 @@ class NexusStagingPlugin implements Plugin<Project> {
             username = { extension.username }
             password = { extension.password }
             packageGroup = { extension.packageGroup }
+            stagingProfileId = { extension.stagingProfileId }
         }
     }
 }

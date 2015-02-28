@@ -2,6 +2,7 @@ package io.codearte.gradle.nexus
 
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
+import groovy.util.logging.Slf4j
 import groovyx.net.http.RESTClient
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.logic.RepositoryCloser
@@ -13,6 +14,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 
 @CompileStatic
+@Slf4j
 abstract class BaseStagingTask extends DefaultTask {
 
     @Input
@@ -28,6 +30,10 @@ abstract class BaseStagingTask extends DefaultTask {
 
     @Input
     String packageGroup
+
+    @Input
+    @Optional
+    String stagingProfileId
 
     @PackageScope
     SimplifiedHttpJsonRestClient createClient() {
@@ -48,5 +54,16 @@ abstract class BaseStagingTask extends DefaultTask {
 
     protected RepositoryPromoter createRepositoryPromoterWithGivenClient(SimplifiedHttpJsonRestClient client) {
         return new RepositoryPromoter(client, getServerUrl())
+    }
+
+    protected String fetchAndCacheStagingProfileId(StagingProfileFetcher stagingProfileFetcher) {
+        String configuredStagingProfileId = getStagingProfileId()
+        if (configuredStagingProfileId != null) {
+            log.info("Using configured staging profile id: $configuredStagingProfileId")
+            return configuredStagingProfileId
+        } else {
+            //TODO: Set stagingProfileId for later reusage - will it work?
+            return stagingProfileFetcher.getStagingProfileIdForPackageGroup(getPackageGroup())
+        }
     }
 }
