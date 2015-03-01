@@ -15,7 +15,7 @@ Add gradle-nexus-staging-plugin to the buildscript dependencies in your build.gr
             //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.4.0"
+            classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.0"
         }
     }
 
