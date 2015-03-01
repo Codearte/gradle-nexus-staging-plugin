@@ -1,5 +1,6 @@
 package io.codearte.gradle.nexus
 
+import io.codearte.gradle.nexus.logic.OperationRetrier
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -29,6 +30,8 @@ class NexusStagingPlugin implements Plugin<Project> {
         def extension = project.extensions.create("nexusStaging", NexusStagingExtension)
         extension.with {
             serverUrl = "https://oss.sonatype.org/service/local/"
+            numberOfRetries = OperationRetrier.DEFAULT_NUMBER_OF_RETRIES
+            delayBetweenRetriesInMillis = OperationRetrier.DEFAULT_DELAY_BETWEEN_RETRIES_IN_MILLIS
         }
         return extension
     }
@@ -69,6 +72,8 @@ class NexusStagingPlugin implements Plugin<Project> {
             password = { extension.password }
             packageGroup = { extension.packageGroup }
             stagingProfileId = { extension.stagingProfileId }
+            numberOfRetries = { extension.numberOfRetries }
+            delayBetweenRetriesInMillis = { extension.delayBetweenRetriesInMillis }
         }
     }
 }

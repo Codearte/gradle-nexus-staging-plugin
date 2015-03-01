@@ -1,6 +1,7 @@
 package io.codearte.gradle.nexus
 
 import groovy.transform.CompileStatic
+import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
 import io.codearte.gradle.nexus.logic.RepositoryPromoter
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
@@ -12,12 +13,13 @@ public class PromoteRepositoryTask extends BaseStagingTask {
     @TaskAction
     void doAction() {
         StagingProfileFetcher stagingProfileFetcher = createFetcherWithGivenClient(createClient())
-        RepositoryFetcher openRepositoryFetcher = createRepositoryFetcherWithGivenClient(createClient())
+        RepositoryFetcher repositoryFetcher = createRepositoryFetcherWithGivenClient(createClient())
         RepositoryPromoter repositoryPromoter = createRepositoryPromoterWithGivenClient(createClient())
+        OperationRetrier<String> retrier = createOperationRetrier()
 
         tryToTakeStagingProfileIdFromCloseRepositoryTask()
         String stagingProfileId = fetchAndCacheStagingProfileId(stagingProfileFetcher)
-        String repositoryId = openRepositoryFetcher.getClosedRepositoryIdForStagingProfileId(stagingProfileId)
+        String repositoryId = retrier.doWithRetry { repositoryFetcher.getClosedRepositoryIdForStagingProfileId(stagingProfileId) }
         repositoryPromoter.promoteRepositoryWithIdAndStagingProfileId(repositoryId, stagingProfileId)
     }
 

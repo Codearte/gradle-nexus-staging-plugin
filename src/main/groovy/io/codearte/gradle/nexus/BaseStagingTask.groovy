@@ -2,9 +2,9 @@ package io.codearte.gradle.nexus
 
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
-import groovy.util.logging.Slf4j
 import groovyx.net.http.RESTClient
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
+import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
 import io.codearte.gradle.nexus.logic.RepositoryPromoter
@@ -34,6 +34,14 @@ abstract class BaseStagingTask extends DefaultTask {
     @Optional
     String stagingProfileId
 
+    @Input
+    @Optional
+    Integer numberOfRetries
+
+    @Input
+    @Optional
+    Integer delayBetweenRetriesInMillis
+
     @PackageScope
     SimplifiedHttpJsonRestClient createClient() {
         new SimplifiedHttpJsonRestClient(new RESTClient(), getUsername(), getPassword())
@@ -53,6 +61,10 @@ abstract class BaseStagingTask extends DefaultTask {
 
     protected RepositoryPromoter createRepositoryPromoterWithGivenClient(SimplifiedHttpJsonRestClient client) {
         return new RepositoryPromoter(client, getServerUrl())
+    }
+
+    protected <T> OperationRetrier<T> createOperationRetrier() {
+        return new OperationRetrier<T>(getNumberOfRetries(), getDelayBetweenRetriesInMillis())
     }
 
     protected String fetchAndCacheStagingProfileId(StagingProfileFetcher stagingProfileFetcher) {

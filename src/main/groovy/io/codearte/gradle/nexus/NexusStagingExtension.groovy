@@ -2,6 +2,7 @@ package io.codearte.gradle.nexus
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.gradle.api.Incubating
 
 @CompileStatic
 @Slf4j
@@ -12,10 +13,12 @@ class NexusStagingExtension {
     String password
     String packageGroup
     String stagingProfileId //since 0.4.1
+    @Incubating Integer numberOfRetries
+    @Incubating Integer delayBetweenRetriesInMillis
 
     //Deprecated since 0.4.1.
     void setNexusUrl(String nexusUrl) {
-        log.warn("DEPRECATION WARNING. nexusUrl property has been deprecated and will be removed in the future")
+        log.warn("DEPRECATION WARNING. nexusUrl property has been deprecated and will be removed in the future versions.")
         serverUrl = nexusUrl
     }
 }
