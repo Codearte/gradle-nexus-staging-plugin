@@ -27,7 +27,7 @@ scmVersion {
 
 project.version = scmVersion.version
 
-sourceCompatibility = 1.6
+sourceCompatibility = 1.7
 
 repositories {
     mavenCentral()
