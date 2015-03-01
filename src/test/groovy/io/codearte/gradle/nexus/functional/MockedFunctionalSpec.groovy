@@ -155,6 +155,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     private void stubGetStagingProfilesWithJson(String responseAsJson) {
         stubFor(get(urlEqualTo("/staging/profiles"))
                 .withHeader("Content-Type", containing("application/json"))
+                .withHeader("Accept", containing("application/json"))
                 .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
@@ -164,6 +165,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     private void stubGetOneRepositoryWithProfileIdAndContent(String stagingProfileId, Map response) {
         stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId"))
                 .withHeader("Content-Type", containing("application/json"))
+                .withHeader("Accept", containing("application/json"))
                 .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
@@ -173,6 +175,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     private void stubSuccessfulCloseRepositoryWithProfileId(String stagingProfileId) {
         stubFor(post(urlEqualTo("/staging/profiles/$stagingProfileId/finish"))
                 .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Accept", containing("application/json"))
                 .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")));
@@ -181,6 +184,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     private void stubSuccessfulPromoteRepositoryWithProfileId(String stagingProfileId) {
         stubFor(post(urlEqualTo("/staging/profiles/$stagingProfileId/promote"))
                 .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Accept", containing("application/json"))
                 .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")));
@@ -190,6 +194,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId")).inScenario("State")
                 .whenScenarioStateIs(Scenario.STARTED)
                 .withHeader("Content-Type", containing("application/json"))
+                .withHeader("Accept", containing("application/json"))
                 .willReturn(aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
@@ -200,6 +205,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId")).inScenario("State")
                 .whenScenarioStateIs("CLOSED")
                 .withHeader("Content-Type", containing("application/json"))
+                .withHeader("Accept", containing("application/json"))
                 .willReturn(aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
