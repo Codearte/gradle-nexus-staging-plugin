@@ -27,20 +27,6 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
             result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
     }
 
-    @IgnoreIf({ !env.containsKey("nexusPassword") })
-    def "should pass parameter to other task"() {
-        given:
-            buildFile << """
-                ${getApplyPluginBlock()}
-                ${getDefaultConfigurationClosure()}
-                task getValue << {
-                    assert getStagingProfile.stagingProfileId == "93c08fdebde1ff"
-                }
-            """.stripIndent()
-        expect:
-            runTasksSuccessfully('getStagingProfile', 'getValue')
-    }
-
     @Ignore
     def "should close open repository"() {
         given:

@@ -15,9 +15,20 @@ public class PromoteRepositoryTask extends BaseStagingTask {
         RepositoryFetcher openRepositoryFetcher = createRepositoryFetcherWithGivenClient(createClient())
         RepositoryPromoter repositoryPromoter = createRepositoryPromoterWithGivenClient(createClient())
 
+        tryToTakeStagingProfileIdFromCloseRepositoryTask()
         String stagingProfileId = fetchAndCacheStagingProfileId(stagingProfileFetcher)
-        //TODO: repositoryId should be taken from CloseRepositoryTask when executed
         String repositoryId = openRepositoryFetcher.getClosedRepositoryIdForStagingProfileId(stagingProfileId)
         repositoryPromoter.promoteRepositoryWithIdAndStagingProfileId(repositoryId, stagingProfileId)
+    }
+
+    private void tryToTakeStagingProfileIdFromCloseRepositoryTask() {
+        if (getStagingProfileId() != null) {
+            return
+        }
+        String stagingProfileIdFromCloseRepositoryTask = project.tasks.withType(CloseRepositoryTask)[0].getStagingProfileId()
+        if (stagingProfileIdFromCloseRepositoryTask != null) {
+            logger.debug("Reusing staging profile id from closeRepository task: $stagingProfileIdFromCloseRepositoryTask")
+            setStagingProfileId(stagingProfileIdFromCloseRepositoryTask)
+        }
     }
 }

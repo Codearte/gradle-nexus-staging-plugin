@@ -14,7 +14,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 
 @CompileStatic
-@Slf4j
 abstract class BaseStagingTask extends DefaultTask {
 
     @Input
@@ -59,11 +58,12 @@ abstract class BaseStagingTask extends DefaultTask {
     protected String fetchAndCacheStagingProfileId(StagingProfileFetcher stagingProfileFetcher) {
         String configuredStagingProfileId = getStagingProfileId()
         if (configuredStagingProfileId != null) {
-            log.info("Using configured staging profile id: $configuredStagingProfileId")
+            logger.info("Using configured staging profile id: $configuredStagingProfileId")
             return configuredStagingProfileId
         } else {
-            //TODO: Set stagingProfileId for later reusage - will it work?
-            return stagingProfileFetcher.getStagingProfileIdForPackageGroup(getPackageGroup())
+            String receivedStagingProfileId = stagingProfileFetcher.getStagingProfileIdForPackageGroup(getPackageGroup())
+            setStagingProfileId(receivedStagingProfileId)
+            return receivedStagingProfileId
         }
     }
 }

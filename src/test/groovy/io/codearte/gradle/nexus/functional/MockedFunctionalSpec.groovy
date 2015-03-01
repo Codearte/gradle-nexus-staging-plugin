@@ -1,6 +1,7 @@
 package io.codearte.gradle.nexus.functional
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule
+import com.github.tomakehurst.wiremock.stubbing.Scenario
 import groovy.json.JsonOutput
 import io.codearte.gradle.nexus.logic.FetcherResponseTrait
 import org.junit.Rule
@@ -13,12 +14,12 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8089);
 
+    protected static final String stagingProfileId = "93c08fdebde1ff"
+
     @Unroll
     def "should not do request for staging profile when provided in configuration on #testedTaskName task"() {
         given:
-            String stagingProfileId = "p1"
-        and:
-            stubGetOneOpenRepositoryWithProfileIdAndContent(stagingProfileId,
+            stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
                     createResponseMapWithGivenRepos([aRepoInStateAndId(repoTypeToReturn, "ignored")]))
         and:
             stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
@@ -50,11 +51,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     @Unroll
     def "should send request for staging profile when not provided in configuration on #testedTaskName task"() {
         given:
-            String stagingProfileId = "93c08fdebde1ff"
-        and:
             stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
         and:
-            stubGetOneOpenRepositoryWithProfileIdAndContent(stagingProfileId,
+            stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
                     createResponseMapWithGivenRepos([aRepoInStateAndId(repoTypeToReturn, "ignored")]))
         and:
             stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
@@ -82,6 +81,78 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             "promoteRepository" | "closed"
     }
 
+    def "should reuse stagingProfileId and repositoryId from closeRepository in promoteRepository when called together"() {
+        given:
+            stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
+        and:
+            stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId")).inScenario("State")
+                    .whenScenarioStateIs(Scenario.STARTED)
+                    .withHeader("Content-Type", containing("application/json"))
+                    .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JsonOutput.toJson(createResponseMapWithGivenRepos([aRepoInStateAndId("open", "ignored")])))
+                    )
+                    .willSetStateTo("CLOSED"));
+        and:
+            stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId")).inScenario("State")
+                    .whenScenarioStateIs("CLOSED")
+                    .withHeader("Content-Type", containing("application/json"))
+                    .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(JsonOutput.toJson(createResponseMapWithGivenRepos([aRepoInStateAndId("closed", "ignored")])))
+                    ));
+        and:
+            stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
+        and:
+            stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId)
+        and:
+            buildFile << """
+                ${getApplyPluginBlock()}
+                ${getDefaultConfigurationClosure()}
+                nexusStaging {
+                    serverUrl = "http://localhost:8089/"
+                }
+            """.stripIndent()
+        when:
+            def result = runTasksSuccessfully("closeRepository", "promoteRepository")
+        then:
+            result.wasExecuted("closeRepository")
+            result.wasExecuted("promoteRepository")
+        and:
+            verify(2, getRequestedFor(urlEqualTo("/staging/profile_repositories/$stagingProfileId")))
+            verify(1, getRequestedFor(urlEqualTo("/staging/profiles")))
+    }
+
+    def "should pass parameter to other task"() {
+        given:
+            stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
+            buildFile << """
+                ${getApplyPluginBlock()}
+                ${getDefaultConfigurationClosure()}
+                nexusStaging {
+                    serverUrl = "http://localhost:8089/"
+                }
+                task getValue << {
+                    assert getStagingProfile.stagingProfileId == "$stagingProfileId"
+                }
+            """.stripIndent()
+        expect:
+            runTasksSuccessfully('getStagingProfile', 'getValue')
+    }
+
+    @Override
+    protected String getDefaultConfigurationClosure() {
+        return """
+                nexusStaging {
+                    username = "codearte"
+                    packageGroup = "io.codearte"
+                    serverUrl = "http://localhost:8089/"
+                }
+        """
+    }
+
     private void stubGetStagingProfilesWithJson(String responseAsJson) {
         stubFor(get(urlEqualTo("/staging/profiles"))
                 .withHeader("Content-Type", containing("application/json"))
@@ -91,7 +162,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 .withBody(responseAsJson)));
     }
 
-    private void stubGetOneOpenRepositoryWithProfileIdAndContent(String stagingProfileId, Map response) {
+    private void stubGetOneRepositoryWithProfileIdAndContent(String stagingProfileId, Map response) {
         stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId"))
                 .withHeader("Content-Type", containing("application/json"))
                 .willReturn(aResponse()

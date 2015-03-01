@@ -8,8 +8,8 @@ class GetStagingProfileTask2 extends BaseStagingTask {
     @TaskAction
     void doAction() {
         StagingProfileFetcher stagingProfileFetcher = createFetcherWithGivenClient(createClient())
-        String stagingProfileId = stagingProfileFetcher.getStagingProfileIdForPackageGroup(getPackageGroup())
-        logger.info("Received staging profile id: $stagingProfileId")
-        ext.stagingProfileId = stagingProfileId
+        String receivedStagingProfileId = stagingProfileFetcher.getStagingProfileIdForPackageGroup(getPackageGroup())
+        logger.info("Received staging profile id: $receivedStagingProfileId")
+        setStagingProfileId(receivedStagingProfileId)
     }
 }
