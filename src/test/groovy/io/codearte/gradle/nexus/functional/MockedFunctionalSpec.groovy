@@ -137,8 +137,8 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             def result = runTasksSuccessfully("promoteRepository")
         then:
             result.wasExecuted("promoteRepository")
-            result.standardOutput.contains("Attempt 1/2 failed.")
-            !result.standardOutput.contains("Attempt 2/2 failed.")
+            result.standardOutput.contains("Attempt 1/3 failed.")
+            !result.standardOutput.contains("Attempt 2/3 failed.")
     }
 
     @Override

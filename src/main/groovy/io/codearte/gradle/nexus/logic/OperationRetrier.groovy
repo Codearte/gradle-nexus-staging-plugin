@@ -21,14 +21,15 @@ class OperationRetrier<T> {
 
     public T doWithRetry(Closure<T> operation) {
         int counter = 0
+        int numberOfAttempts = numberOfRetries + 1
         while (true) {
             try {
                 counter++
-                log.debug("Attempt $counter/$numberOfRetries...")
+                log.debug("Attempt $counter/$numberOfAttempts...")
                 return operation()
             } catch (WrongNumberOfRepositories | IllegalArgumentException e) { //Exceptions to catch could be configurable if needed
-                String message = "Attempt $counter/$numberOfRetries failed. ${e.getClass().getSimpleName()} was thrown with message '${e.message}'"
-                if (counter > numberOfRetries) {
+                String message = "Attempt $counter/$numberOfAttempts failed. ${e.getClass().getSimpleName()} was thrown with message '${e.message}'"
+                if (counter >= numberOfAttempts) {
                     log.info("$message. Giving up.")
                     throw e
                 } else {

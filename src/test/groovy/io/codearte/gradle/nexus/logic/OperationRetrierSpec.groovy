@@ -57,7 +57,7 @@ class OperationRetrierSpec extends Specification {
 
     def "should honor delay between retries"() {
         given:
-            OperationRetrier spiedRetrier = Spy(retryCount: 1)
+            OperationRetrier spiedRetrier = Spy()
         and:
             def fetcherMock = Mock(RepositoryFetcher)
             int counter = 0
