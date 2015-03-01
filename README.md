@@ -62,8 +62,8 @@ The plugin defines the following configuration properties in the `nexusStaging` 
  - `packageGroup` - package group as registered in Nexus staging profile
  - `stagingProfileId` (optional) - staging profile used to release given project - can be get with `getStagingProfile` task - when not set
 one additional request is set to Nexus server to determine the value using `packageGroup`
- - `numberOfRetries` (optional) - number of retries when waiting for a repository to change a state - by default `2`
- - `delayBetweenRetriesInMillis` (optional) - delay between retries - by default `1000` milliseconds 
+ - `numberOfRetries` (optional) - number of retries when waiting for a repository to change a state - by default `5`
+ - `delayBetweenRetriesInMillis` (optional) - delay between retries - by default `1000` milliseconds
 
 For sensible configuration example see the plugin's own staging configuration in [build.gradle](build.gradle).
 

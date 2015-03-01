@@ -130,6 +130,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 nexusStaging {
                     stagingProfileId = "$stagingProfileId"
                     delayBetweenRetriesInMillis = 50
+                    numberOfRetries = 2
                 }
             """.stripIndent()
         when:
