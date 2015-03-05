@@ -3,6 +3,8 @@ package io.codearte.gradle.nexus
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.maven.MavenDeployer
+import org.gradle.api.tasks.Upload
 
 class NexusStagingPlugin implements Plugin<Project> {
 
@@ -18,6 +20,7 @@ class NexusStagingPlugin implements Plugin<Project> {
         def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)
         def promoteRepositoryTask = createAndConfigurePromoteRepositoryTask(project)
         promoteRepositoryTask.mustRunAfter(closeRepositoryTask)
+        tryToGetCredentialsFromUploadArchivesTask(project, extension)
     }
 
     void emitWarningIfAppliedNotToRootProject(Project project) {
@@ -74,6 +77,26 @@ class NexusStagingPlugin implements Plugin<Project> {
             stagingProfileId = { extension.stagingProfileId }
             numberOfRetries = { extension.numberOfRetries }
             delayBetweenRetriesInMillis = { extension.delayBetweenRetriesInMillis }
+        }
+    }
+
+    private void tryToGetCredentialsFromUploadArchivesTask(Project project, NexusStagingExtension extension) {
+        project.afterEvaluate {
+            if (extension.username != null) {
+                return  //username already set manually
+            }
+
+            Upload uploadTask = project.tasks.findByPath("uploadArchives")
+            uploadTask?.repositories.withType(MavenDeployer).each { MavenDeployer deployer ->
+                project.logger.debug("Trying to read credentials from repository '${deployer.name}'")
+                def authentication = deployer.repository.authentication //Not to use class names as maven-ant-task is not on classpath when plugin is executed
+                if (authentication.userName != null) {
+                    extension.username = authentication.userName
+                    extension.password = authentication.password
+                    project.logger.info("Using username '${extension.username}' and password from repository '${deployer.name}'")
+                    return  //from each
+                }
+            }
         }
     }
 }

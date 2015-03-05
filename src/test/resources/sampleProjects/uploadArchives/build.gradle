@@ -1,0 +1,33 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+apply plugin: 'io.codearte.nexus-staging'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.7'
+
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+    testCompile 'junit:junit:4.11'
+}
+
+artifacts {
+    archives jar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(id: 'test-repo-staging', url: "http://localhost:8089/nexus/content/repositories/internal/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+            snapshotRepository(id: 'test-repo-snapshots', url: 'http://localhost:8089/nexus/content/repositories/internal-snapshots/') {
+                authentication(userName: 'testUser', password: 'noPassword')
+            }
+            name = 'Test repo'
+        }
+    }
+}
