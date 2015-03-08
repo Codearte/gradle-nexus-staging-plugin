@@ -27,13 +27,11 @@ Apply plugin:
 Configure plugin:
 
     nexusStaging {
-        username = yourNexusUsername
-        password = yourPasswordReadFromProperties
         packageGroup = "org.mycompany.myproject"
         stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
     }
 
-After successful upload archives (with `maven`, `maven-publish` or `nexus` plugin) to Sonatype OSSRH call:
+After successful upload archives (with `maven`, `maven-publish` or [`nexus`](https://github.com/bmuschko/gradle-nexus-plugin/) plugin) to Sonatype OSSRH call:
 
     ./gradlew closeRepository promoteRepository
 
@@ -58,15 +56,26 @@ together there is a built-in retry mechanism.
 The plugin defines the following configuration properties in the `nexusStaging` closure:
 
  - `serverUrl` (optional) - stable release repository - by default Sonatype OSSRH - `https://oss.sonatype.org/service/local/`
- - `username` - username to the server 
- - `password` - password
+ - `username` (optional) - username to the server 
+ - `password` (optional) - password
  - `packageGroup` - package group as registered in Nexus staging profile
  - `stagingProfileId` (optional) - staging profile used to release given project - can be get with `getStagingProfile` task - when not set
 one additional request is set to Nexus server to determine the value using `packageGroup`
- - `numberOfRetries` (optional) - number of retries when waiting for a repository to change a state - by default `5`
+ - `numberOfRetries` (optional) - number of retries when waiting for a repository to change a state - by default `7`
  - `delayBetweenRetriesInMillis` (optional) - delay between retries - by default `1000` milliseconds
 
 For sensible configuration example see the plugin's own staging configuration in [build.gradle](build.gradle).
+
+## Server credentials
+
+Production Nexus instances usually requires user to authenticate before perform staging operations. In nexus-staging plugin there are a few ways to
+provide credentials:
+ - manually set username and password in a `nexusStaging` configuration closure (probably reading them from Gradle or system properties)
+ - provide authentication section in MavenDeloyer (from Gradle `maven` plugin) - it will be reused by nexus-staging plugin
+ - set Gradle properties `nexusUsername` abd `nexusPassword` (via command line or `~/.gradle/gradle.properties`) - properties with these names are
+also used by [gradle-nexus-plugin](https://github.com/bmuschko/gradle-nexus-plugin/)
+
+The first matching strategy win. If you need to set empty password use `''` (empty string) instead of null. 
 
 ## Additional information 
 
