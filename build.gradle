@@ -6,7 +6,7 @@ buildscript {
         classpath 'org.hibernate.build.gradle:gradle-maven-publish-auth:2.0.1'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath 'pl.allegro.tech.build:axion-release-plugin:1.2.0'
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.0'
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.1'
     }
 }
 
@@ -56,8 +56,6 @@ dependencies {
 }
 
 nexusStaging {
-    username = project.hasProperty('nexusUsername') ? project.getProperty('nexusUsername') : null   //TODO: Temporary
-    password = project.hasProperty('nexusPassword') ? project.getProperty('nexusPassword') : null
     packageGroup = "io.codearte"
     stagingProfileId = "93c08fdebde1ff"
 }
