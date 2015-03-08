@@ -3,7 +3,7 @@ package io.codearte.gradle.nexus
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
 import org.gradle.api.tasks.TaskAction
 
-class GetStagingProfileTask2 extends BaseStagingTask {
+class GetStagingProfileTask extends BaseStagingTask {
 
     @TaskAction
     void doAction() {

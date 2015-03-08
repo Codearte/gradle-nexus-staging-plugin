@@ -14,7 +14,7 @@ class NexusStagingPlugin implements Plugin<Project> {
     private static final String CLOSE_REPOSITORY_TASK_NAME = "closeRepository"
     private static final String PROMOTE_REPOSITORY_TASK_NAME = "promoteRepository"
 
-    private static final Set<Class> STAGING_TASK_CLASSES = [GetStagingProfileTask2, CloseRepositoryTask, PromoteRepositoryTask]
+    private static final Set<Class> STAGING_TASK_CLASSES = [GetStagingProfileTask, CloseRepositoryTask, PromoteRepositoryTask]
 
     private static final String NEXUS_USERNAME_PROPERTY = 'nexusUsername'
     private static final String NEXUS_PASSWORD_PROPERTY = 'nexusPassword'
@@ -51,7 +51,7 @@ class NexusStagingPlugin implements Plugin<Project> {
     }
 
     private void createAndConfigureGetStagingProfileTask2(Project project) {
-        GetStagingProfileTask2 task = project.tasks.create(GET_STAGING_PROFILE_TASK_NAME, GetStagingProfileTask2)
+        GetStagingProfileTask task = project.tasks.create(GET_STAGING_PROFILE_TASK_NAME, GetStagingProfileTask)
         task.with {
             description = "Gets staging profile id in Nexus - diagnostic tasks"
             group = "release"
