@@ -41,7 +41,9 @@ class SimplifiedHttpJsonRestClient {
 
     private void setUriAndAuthentication(String uri) {
         restClient.uri = uri
-        restClient.auth.basic(username, password)   //has to be after URI is set
+        if (username != null) {
+            restClient.auth.basic(username, password)   //has to be after URI is set
+        }
     }
 
     void post(String uri, Map content) {
