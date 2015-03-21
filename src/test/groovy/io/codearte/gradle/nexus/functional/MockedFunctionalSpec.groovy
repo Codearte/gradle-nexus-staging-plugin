@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import groovy.json.JsonOutput
 import io.codearte.gradle.nexus.logic.FetcherResponseTrait
+import org.gradle.api.logging.LogLevel
 import org.junit.Rule
 import spock.lang.Unroll
 
@@ -139,6 +140,22 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             result.wasExecuted("promoteRepository")
             result.standardOutput.contains("Attempt 1/3 failed.")
             !result.standardOutput.contains("Attempt 2/3 failed.")
+    }
+
+    def "should display staging profile without --info switch"() {
+        given:
+            stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
+        and:
+            buildFile << """
+                ${getApplyPluginBlock()}
+                ${getDefaultConfigurationClosure()}
+            """.stripIndent()
+        and:
+            logLevel = LogLevel.LIFECYCLE
+        when:
+            def result = runTasksSuccessfully('getStagingProfile')
+        then:
+            result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
     }
 
     @Override

@@ -9,7 +9,7 @@ class GetStagingProfileTask extends BaseStagingTask {
     void doAction() {
         StagingProfileFetcher stagingProfileFetcher = createFetcherWithGivenClient(createClient())
         String receivedStagingProfileId = stagingProfileFetcher.getStagingProfileIdForPackageGroup(getPackageGroup())
-        logger.info("Received staging profile id: $receivedStagingProfileId")
+        logger.lifecycle("Received staging profile id: $receivedStagingProfileId")
         setStagingProfileId(receivedStagingProfileId)
     }
 }

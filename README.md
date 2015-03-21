@@ -51,7 +51,7 @@ The plugin provides two main task:
 And one additional:
 
  - `getStagingProfile` - gets and displays staging profile id for given package group. This is a diagnostic task to get the value and put it
-into the configuration closure as `stagingProfileId`. To see the result it is required to call gradle with `--info` switch.
+into the configuration closure as `stagingProfileId`.
 
 It has to be mentioned that calling Nexus REST API ends immediately, but the closing operation takes a moment, so to make it possible to call
 `closeRepository promoteRepository` together there is a built-in retry mechanism.
