@@ -7,7 +7,7 @@ artifacts/repository).
 
 ## Quick start
 
-Add gradle-nexus-staging-plugin to the buildscript dependencies in your build.gradle file for root project:
+Add gradle-nexus-staging-plugin to the `buildscript` dependencies in your build.gradle file for root project:
 
     buildscript {
         repositories {
@@ -20,36 +20,41 @@ Add gradle-nexus-staging-plugin to the buildscript dependencies in your build.gr
         }
     }
 
-Apply plugin:
+Apply the plugin:
 
     apply plugin: 'io.codearte.nexus-staging'
 
-Configure plugin:
+Configure it:
 
     nexusStaging {
         packageGroup = "org.mycompany.myproject"
         stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
     }
 
-After successful upload archives (with `maven`, `maven-publish` or [`nexus`](https://github.com/bmuschko/gradle-nexus-plugin/) plugin) to Sonatype OSSRH call:
+After successful archives upload (with [`maven`](https://gradle.org/docs/current/userguide/maven_plugin.html), 
+[`maven-publish`](https://gradle.org/docs/current/userguide/publishing_maven.html) or 
+[`nexus`](https://github.com/bmuschko/gradle-nexus-plugin/) plugin) to Sonatype OSSRH call:
 
     ./gradlew closeRepository promoteRepository
 
-to close staging repository and promote/release it and its artifacts. If a synchronisation with Maven Central was enabled the artifacts should
+to close staging repository and promote/release it and its artifacts. If a synchronization with Maven Central was enabled the artifacts should
 automatically appear into Maven Central within several minutes.
 
 ## Tasks
 
-The plugin provides three task:
+The plugin provides two main task:
 
  - `closeRepository` - closes open repository with uploaded artifacts. There should be just one open repository available in the staging profile
 (possible old/broken repositories can be dropped with Nexus GUI)
  - `promoteRepository` - promotes/releases closed repository (required to put artifacts to Maven Central)
- - `getStagingProfileTask` - gets and displays staging profile id for given package group. This is a diagnostic task to get the value and put it
+ 
+And one additional:
+
+ - `getStagingProfile` - gets and displays staging profile id for given package group. This is a diagnostic task to get the value and put it
 into the configuration closure as `stagingProfileId`. To see the result it is required to call gradle with `--info` switch.
 
-Calling Nexus REST API ends immediately, but the closing operation takes a moment, so to make it possible to call `closeRepository promoteRepository`
-together there is a built-in retry mechanism.
+It has to be mentioned that calling Nexus REST API ends immediately, but the closing operation takes a moment, so to make it possible to call
+`closeRepository promoteRepository` together there is a built-in retry mechanism.
 
 ## Configuration
 
@@ -64,7 +69,7 @@ one additional request is set to Nexus server to determine the value using `pack
  - `numberOfRetries` (optional) - number of retries when waiting for a repository to change a state - by default `7`
  - `delayBetweenRetriesInMillis` (optional) - delay between retries - by default `1000` milliseconds
 
-For sensible configuration example see the plugin's own staging configuration in [build.gradle](build.gradle).
+For sensible configuration example see the plugin's own release configuration in [build.gradle](build.gradle).
 
 ## Server credentials
 
