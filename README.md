@@ -42,7 +42,7 @@ automatically appear into Maven Central within several minutes.
 
 ## Tasks
 
-The plugin provides two main task:
+The plugin provides three main tasks:
 
  - `closeRepository` - closes open repository with uploaded artifacts. There should be just one open repository available in the staging profile
 (possible old/broken repositories can be dropped with Nexus GUI)
