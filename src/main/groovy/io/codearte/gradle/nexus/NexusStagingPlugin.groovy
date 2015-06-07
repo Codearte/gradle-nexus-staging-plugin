@@ -27,7 +27,7 @@ class NexusStagingPlugin implements Plugin<Project> {
         this.project = project
         this.extension = createAndConfigureExtension(project)
         emitWarningIfAppliedNotToRootProject(project)
-        createAndConfigureGetStagingProfileTask2(project)
+        createAndConfigureGetStagingProfileTask(project)
         def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)
         def promoteRepositoryTask = createAndConfigurePromoteRepositoryTask(project)
         promoteRepositoryTask.mustRunAfter(closeRepositoryTask)
@@ -50,36 +50,34 @@ class NexusStagingPlugin implements Plugin<Project> {
         return extension
     }
 
-    private void createAndConfigureGetStagingProfileTask2(Project project) {
+    private void createAndConfigureGetStagingProfileTask(Project project) {
         GetStagingProfileTask task = project.tasks.create(GET_STAGING_PROFILE_TASK_NAME, GetStagingProfileTask)
-        task.with {
-            description = "Gets staging profile id in Nexus - diagnostic tasks"
-            group = "release"
-        }
-        setTaskDefaults(task)
+        setTaskDescriptionAndGroup(task, "Gets a staging profile id in Nexus - a diagnostic task")
+        setTaskDefaultsAndDescription(task)
     }
 
     private CloseRepositoryTask createAndConfigureCloseRepositoryTask(Project project) {
         CloseRepositoryTask task = project.tasks.create(CLOSE_REPOSITORY_TASK_NAME, CloseRepositoryTask)
-        task.with {
-            description = "Closes open artifacts repository in Nexus"
-            group = "release"
-        }
-        setTaskDefaults(task)
+        setTaskDescriptionAndGroup(task, "Closes an open artifacts repository in Nexus")
+        setTaskDefaultsAndDescription(task)
         return task
     }
 
     private PromoteRepositoryTask createAndConfigurePromoteRepositoryTask(Project project) {
         PromoteRepositoryTask task = project.tasks.create(PROMOTE_REPOSITORY_TASK_NAME, PromoteRepositoryTask)
-        task.with {
-            description = "Promotes/releases closed artifacts repository in Nexus"
-            group = "release"
-        }
-        setTaskDefaults(task)
+        setTaskDescriptionAndGroup(task, "Promotes/releases a closed artifacts repository in Nexus")
+        setTaskDefaultsAndDescription(task)
         return task
     }
 
-    private void setTaskDefaults(BaseStagingTask task) {
+    private void setTaskDescriptionAndGroup(BaseStagingTask task, String taskDescription) {
+        task.with {
+            description = taskDescription
+            group = "release"
+        }
+    }
+
+    private void setTaskDefaultsAndDescription(BaseStagingTask task) {
         task.conventionMapping.with {
             serverUrl = { extension.serverUrl }
             username = { extension.username }
