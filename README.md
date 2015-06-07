@@ -47,6 +47,7 @@ The plugin provides two main task:
  - `closeRepository` - closes open repository with uploaded artifacts. There should be just one open repository available in the staging profile
 (possible old/broken repositories can be dropped with Nexus GUI)
  - `promoteRepository` - promotes/releases closed repository (required to put artifacts to Maven Central)
+ - `closeAndPromoteRepository` - closes and promotes/releases repository (an equivalent to `closeRepository promoteRepository`)
  
 And one additional:
 
@@ -54,7 +55,7 @@ And one additional:
 into the configuration closure as `stagingProfileId`.
 
 It has to be mentioned that calling Nexus REST API ends immediately, but the closing operation takes a moment, so to make it possible to call
-`closeRepository promoteRepository` together there is a built-in retry mechanism.
+`closeRepository promoteRepository` together (or `closeAndPromoteRepository`) there is a built-in retry mechanism.
 
 ## Configuration
 

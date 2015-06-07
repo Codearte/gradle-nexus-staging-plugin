@@ -158,6 +158,29 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
     }
 
+    def "should call close and promote in closeAndPromoteRepository task"() {
+        given:
+            stubGetOneOpenRepositoryInFirstCallAndOneClosedIntheNext(stagingProfileId)
+        and:
+            stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
+        and:
+            stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId)
+        and:
+            buildFile << """
+                ${getApplyPluginBlock()}
+                ${getDefaultConfigurationClosure()}
+                nexusStaging {
+                    stagingProfileId = "$stagingProfileId"
+                }
+            """.stripIndent()
+        when:
+            def result = runTasksSuccessfully("closeAndPromoteRepository")
+        then:
+            result.wasExecuted("closeRepository")
+            result.wasExecuted("promoteRepository")
+            result.wasExecuted("closeAndPromoteRepository")
+    }
+
     @Override
     protected String getDefaultConfigurationClosure() {
         return """

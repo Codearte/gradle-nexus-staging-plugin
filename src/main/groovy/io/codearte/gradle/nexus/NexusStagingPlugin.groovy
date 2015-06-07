@@ -1,6 +1,7 @@
 package io.codearte.gradle.nexus
 
 import io.codearte.gradle.nexus.logic.OperationRetrier
+import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -13,6 +14,7 @@ class NexusStagingPlugin implements Plugin<Project> {
     private static final String GET_STAGING_PROFILE_TASK_NAME = "getStagingProfile"
     private static final String CLOSE_REPOSITORY_TASK_NAME = "closeRepository"
     private static final String PROMOTE_REPOSITORY_TASK_NAME = "promoteRepository"
+    private static final String CLOSE_AND_PROMOTE_REPOSITORY_TASK_NAME = "closeAndPromoteRepository"
 
     private static final Set<Class> STAGING_TASK_CLASSES = [GetStagingProfileTask, CloseRepositoryTask, PromoteRepositoryTask]
 
@@ -31,6 +33,8 @@ class NexusStagingPlugin implements Plugin<Project> {
         def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)
         def promoteRepositoryTask = createAndConfigurePromoteRepositoryTask(project)
         promoteRepositoryTask.mustRunAfter(closeRepositoryTask)
+        def closeAndPromoteRepositoryTask = createAndConfigureCloseAndPromoteRepositoryTask(project)
+        closeAndPromoteRepositoryTask.dependsOn(closeRepositoryTask, promoteRepositoryTask)
         tryToDetermineCredentials(project, extension)
     }
 
@@ -70,7 +74,13 @@ class NexusStagingPlugin implements Plugin<Project> {
         return task
     }
 
-    private void setTaskDescriptionAndGroup(BaseStagingTask task, String taskDescription) {
+    private Task createAndConfigureCloseAndPromoteRepositoryTask(Project project) {
+        Task task = project.tasks.create(CLOSE_AND_PROMOTE_REPOSITORY_TASK_NAME, DefaultTask)
+        setTaskDescriptionAndGroup(task, "Closes and promotes an artifacts repository in Nexus")
+        return task
+    }
+
+    private void setTaskDescriptionAndGroup(Task task, String taskDescription) {
         task.with {
             description = taskDescription
             group = "release"
