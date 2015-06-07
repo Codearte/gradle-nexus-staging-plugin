@@ -17,7 +17,7 @@ class RepositoryFetcher extends BaseOperationExecutor {
     }
 
     private String getRepositoryIdWithGivenStateForStagingProfileId(String state, String stagingProfileId) {
-        log.info("Getting " + state + " repository for staging profile $stagingProfileId")
+        log.info("Getting '$state' repository for staging profile '$stagingProfileId'")
         Map responseAsMap = client.get(nexusUrl + "/staging/profile_repositories/$stagingProfileId")    //TODO: Constant
         return parseResponseAndGetRepositoryIdInGivenState(responseAsMap, state)
     }
