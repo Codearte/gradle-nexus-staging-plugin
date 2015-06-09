@@ -35,7 +35,7 @@ After successful archives upload (with [`maven`](https://gradle.org/docs/current
 [`maven-publish`](https://gradle.org/docs/current/userguide/publishing_maven.html) or 
 [`nexus`](https://github.com/bmuschko/gradle-nexus-plugin/) plugin) to Sonatype OSSRH call:
 
-    ./gradlew closeRepository promoteRepository
+    ./gradlew closeAndPromoteRepository
 
 to close staging repository and promote/release it and its artifacts. If a synchronization with Maven Central was enabled the artifacts should
 automatically appear into Maven Central within several minutes.
