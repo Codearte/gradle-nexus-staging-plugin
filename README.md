@@ -88,6 +88,8 @@ The first matching strategy win. If you need to set empty password use `''` (emp
 **The released version is available as a technology preview and it definitely will be evolving breaking backward compatibility. Please take it into
 account before using it in production.**
 
+Project [changelog](https://github.com/Codearte/gradle-nexus-staging-plugin/releases)
+
 The plugin is licensed under the terms of [the Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
 ![Stat Counter stats](https://c.statcounter.com/10347937/0/98ac55b0/0/)
