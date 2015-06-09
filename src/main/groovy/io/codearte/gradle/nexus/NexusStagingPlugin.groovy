@@ -7,9 +7,15 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.maven.MavenDeployer
 import org.gradle.api.execution.TaskExecutionGraph
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.Upload
 
+import java.lang.invoke.MethodHandles
+
 class NexusStagingPlugin implements Plugin<Project> {
+
+    private final static Logger log =  Logging.getLogger(MethodHandles.lookup().lookupClass())
 
     private static final String GET_STAGING_PROFILE_TASK_NAME = "getStagingProfile"
     private static final String CLOSE_REPOSITORY_TASK_NAME = "closeRepository"
@@ -92,11 +98,22 @@ class NexusStagingPlugin implements Plugin<Project> {
             serverUrl = { extension.serverUrl }
             username = { extension.username }
             password = { extension.password }
-            packageGroup = { extension.packageGroup }
+            packageGroup = {
+                if (extension.packageGroup) {
+                    return extension.packageGroup
+                } else {
+                    return getProjectGroupOrNull(project)
+                }
+            }
             stagingProfileId = { extension.stagingProfileId }
             numberOfRetries = { extension.numberOfRetries }
             delayBetweenRetriesInMillis = { extension.delayBetweenRetriesInMillis }
         }
+    }
+
+    private String getProjectGroupOrNull(Project project) {
+        log.debug("project.group: '{}', class: {}", project.getGroup(), project.getGroup()?.class)
+        return project.getGroup() ?: null
     }
 
     //TODO: Extract to separate class

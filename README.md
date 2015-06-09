@@ -27,7 +27,7 @@ Apply the plugin:
 Configure it:
 
     nexusStaging {
-        packageGroup = "org.mycompany.myproject"
+        packageGroup = "org.mycompany.myproject" //optional if packageGroup == project.getGroup()
         stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
     }
 
@@ -62,9 +62,10 @@ It has to be mentioned that calling Nexus REST API ends immediately, but the clo
 The plugin defines the following configuration properties in the `nexusStaging` closure:
 
  - `serverUrl` (optional) - stable release repository - by default Sonatype OSSRH - `https://oss.sonatype.org/service/local/`
- - `username` (optional) - username to the server 
+ - `username` (optional) - username to the server
  - `password` (optional) - password
- - `packageGroup` - package group as registered in Nexus staging profile
+ - `packageGroup` (optional) - package group as registered in Nexus staging profile - by default set to a project group (has to be overridden
+if packageGroup in Nexus was requested for a few packages in the same domain)
  - `stagingProfileId` (optional) - staging profile used to release given project - can be get with `getStagingProfile` task - when not set
 one additional request is set to Nexus server to determine the value using `packageGroup`
  - `numberOfRetries` (optional) - number of retries when waiting for a repository to change a state - by default `7`

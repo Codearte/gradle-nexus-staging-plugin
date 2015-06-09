@@ -181,6 +181,38 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             result.wasExecuted("closeAndPromoteRepository")
     }
 
+    def "packageGroup should be set to project.group by default "() {
+        given:
+            stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
+        and:
+            buildFile << """
+                ${getApplyPluginBlock()}
+                nexusStaging {
+                    serverUrl = "http://localhost:8089/"
+                }
+                project.group = "io.codearte"
+            """.stripIndent()
+        when:
+            def result = runTasksSuccessfully('getStagingProfile')
+        then:
+            result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
+    }
+
+    def "explicitly defined packageGroup should override default value"() {
+        given:
+            stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
+        and:
+            buildFile << """
+                ${getApplyPluginBlock()}
+                ${getDefaultConfigurationClosure()}
+                project.group = "io.someother"
+            """.stripIndent()
+        when:
+            def result = runTasksSuccessfully('getStagingProfile')
+        then:
+            result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
+    }
+
     @Override
     protected String getDefaultConfigurationClosure() {
         return """
