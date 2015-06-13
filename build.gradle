@@ -15,7 +15,10 @@ apply plugin: 'com.bmuschko.nexus'
 apply plugin: 'io.codearte.nexus-staging'
 
 scmVersion {
-    tag { prefix = '' }
+    tag {
+        prefix = 'release'
+        versionSeparator = '/'
+    }
     createReleaseCommit = true
     releaseCommitMessage { version, position -> "Release version: ${version}\n\n[ci skip]" }
     hooks {
