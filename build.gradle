@@ -39,7 +39,7 @@ dependencies {
         exclude group: 'xerces', module: 'xercesImpl'   //conflicts with xercesImpl from Gradle
     }
 
-    testCompile('org.spockframework:spock-core:0.7-groovy-2.0') {
+    testCompile('org.spockframework:spock-core:1.0-groovy-2.3') {
         //groovy 2.3.x is already provided by Gradle itself
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
