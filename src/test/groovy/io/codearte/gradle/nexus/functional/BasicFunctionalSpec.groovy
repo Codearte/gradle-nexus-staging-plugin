@@ -56,4 +56,19 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
         and:
             result.standardOutput.contains("has been promotted")   //TODO: Match with regexp
     }
+
+    @Ignore
+    def "should drop promoted repository"() {
+        given:
+            buildFile << """
+                ${getApplyPluginBlock()}
+                ${getDefaultConfigurationClosure()}
+            """.stripIndent()
+        when:
+            def result = runTasksSuccessfully('dropRepository')
+        then:
+            result.wasExecuted(':dropRepository')
+        and:
+            result.standardOutput.contains("has been dropped")   //TODO: Match with regexp
+    }
 }

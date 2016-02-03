@@ -16,6 +16,10 @@ class RepositoryFetcher extends BaseOperationExecutor {
         return getRepositoryIdWithGivenStateForStagingProfileId("closed", stagingProfileId)
     }
 
+    String getPromotedRepositoryIdForStagingProfileId(String stagingProfileId) {
+        return getRepositoryIdWithGivenStateForStagingProfileId("promoted", stagingProfileId)
+    }
+
     private String getRepositoryIdWithGivenStateForStagingProfileId(String state, String stagingProfileId) {
         log.info("Getting '$state' repository for staging profile '$stagingProfileId'")
         Map responseAsMap = client.get(nexusUrl + "/staging/profile_repositories/$stagingProfileId")    //TODO: Constant

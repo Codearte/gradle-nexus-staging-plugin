@@ -6,6 +6,7 @@ import groovyx.net.http.RESTClient
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
+import io.codearte.gradle.nexus.logic.RepositoryDropper
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
 import io.codearte.gradle.nexus.logic.RepositoryPromoter
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
@@ -61,6 +62,10 @@ abstract class BaseStagingTask extends DefaultTask {
 
     protected RepositoryPromoter createRepositoryPromoterWithGivenClient(SimplifiedHttpJsonRestClient client) {
         return new RepositoryPromoter(client, getServerUrl())
+    }
+
+    protected RepositoryDropper createRepositoryDropperWithGivenClient(SimplifiedHttpJsonRestClient client) {
+        return new RepositoryDropper(client, getServerUrl())
     }
 
     protected <T> OperationRetrier<T> createOperationRetrier() {

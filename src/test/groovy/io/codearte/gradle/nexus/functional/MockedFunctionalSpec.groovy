@@ -102,6 +102,30 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             verify(1, getRequestedFor(urlEqualTo("/staging/profiles")))
     }
 
+    def "should reuse stagingProfileId from promoteRepository in dropRepository when called together"() {
+        given:
+            stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
+        and:
+            stubGetOneClosedRepositoryInFirstCallAndOnePromotedInTheNext(stagingProfileId)
+        and:
+            stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId)
+        and:
+            stubSuccessfulDropRepositoryWithProfileId(stagingProfileId)
+        and:
+            buildFile << """
+                ${getApplyPluginBlock()}
+                ${getDefaultConfigurationClosure()}
+            """.stripIndent()
+        when:
+            def result = runTasksSuccessfully("promoteRepository", "dropRepository")
+        then:
+            result.wasExecuted("promoteRepository")
+            result.wasExecuted("dropRepository")
+        and:
+            verify(2, getRequestedFor(urlEqualTo("/staging/profile_repositories/$stagingProfileId")))
+            verify(1, getRequestedFor(urlEqualTo("/staging/profiles")))
+    }
+
     def "should pass parameter to other task"() {
         given:
             stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
@@ -138,6 +162,31 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             def result = runTasksSuccessfully("promoteRepository")
         then:
             result.wasExecuted("promoteRepository")
+            result.standardOutput.contains("Attempt 1/3 failed.")
+            !result.standardOutput.contains("Attempt 2/3 failed.")
+    }
+
+    def "should retry drop when repository has not been already promoted"() {
+        given:
+            stubGetOneClosedRepositoryInFirstCallAndOnePromotedInTheNext(stagingProfileId)
+        and:
+            stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId)
+        and:
+            stubSuccessfulDropRepositoryWithProfileId(stagingProfileId)
+        and:
+            buildFile << """
+                    ${getApplyPluginBlock()}
+                    ${getDefaultConfigurationClosure()}
+                    nexusStaging {
+                        stagingProfileId = "$stagingProfileId"
+                        delayBetweenRetriesInMillis = 50
+                        numberOfRetries = 2
+                    }
+            """.stripIndent()
+        when:
+            def result = runTasksSuccessfully("dropRepository")
+        then:
+            result.wasExecuted("dropRepository")
             result.standardOutput.contains("Attempt 1/3 failed.")
             !result.standardOutput.contains("Attempt 2/3 failed.")
     }
@@ -262,6 +311,15 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 .withHeader("Content-Type", "application/json")));
     }
 
+    private void stubSuccessfulDropRepositoryWithProfileId(String stagingProfileId) {
+        stubFor(post(urlEqualTo("/staging/profiles/$stagingProfileId/drop"))
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Accept", containing("application/json"))
+                .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")));
+    }
+
     private void stubGetOneOpenRepositoryInFirstCallAndOneClosedIntheNext(String stagingProfileId) {
         stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId")).inScenario("State")
                 .whenScenarioStateIs(Scenario.STARTED)
@@ -282,6 +340,29 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
                     .withBody(JsonOutput.toJson(createResponseMapWithGivenRepos([aRepoInStateAndId("closed", "ignored")])))
+                ));
+    }
+
+    private void stubGetOneClosedRepositoryInFirstCallAndOnePromotedInTheNext(String stagingProfileId) {
+        stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId")).inScenario("State")
+                .whenScenarioStateIs(Scenario.STARTED)
+                .withHeader("Content-Type", containing("application/json"))
+                .withHeader("Accept", containing("application/json"))
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(JsonOutput.toJson(createResponseMapWithGivenRepos([aRepoInStateAndId("closed", "ignored")])))
+                )
+                .willSetStateTo("PROMOTED"));
+
+        stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId")).inScenario("State")
+                .whenScenarioStateIs("PROMOTED")
+                .withHeader("Content-Type", containing("application/json"))
+                .withHeader("Accept", containing("application/json"))
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(JsonOutput.toJson(createResponseMapWithGivenRepos([aRepoInStateAndId("promoted", "ignored")])))
                 ));
     }
 }
