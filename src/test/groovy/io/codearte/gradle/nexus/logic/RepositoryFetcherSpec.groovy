@@ -5,7 +5,6 @@ import io.codearte.gradle.nexus.PasswordUtil
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.infra.WrongNumberOfRepositories
 import spock.lang.Ignore
-import spock.lang.Unroll
 
 class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements FetcherResponseTrait {
 
@@ -50,7 +49,6 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
             repositoryId == TEST_REPOSITORY_ID
     }
 
-    @Unroll
     def "should fail with meaningful exception on lack of repositories in given state #state"() {
         given:
             client.get(GET_REPOSITORY_ID_FULL_URL) >> { createResponseMapWithGivenRepos([]) }
@@ -65,7 +63,6 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
             state << ["open", "closed"]
     }
 
-    @Unroll
     def "should fail with meaningful exception on too many repositories in given state #state"() {
         given:
             client.get(GET_REPOSITORY_ID_FULL_URL) >> {
@@ -83,7 +80,6 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
             state << ["open", "closed"]
     }
 
-    @Unroll
     def "should fail with meaningful exception on wrong repo state returned from server"() {
         given:
             client.get(GET_REPOSITORY_ID_FULL_URL) >> { createResponseMapWithGivenRepos([aRepoInState(receivedState)]) }

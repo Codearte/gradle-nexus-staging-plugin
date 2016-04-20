@@ -6,7 +6,6 @@ import groovy.json.JsonOutput
 import io.codearte.gradle.nexus.logic.FetcherResponseTrait
 import org.gradle.api.logging.LogLevel
 import org.junit.Rule
-import spock.lang.Unroll
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*
 
@@ -17,7 +16,6 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
 
     protected static final String stagingProfileId = "93c08fdebde1ff"
 
-    @Unroll
     def "should not do request for staging profile when provided in configuration on #testedTaskName task"() {
         given:
             stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
@@ -48,7 +46,6 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             "promoteRepository" | "closed"
     }
 
-    @Unroll
     def "should send request for staging profile when not provided in configuration on #testedTaskName task"() {
         given:
             stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
