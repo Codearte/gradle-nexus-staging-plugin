@@ -6,6 +6,7 @@ buildscript {
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath 'pl.allegro.tech.build:axion-release-plugin:1.2.3'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
+        classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.0.1'
     }
 }
 
@@ -13,6 +14,7 @@ apply plugin: 'groovy'
 apply plugin: 'pl.allegro.tech.build.axion-release'
 apply plugin: 'com.bmuschko.nexus'
 apply plugin: 'io.codearte.nexus-staging'
+apply plugin: 'ru.vyarus.animalsniffer'
 
 scmVersion {
     tag {
@@ -42,19 +44,24 @@ dependencies {
         exclude group: 'xerces', module: 'xercesImpl'   //conflicts with xercesImpl from Gradle
     }
 
-    testCompile('org.spockframework:spock-core:1.0-groovy-2.3') {
+    testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
         //groovy 2.3.x is already provided by Gradle itself
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     testCompile 'cglib:cglib-nodep:2.2.2'   //for Spying in Spock
     testCompile 'junit:junit:4.11'
 
-    /*funcT*/testCompile('com.netflix.nebula:nebula-test:2.2.1') {
+    /*funcT*/testCompile('com.netflix.nebula:nebula-test:4.2.2') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     /*funcT*/testCompile('com.github.tomakehurst:wiremock:1.50') {  //1.51+ requires httpclient 4.3+ which conflicts with version distributed with Gradle
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
+    signature 'org.codehaus.mojo.signature:java17:1.0@signature'
+}
+
+tasks.withType(ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer) {
+    onlyIf { project.hasProperty('compatibility') }
 }
 
 nexusStaging {
