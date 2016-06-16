@@ -75,7 +75,7 @@ For sensible configuration example see the plugin's own release configuration in
 
 ## Server credentials
 
-Production Nexus instances usually requires user to authenticate before perform staging operations. In nexus-staging plugin there are a few ways to
+Production Nexus instances usually require user to authenticate before perform staging operations. In nexus-staging plugin there are a few ways to
 provide credentials:
  - manually set username and password in a `nexusStaging` configuration closure (probably reading them from Gradle or system properties)
  - provide authentication section in MavenDeloyer (from Gradle `maven` plugin) - it will be reused by nexus-staging plugin
