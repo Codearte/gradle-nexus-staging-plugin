@@ -4,4 +4,4 @@ jdk:
   - oraclejdk7
 
 install: ./gradlew assemble --stacktrace --info
-script: ./gradlew check --stacktrace --info --continue
+script: ./gradlew check -Pcompatibility --stacktrace --info --continue
