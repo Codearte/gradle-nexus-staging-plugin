@@ -22,10 +22,10 @@ uploadArchives {
     repositories {
         mavenDeployer {
             repository(id: 'test-repo-staging', url: "http://localhost:8089/nexus/content/repositories/internal/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
+                authentication(userName: testSonatypeUsername, password: testSonatypePassword)
             }
             snapshotRepository(id: 'test-repo-snapshots', url: 'http://localhost:8089/nexus/content/repositories/internal-snapshots/') {
-                authentication(userName: 'testUser', password: 'noPassword')
+                authentication(userName: 'someOtherTestUsername', password: 'someOtherTestPasswrod')
             }
             name = 'Test repo'
         }

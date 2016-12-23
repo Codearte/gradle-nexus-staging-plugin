@@ -7,7 +7,7 @@ class PasswordFunctionalSpec extends BaseNexusStagingFunctionalSpec {
     def "should read password from repository configured in uploadArchives"() {
         given:
             copyResources("sampleProjects//uploadArchives", "")
-            file("gradle.properties") << "\nsonatypeUsername=testUsername" << "\nsonatypePassword=testPassword"
+            file("gradle.properties") << "\ntestSonatypeUsername=testUsername" << "\ntestSonatypePassword=testPassword"
         when:
             def result = runTasksWithFailure('getStagingProfile')
         then:
