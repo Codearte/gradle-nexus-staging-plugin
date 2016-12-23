@@ -63,6 +63,7 @@ class SimplifiedHttpJsonRestClient {
 		
 			HttpResponseDecorator resp = e.getResponse();
 			String message = "${resp.statusLine.statusCode}:${resp.statusLine.reasonPhrase}  body=${resp.data}"
+		    log.error("POST response failed.  ${message}")
 			throw new HttpResponseException(e.getStatusCode(), message)
 		}
     }
