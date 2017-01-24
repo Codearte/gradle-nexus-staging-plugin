@@ -88,6 +88,28 @@ names are also used by [gradle-nexus-plugin](https://github.com/bmuschko/gradle-
 
 The first matching strategy win. If you need to set an empty password use `''` (an empty string) instead of null.
 
+## FAQ
+
+### 1. Why do I get `Wrong number of received repositories in state 'open'. Expected 1, received 2`?
+
+There may be a few reasons to get this.
+
+1. Ensure using the [Nexus UI](https://oss.sonatype.org/) that there are no old open staging repositories from the previous executions. If yes, just
+drop them suing the UI and try again. This is quite common during the initial experiments with the plugin.
+
+2. It takes some time to close and/or promote a staging repository in Nexus, especially with multiple artifacts. The plugin has a built-in retry
+mechanism, however, the default value can be too [low](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/12), especially for
+the multiproject build. To confirm that enable logging at the info level in Gradle (using the `--info` or `-i` build parameter). You should see log
+messages similar to `Attempt 8/8 failed.`. If yes, increase the timeout using the `numberOfRetries` or `delayBetweenRetriesInMillis` configuration 
+parameters. 
+
+3. An another reason to get the aforementioned error is releasing more than one project using the same Nexus staging repository simultaneously
+(usually automatically from a Continuous Delivery pipeline from a Continuous Integration server). Unfortunately Gradle does not provide a mechanism
+to track/manage staging repository where the artifacts are being uploaded. Therefore, it is hard to distinguish on closing the own/current repository
+from the one created by our another project. There is an [idea](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/29) how it could be
+handled using the Nexus API. Please comment in that [issue](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/29) if you are in that
+situation. 
+
 ## Additional information 
 
 **The released version is available as a technology preview and it definitely will be evolving breaking backward compatibility. Please take it into
