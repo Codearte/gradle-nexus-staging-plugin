@@ -25,7 +25,7 @@ uploadArchives {
                 authentication(userName: testSonatypeUsername, password: testSonatypePassword)
             }
             snapshotRepository(id: 'test-repo-snapshots', url: 'http://localhost:8089/nexus/content/repositories/internal-snapshots/') {
-                authentication(userName: 'someOtherTestUsername', password: 'someOtherTestPasswrod')
+                authentication(userName: 'someOtherTestUsername', password: 'someOtherTestPassword')
             }
             name = 'Test repo'
         }

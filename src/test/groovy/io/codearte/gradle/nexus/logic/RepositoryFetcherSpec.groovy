@@ -87,7 +87,7 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
             fetcher."get${expectedState.capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
         then:
             def e = thrown(IllegalArgumentException)
-            e.message == "Unexpected state of reveived repository. Received $receivedState, expected $expectedState".toString()
+            e.message == "Unexpected state of received repository. Received $receivedState, expected $expectedState".toString()
         where:
             expectedState || receivedState
             "open"        || "closed"

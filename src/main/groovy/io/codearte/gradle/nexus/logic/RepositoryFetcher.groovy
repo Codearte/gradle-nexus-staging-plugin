@@ -41,7 +41,7 @@ class RepositoryFetcher extends BaseOperationExecutor {
     private void verifyReceivedRepositoryState(Map repository, String expectedRepositoryState) {
         if (repository.type != expectedRepositoryState) {
             throw new IllegalArgumentException(
-                    "Unexpected state of reveived repository. Received ${repository.type}, expected $expectedRepositoryState")
+                    "Unexpected state of received repository. Received ${repository.type}, expected $expectedRepositoryState")
         }
     }
 }
