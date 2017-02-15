@@ -1,12 +1,16 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
     }
     dependencies {
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
         classpath 'pl.allegro.tech.build:axion-release-plugin:1.2.3'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
         classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.0.1'
+        classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
     }
 }
 
@@ -108,4 +112,28 @@ modifyPom {
 
 wrapper {
     gradleVersion "2.4"
+}
+
+if (hasProperty('pluginPortal')) {
+
+    apply plugin: 'com.gradle.plugin-publish'
+
+    pluginBundle {
+        website = 'https://github.com/Codearte/gradle-nexus-staging-plugin/'
+        vcsUrl = 'https://github.com/Codearte/gradle-nexus-staging-plugin/'
+
+        plugins {
+            plugin {
+                id = 'io.codearte.nexus-staging'
+                displayName = 'gradle-nexus-staging-plugin'
+                description = 'Releasing to Maven Central from Gradle without dealing with Nexus UI'
+                tags = ['maven-central', 'nexus', 'release', 'binary', 'repository', 'staging', 'codearte']
+            }
+        }
+
+        mavenCoordinates {
+            groupId = project.group
+            artifactId = project.name
+        }
+    }
 }
