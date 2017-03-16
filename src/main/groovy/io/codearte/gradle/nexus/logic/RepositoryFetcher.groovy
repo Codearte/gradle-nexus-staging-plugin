@@ -24,24 +24,16 @@ class RepositoryFetcher extends BaseOperationExecutor {
 
     private String parseResponseAndGetRepositoryIdInGivenState(Map responseAsMap, String repositoryState) {
         def repository = verifyThatOneRepositoryAndReturnIt(responseAsMap, repositoryState)
-        verifyReceivedRepositoryState(repository, repositoryState)
         log.debug("Received 1 '$repositoryState' repository with id: ${repository.repositoryId}")
         return repository.repositoryId
     }
 
     private Map verifyThatOneRepositoryAndReturnIt(Map responseAsMap, String repositoryState) {
-        int numberOfRespositories = responseAsMap.data.size()
-        if (numberOfRespositories != 1) {
-            throw new WrongNumberOfRepositories(numberOfRespositories, repositoryState)
+        def repositoryInGivenState = { it.type == repositoryState }
+        int numberOfRepositories = responseAsMap.data.count(repositoryInGivenState)
+        if (numberOfRepositories != 1) {
+            throw new WrongNumberOfRepositories(numberOfRepositories, repositoryState)
         }
-        Map repository = responseAsMap.data[0] as Map
-        return repository
-    }
-
-    private void verifyReceivedRepositoryState(Map repository, String expectedRepositoryState) {
-        if (repository.type != expectedRepositoryState) {
-            throw new IllegalArgumentException(
-                    "Unexpected state of received repository. Received ${repository.type}, expected $expectedRepositoryState")
-        }
+        return responseAsMap.data.find(repositoryInGivenState) as Map
     }
 }

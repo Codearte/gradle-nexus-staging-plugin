@@ -86,12 +86,13 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
         when:
             fetcher."get${expectedState.capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
         then:
-            def e = thrown(IllegalArgumentException)
-            e.message == "Unexpected state of received repository. Received $receivedState, expected $expectedState".toString()
+        def e = thrown(WrongNumberOfRepositories)
+        e.message == "Wrong number of received repositories in state '$expectedState'. Expected 1, received 0"
         where:
-            expectedState || receivedState
-            "open"        || "closed"
-            "closed"      || "open"
+
+        expectedState | receivedState
+        "open"        | "closed"
+        "closed"      | "open"
     }
 
     private Map anOpenRepo() {

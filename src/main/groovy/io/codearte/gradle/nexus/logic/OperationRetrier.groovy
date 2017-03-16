@@ -19,7 +19,7 @@ class OperationRetrier<T> {
         this.delayBetweenRetries = delayBetweenRetries
     }
 
-    public T doWithRetry(Closure<T> operation) {
+    T doWithRetry(Closure<T> operation) {
         int counter = 0
         int numberOfAttempts = numberOfRetries + 1
         while (true) {
