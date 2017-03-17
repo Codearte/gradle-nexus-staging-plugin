@@ -20,6 +20,7 @@ class NexusStagingPlugin implements Plugin<Project> {
     private static final String GET_STAGING_PROFILE_TASK_NAME = "getStagingProfile"
     private static final String CLOSE_REPOSITORY_TASK_NAME = "closeRepository"
     private static final String PROMOTE_REPOSITORY_TASK_NAME = "promoteRepository"
+    private static final String DROP_REPOSITORY_TASK_NAME = "dropRepository"
     private static final String CLOSE_AND_PROMOTE_REPOSITORY_TASK_NAME = "closeAndPromoteRepository"
 
     private static final Set<Class> STAGING_TASK_CLASSES = [GetStagingProfileTask, CloseRepositoryTask, PromoteRepositoryTask]
@@ -38,7 +39,9 @@ class NexusStagingPlugin implements Plugin<Project> {
         createAndConfigureGetStagingProfileTask(project)
         def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)
         def promoteRepositoryTask = createAndConfigurePromoteRepositoryTask(project)
+        def dropRepositoryTask = createAndConfigureDropRepositoryTask(project)
         promoteRepositoryTask.mustRunAfter(closeRepositoryTask)
+        dropRepositoryTask.mustRunAfter(promoteRepositoryTask)
         def closeAndPromoteRepositoryTask = createAndConfigureCloseAndPromoteRepositoryTask(project)
         closeAndPromoteRepositoryTask.dependsOn(closeRepositoryTask, promoteRepositoryTask)
         tryToDetermineCredentials(project, extension)
@@ -76,6 +79,13 @@ class NexusStagingPlugin implements Plugin<Project> {
     private PromoteRepositoryTask createAndConfigurePromoteRepositoryTask(Project project) {
         PromoteRepositoryTask task = project.tasks.create(PROMOTE_REPOSITORY_TASK_NAME, PromoteRepositoryTask)
         setTaskDescriptionAndGroup(task, "Promotes/releases a closed artifacts repository in Nexus")
+        setTaskDefaultsAndDescription(task)
+        return task
+    }
+
+    private DropRepositoryTask createAndConfigureDropRepositoryTask(Project project) {
+        DropRepositoryTask task = project.tasks.create(DROP_REPOSITORY_TASK_NAME, DropRepositoryTask)
+        setTaskDescriptionAndGroup(task, "Drops a promoted artifacts repository in Nexus")
         setTaskDefaultsAndDescription(task)
         return task
     }

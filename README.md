@@ -51,6 +51,7 @@ The plugin provides three main tasks:
  - `closeRepository` - closes open repository with uploaded artifacts. There should be just one open repository available in the staging profile
 (possible old/broken repositories can be dropped with Nexus GUI)
  - `promoteRepository` - promotes/releases closed repository (required to put artifacts to Maven Central)
+ - `dropRepository` - drops promoted repository
  - `closeAndPromoteRepository` - closes and promotes/releases repository (an equivalent to `closeRepository promoteRepository`)
  
 And one additional:
