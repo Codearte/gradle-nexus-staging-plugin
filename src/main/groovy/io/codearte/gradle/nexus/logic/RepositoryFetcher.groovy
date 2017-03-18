@@ -23,13 +23,13 @@ class RepositoryFetcher extends BaseOperationExecutor {
     }
 
     private String parseResponseAndGetRepositoryIdInGivenState(Map responseAsMap, String repositoryState) {
-        def repository = verifyThatOneRepositoryAndReturnIt(responseAsMap, repositoryState)
+        Map repository = verifyThatOneRepositoryAndReturnIt(responseAsMap, repositoryState)
         log.debug("Received 1 '$repositoryState' repository with id: ${repository.repositoryId}")
         return repository.repositoryId
     }
 
     private Map verifyThatOneRepositoryAndReturnIt(Map responseAsMap, String repositoryState) {
-        def repositoryInGivenState = { it.type == repositoryState }
+        Closure repositoryInGivenState = { it.type == repositoryState }
         int numberOfRepositories = responseAsMap.data.count(repositoryInGivenState)
         if (numberOfRepositories != 1) {
             throw new WrongNumberOfRepositories(numberOfRepositories, repositoryState)

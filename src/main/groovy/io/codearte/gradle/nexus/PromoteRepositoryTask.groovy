@@ -15,13 +15,12 @@ class PromoteRepositoryTask extends BaseStagingTask {
         StagingProfileFetcher stagingProfileFetcher = createFetcherWithGivenClient(createClient())
         RepositoryFetcher repositoryFetcher = createRepositoryFetcherWithGivenClient(createClient())
         RepositoryPromoter repositoryPromoter = createRepositoryPromoterWithGivenClient(createClient())
-        OperationRetrier<String> retrier = createOperationRetrier()
 
         tryToTakeStagingProfileIdFromCloseRepositoryTask()
         String stagingProfileId = fetchAndCacheStagingProfileId(stagingProfileFetcher)
-        String repositoryId = project.tasks.withType(CloseRepositoryTask)[0].stagingRepositoryId ?:
-            retrier.doWithRetry { repositoryFetcher.getClosedRepositoryIdForStagingProfileId(stagingProfileId) }
-        def autoDropAfterRelease = Boolean.valueOf(project.properties["nexus-staging.autoDropAfterRelease"] as String)
+
+        String repositoryId = getRepositoryIdFromCloseTaskOrFromServer(stagingProfileId, repositoryFetcher)
+        def autoDropAfterRelease = Boolean.valueOf(project.properties["nexus-staging.autoDropAfterRelease"] as String)  //TODO: Remove
         repositoryPromoter.promoteRepositoryWithIdAndStagingProfileId(repositoryId, stagingProfileId, autoDropAfterRelease)
     }
 
@@ -29,11 +28,23 @@ class PromoteRepositoryTask extends BaseStagingTask {
         if (getStagingProfileId() != null) {
             return
         }
-        String stagingProfileIdFromCloseRepositoryTask = project.tasks.withType(CloseRepositoryTask)[0].stagingProfileId
+        String stagingProfileIdFromCloseRepositoryTask = getCloseRepositoryTask().stagingProfileId
 
         if (stagingProfileIdFromCloseRepositoryTask != null) {
             logger.debug("Reusing staging profile id from closeRepository task: $stagingProfileIdFromCloseRepositoryTask")
             setStagingProfileId(stagingProfileIdFromCloseRepositoryTask)
         }
+    }
+
+    private CloseRepositoryTask getCloseRepositoryTask() {
+        return project.tasks.withType(CloseRepositoryTask)[0]
+    }
+
+    private String getRepositoryIdFromCloseTaskOrFromServer(String stagingProfileId, RepositoryFetcher repositoryFetcher) {
+        //TODO: Add debug statement
+        OperationRetrier<String> retrier = createOperationRetrier()
+        String repositoryId = getCloseRepositoryTask().stagingRepositoryId ?:
+                retrier.doWithRetry { repositoryFetcher.getClosedRepositoryIdForStagingProfileId(stagingProfileId) }
+        return repositoryId
     }
 }
