@@ -5,7 +5,6 @@ import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
-import org.gradle.api.internal.tasks.options.Option
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction

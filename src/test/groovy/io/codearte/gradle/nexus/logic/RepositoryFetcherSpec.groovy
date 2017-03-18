@@ -1,12 +1,10 @@
 package io.codearte.gradle.nexus.logic
 
-import groovyx.net.http.RESTClient
-import io.codearte.gradle.nexus.PasswordUtil
+import io.codearte.gradle.nexus.FunctionalTestHelperTrait
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.infra.WrongNumberOfRepositories
-import spock.lang.Ignore
 
-class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements FetcherResponseTrait {
+class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements FetcherResponseTrait, FunctionalTestHelperTrait {
 
     private static final String GET_REPOSITORY_ID_PATH = "/staging/profile_repositories/"
     private static final String GET_REPOSITORY_ID_FULL_URL = MOCK_SERVER_HOST + GET_REPOSITORY_ID_PATH + TEST_STAGING_PROFILE_ID
@@ -17,18 +15,6 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
     void setup() {
         client = Mock(SimplifiedHttpJsonRestClient)
         fetcher = new RepositoryFetcher(client, MOCK_SERVER_HOST)
-    }
-
-    @Ignore
-    def "should get open repository id from server e2e"() {
-        given:
-            client = new SimplifiedHttpJsonRestClient(new RESTClient(), "codearte", PasswordUtil.tryToReadNexusPassword())
-            fetcher = new RepositoryFetcher(client, E2E_TEST_SERVER_BASE_PATH)
-        when:
-            String stagingProfileId = fetcher.getOpenRepositoryIdForStagingProfileId(TEST_STAGING_PROFILE_ID)
-        then:
-            println stagingProfileId
-            stagingProfileId == TEST_REPOSITORY_ID
     }
 
     def "should get open repository id from server"() {
@@ -86,13 +72,12 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
         when:
             fetcher."get${expectedState.capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
         then:
-        def e = thrown(WrongNumberOfRepositories)
-        e.message == "Wrong number of received repositories in state '$expectedState'. Expected 1, received 0"
+            def e = thrown(WrongNumberOfRepositories)
+            e.message == "Wrong number of received repositories in state '$expectedState'. Expected 1, received 0".toString()
         where:
-
-        expectedState | receivedState
-        "open"        | "closed"
-        "closed"      | "open"
+            expectedState | receivedState
+            "open"        | "closed"
+            "closed"      | "open"
     }
 
     private Map anOpenRepo() {

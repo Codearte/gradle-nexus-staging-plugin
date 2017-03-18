@@ -5,10 +5,14 @@ import nebula.test.IntegrationSpec
 class BaseNexusStagingFunctionalSpec extends IntegrationSpec {
 
     protected String nexusPassword
+    protected String nexusUsername
+    protected String packageGroup
 
     void setup() {
         fork = true //to prevent ClassCastException: org.apache.xerces.parsers.XIncludeAwareParserConfiguration cannot be cast to org.apache.xerces.xni.parser.XMLParserConfiguration
+        nexusUsername = 'nexus-at'
         nexusPassword = ''
+        packageGroup = 'io.gitlab.nexus-at'
     }
 
     protected String getApplyPluginBlock() {
@@ -26,9 +30,9 @@ class BaseNexusStagingFunctionalSpec extends IntegrationSpec {
     protected String getDefaultConfigurationClosure() {
         return """
                 nexusStaging {
-                    username = "codearte"
+                    username = '$nexusUsername'
                     password = '$nexusPassword'
-                    packageGroup = "io.codearte"
+                    packageGroup = '$packageGroup'
                 }
         """
     }

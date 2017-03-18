@@ -7,7 +7,7 @@ import groovy.transform.InheritConstructors
 @CompileStatic
 abstract class AbstractStagingOperationExecutor extends BaseOperationExecutor {
 
-    protected Map prepareStagingPostContentWithGivenRepositoryIdAndStagingId(String repositoryId, String stagingProfileId) {
+    protected Map<String, Map> prepareStagingPostContentWithGivenRepositoryIdAndStagingId(String repositoryId, String stagingProfileId) {
         return [data: [
                         stagedRepositoryId: repositoryId,
                         description: 'Automatically released/promoted with gradle-nexus-staging-plugin!',
