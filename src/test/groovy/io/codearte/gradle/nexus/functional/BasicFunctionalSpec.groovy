@@ -54,6 +54,6 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec {
         then:
             result.wasExecuted(':promoteRepository')
         and:
-            result.standardOutput.contains("has been promotted")   //TODO: Match with regexp
+            result.standardOutput.contains("has been promoted")   //TODO: Match with regexp
     }
 }

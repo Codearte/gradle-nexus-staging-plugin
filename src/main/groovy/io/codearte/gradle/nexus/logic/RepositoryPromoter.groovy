@@ -13,6 +13,6 @@ class RepositoryPromoter extends AbstractStagingOperationExecutor {
         log.info("Promoting repository '$repositoryId' with staging profile '$stagingProfileId'")
         Map postContent = prepareStagingPostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId)
         client.post(nexusUrl + "/staging/profiles/$stagingProfileId/promote", postContent)
-        log.info("Repository '$repositoryId' with staging profile '$stagingProfileId' has been promotted")
+        log.info("Repository '$repositoryId' with staging profile '$stagingProfileId' has been promoted")
     }
 }
