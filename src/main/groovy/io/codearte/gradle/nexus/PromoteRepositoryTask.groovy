@@ -20,8 +20,7 @@ class PromoteRepositoryTask extends BaseStagingTask {
         String stagingProfileId = fetchAndCacheStagingProfileId(stagingProfileFetcher)
 
         String repositoryId = getRepositoryIdFromCloseTaskOrFromServer(stagingProfileId, repositoryFetcher)
-        def autoDropAfterRelease = Boolean.valueOf(project.properties["nexus-staging.autoDropAfterRelease"] as String)  //TODO: Remove
-        repositoryPromoter.promoteRepositoryWithIdAndStagingProfileId(repositoryId, stagingProfileId, autoDropAfterRelease)
+        repositoryPromoter.promoteRepositoryWithIdAndStagingProfileId(repositoryId, stagingProfileId)
     }
 
     private void tryToTakeStagingProfileIdFromCloseRepositoryTask() {
