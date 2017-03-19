@@ -11,7 +11,7 @@ class RepositoryCloser extends AbstractStagingOperationExecutor {
 
     void closeRepositoryWithIdAndStagingProfileId(String repositoryId, String stagingProfileId) {
         log.info("Closing repository '$repositoryId' with staging profile '$stagingProfileId'")
-        Map postContent = prepareStagingPostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId)
+        Map<String, Map> postContent = prepareStagingPostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId)
         client.post(nexusUrl + "/staging/profiles/$stagingProfileId/finish", postContent)
         log.info("Repository '$repositoryId' with staging profile '$stagingProfileId' has been closed")
     }

@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import groovyx.net.http.ContentType
 import groovyx.net.http.HttpResponseDecorator
+import groovyx.net.http.HttpResponseException
 import groovyx.net.http.RESTClient
 
 /**
@@ -50,9 +51,17 @@ class SimplifiedHttpJsonRestClient {
         setUriAndAuthentication(uri)
         Map params = createAndInitializeCallParametersMap()
         params.body = content
-        log.debug("POST request content: $content")
-        //TODO: Add better error handling (e.g. display error message received from server, not only 500 + not fail on 404 in 'text/html')
-        HttpResponseDecorator response = (HttpResponseDecorator)restClient.post(params)
-        log.warn("POST response data: ${response.data}")
+        try {
+            log.debug("POST request content: $content")
+            HttpResponseDecorator response = (HttpResponseDecorator) restClient.post(params)
+            log.debug("POST response status ${response.status}, data: ${response.data}")
+        } catch (HttpResponseException e) {
+            //Enhance rethrown exception to contain also response body - #5
+            //TODO: Still better handle response content type on 404 and 50x - server returns 'text/plain', but RESTClient from Groovy Builder tries to parse it as JSON
+            HttpResponseDecorator resp = e.getResponse();
+            String message = "${resp.statusLine.statusCode}: ${resp.statusLine.reasonPhrase}, body: ${resp.data}"
+            log.warn("POST response failed. ${message}")
+            throw new NexusHttpResponseException(e.getStatusCode(), message, e)
+        }
     }
 }

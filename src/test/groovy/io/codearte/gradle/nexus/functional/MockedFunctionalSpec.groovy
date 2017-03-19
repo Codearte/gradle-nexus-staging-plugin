@@ -4,15 +4,24 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import groovy.json.JsonOutput
 import io.codearte.gradle.nexus.logic.FetcherResponseTrait
+import nebula.test.functional.ExecutionResult
 import org.gradle.api.logging.LogLevel
 import org.junit.Rule
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import static com.github.tomakehurst.wiremock.client.WireMock.containing
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import static com.github.tomakehurst.wiremock.client.WireMock.get
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
+import static com.github.tomakehurst.wiremock.client.WireMock.post
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
+import static com.github.tomakehurst.wiremock.client.WireMock.verify
 
 class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements FetcherResponseTrait {
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(8089);
+    public WireMockRule wireMockRule = new WireMockRule(8089)
 
     protected static final String stagingProfileId = "93c08fdebde1ff"
 
@@ -33,7 +42,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 }
             """.stripIndent()
         when:
-            def result = runTasksSuccessfully(testedTaskName)
+            ExecutionResult result = runTasksSuccessfully(testedTaskName)
         then:
             result.wasExecuted(testedTaskName)
             result.standardOutput.contains("Using configured staging profile id: $stagingProfileId")
@@ -75,11 +84,11 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             "promoteRepository" | "closed"
     }
 
-    def "should reuse stagingProfileId from closeRepository in promoteRepository when called together"() {
+    def "should reuse stagingProfileId AND stagingRepositoryId from closeRepository in promoteRepository when called together"() {
         given:
             stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
         and:
-            stubGetOneOpenRepositoryInFirstCallAndOneClosedIntheNext(stagingProfileId)
+            stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(stagingProfileId)
         and:
             stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
         and:
@@ -90,12 +99,12 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 ${getDefaultConfigurationClosure()}
             """.stripIndent()
         when:
-            def result = runTasksSuccessfully("closeRepository", "promoteRepository")
+            ExecutionResult result = runTasksSuccessfully("closeRepository", "promoteRepository")
         then:
             result.wasExecuted("closeRepository")
             result.wasExecuted("promoteRepository")
         and:
-            verify(2, getRequestedFor(urlEqualTo("/staging/profile_repositories/$stagingProfileId")))
+            verify(1, getRequestedFor(urlEqualTo("/staging/profile_repositories/$stagingProfileId")))
             verify(1, getRequestedFor(urlEqualTo("/staging/profiles")))
     }
 
@@ -116,7 +125,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
 
     def "should retry promotion when repository has not been already closed"() {
         given:
-            stubGetOneOpenRepositoryInFirstCallAndOneClosedIntheNext(stagingProfileId)
+            stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(stagingProfileId)
         and:
             stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
         and:
@@ -132,7 +141,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 }
             """.stripIndent()
         when:
-            def result = runTasksSuccessfully("promoteRepository")
+            ExecutionResult result = runTasksSuccessfully("promoteRepository")
         then:
             result.wasExecuted("promoteRepository")
             result.standardOutput.contains("Attempt 1/3 failed.")
@@ -150,14 +159,14 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         and:
             logLevel = LogLevel.LIFECYCLE
         when:
-            def result = runTasksSuccessfully('getStagingProfile')
+            ExecutionResult result = runTasksSuccessfully('getStagingProfile')
         then:
             result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
     }
 
     def "should call close and promote in closeAndPromoteRepository task"() {
         given:
-            stubGetOneOpenRepositoryInFirstCallAndOneClosedIntheNext(stagingProfileId)
+            stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(stagingProfileId)
         and:
             stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
         and:
@@ -171,7 +180,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 }
             """.stripIndent()
         when:
-            def result = runTasksSuccessfully("closeAndPromoteRepository")
+            ExecutionResult result = runTasksSuccessfully("closeAndPromoteRepository")
         then:
             result.wasExecuted("closeRepository")
             result.wasExecuted("promoteRepository")
@@ -190,7 +199,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 project.group = "io.codearte"
             """.stripIndent()
         when:
-            def result = runTasksSuccessfully('getStagingProfile')
+            ExecutionResult result = runTasksSuccessfully('getStagingProfile')
         then:
             result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
     }
@@ -205,7 +214,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 project.group = "io.someother"
             """.stripIndent()
         when:
-            def result = runTasksSuccessfully('getStagingProfile')
+            ExecutionResult result = runTasksSuccessfully('getStagingProfile')
         then:
             result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
     }
@@ -228,7 +237,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
-                .withBody(responseAsJson)));
+                .withBody(responseAsJson)))
     }
 
     private void stubGetOneRepositoryWithProfileIdAndContent(String stagingProfileId, Map response) {
@@ -238,47 +247,64 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
-                .withBody(JsonOutput.toJson(response))));
+                .withBody(JsonOutput.toJson(response))))
     }
 
     private void stubSuccessfulCloseRepositoryWithProfileId(String stagingProfileId) {
-        stubFor(post(urlEqualTo("/staging/profiles/$stagingProfileId/finish"))
-                .withHeader("Content-Type", equalTo("application/json"))
-                .withHeader("Accept", containing("application/json"))
-                .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")));
+        stubGivenSuccessfulTransitionOperationWithProfileId("finish", stagingProfileId)
     }
 
     private void stubSuccessfulPromoteRepositoryWithProfileId(String stagingProfileId) {
-        stubFor(post(urlEqualTo("/staging/profiles/$stagingProfileId/promote"))
+        stubGivenSuccessfulTransitionOperationWithProfileId("promote", stagingProfileId)
+    }
+
+    private void stubGivenSuccessfulTransitionOperationWithProfileId(String restCommandName, String stagingProfileId) {
+        stubFor(post(urlEqualTo("/staging/profiles/$stagingProfileId/$restCommandName"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withHeader("Accept", containing("application/json"))
                 .willReturn(aResponse()
                 .withStatus(200)
-                .withHeader("Content-Type", "application/json")));
+                .withHeader("Content-Type", "application/json")))
     }
 
-    private void stubGetOneOpenRepositoryInFirstCallAndOneClosedIntheNext(String stagingProfileId) {
+    private void stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(String stagingProfileId) {
+        stubGetGivenRepositoriesInFirstAndSecondCall(stagingProfileId,
+                [aRepoInStateAndId("open", "ignored"), aRepoInStateAndId("closed", "ignoredClosed")],
+                [aRepoInStateAndId("closed", "ignored"), aRepoInStateAndId("closed", "ignoredClosed")])
+    }
+
+    private void stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(String stagingProfileId) {
+        stubGetGivenRepositoriesInFirstAndSecondCall(stagingProfileId,
+                [aRepoInStateAndId("open", "ignored")],
+                [aRepoInStateAndId("closed", "ignored")])
+    }
+
+    private void stubGetGivenRepositoriesInFirstAndSecondCall(String stagingProfileId, List<Map> repositoriesToReturnInFirstCall,
+                                                              List<Map> repositoriesToReturnInSecondCall) {
         stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId")).inScenario("State")
-                .whenScenarioStateIs(Scenario.STARTED)
-                .withHeader("Content-Type", containing("application/json"))
-                .withHeader("Accept", containing("application/json"))
-                .willReturn(aResponse()
-                    .withStatus(200)
-                    .withHeader("Content-Type", "application/json")
-                    .withBody(JsonOutput.toJson(createResponseMapWithGivenRepos([aRepoInStateAndId("open", "ignored")])))
+            .whenScenarioStateIs(Scenario.STARTED)
+            .withHeader("Content-Type", containing("application/json"))
+            .withHeader("Accept", containing("application/json"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(
+                    JsonOutput.toJson(createResponseMapWithGivenRepos(repositoriesToReturnInFirstCall))
                 )
-                .willSetStateTo("CLOSED"));
+            )
+            .willSetStateTo("CLOSED"))
 
         stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId")).inScenario("State")
-                .whenScenarioStateIs("CLOSED")
-                .withHeader("Content-Type", containing("application/json"))
-                .withHeader("Accept", containing("application/json"))
-                .willReturn(aResponse()
-                    .withStatus(200)
-                    .withHeader("Content-Type", "application/json")
-                    .withBody(JsonOutput.toJson(createResponseMapWithGivenRepos([aRepoInStateAndId("closed", "ignored")])))
-                ));
+            .whenScenarioStateIs("CLOSED")
+            .withHeader("Content-Type", containing("application/json"))
+            .withHeader("Accept", containing("application/json"))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(
+                    JsonOutput.toJson(createResponseMapWithGivenRepos(repositoriesToReturnInSecondCall))
+                )
+            )
+        )
     }
 }

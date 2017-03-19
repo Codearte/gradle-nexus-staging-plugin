@@ -5,10 +5,16 @@ import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
 @CompileStatic
-public class CloseRepositoryTask extends BaseStagingTask {
+class CloseRepositoryTask extends BaseStagingTask {
+
+    @Input
+    @Optional
+    String stagingRepositoryId
 
     @TaskAction
     void doAction() {
@@ -19,6 +25,7 @@ public class CloseRepositoryTask extends BaseStagingTask {
 
         String stagingProfileId = fetchAndCacheStagingProfileId(stagingProfileFetcher)
         String repositoryId = retrier.doWithRetry { repositoryFetcher.getOpenRepositoryIdForStagingProfileId(stagingProfileId) }
+        stagingRepositoryId = repositoryId
         repositoryCloser.closeRepositoryWithIdAndStagingProfileId(repositoryId, stagingProfileId)
     }
 }
