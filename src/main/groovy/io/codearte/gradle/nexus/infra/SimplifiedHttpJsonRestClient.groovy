@@ -60,7 +60,7 @@ class SimplifiedHttpJsonRestClient {
             //TODO: Still better handle response content type on 404 and 50x - server returns 'text/plain', but RESTClient from Groovy Builder tries to parse it as JSON
             HttpResponseDecorator resp = e.getResponse();
             String message = "${resp.statusLine.statusCode}: ${resp.statusLine.reasonPhrase}, body: ${resp.data}"
-            log.warn("POST response failed. ${message}")
+            log.warn("POST request failed. ${message}")
             throw new NexusHttpResponseException(e.getStatusCode(), message, e)
         }
     }
