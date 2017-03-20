@@ -1,3 +1,7 @@
+0.6.1 - 2017-03-20
+
+ - Reusing stagingRepositoryId from close task bypasses retry mechanism and fails - [#44](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/44) - reusing stagingRepositoryId is temporary disabled
+
 0.6.0 - 2017-03-19
 
  - Consider state trying to find just one repository in given state - [#36](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/36) - contribution by [strelok1](https://github.com/strelok1)
