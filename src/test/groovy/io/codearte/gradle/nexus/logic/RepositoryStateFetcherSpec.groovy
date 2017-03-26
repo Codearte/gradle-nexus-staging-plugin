@@ -16,18 +16,20 @@ class RepositoryStateFetcherSpec extends BaseOperationExecutorSpec implements Fe
         repoStateFetcher = new RepositoryStateFetcher(client, MOCK_SERVER_HOST)
     }
 
+    @SuppressWarnings("GrDeprecatedAPIUsage")
     def "should return state received from server mapped to enum"() {
         given:
-            client.get(getGetRepositoryStateFullUrlForRepoId(TEST_REPOSITORY_ID)) >> { aRepoInStateAndIdFull('closed', TEST_REPOSITORY_ID) }
+            client.get(getGetRepositoryStateFullUrlForRepoId(TEST_REPOSITORY_ID)) >> { aRepoInStateAndIdFull(TEST_REPOSITORY_ID, 'closed') }
         when:
             RepositoryState repoState = repoStateFetcher.getNonTransitioningRepositoryStateById(TEST_REPOSITORY_ID)
         then:
             repoState == RepositoryState.CLOSED
     }
 
+    @SuppressWarnings("GrDeprecatedAPIUsage")
     def "should throw exception with meaningful message if unsupported or missing state"() {
         given:
-            client.get(getGetRepositoryStateFullUrlForRepoId(TEST_REPOSITORY_ID)) >> { aRepoInStateAndIdFull(unsupportedState, TEST_REPOSITORY_ID) }
+            client.get(getGetRepositoryStateFullUrlForRepoId(TEST_REPOSITORY_ID)) >> { aRepoInStateAndIdFull(TEST_REPOSITORY_ID, unsupportedState) }
         when:
             repoStateFetcher.getNonTransitioningRepositoryStateById(TEST_REPOSITORY_ID)
         then:

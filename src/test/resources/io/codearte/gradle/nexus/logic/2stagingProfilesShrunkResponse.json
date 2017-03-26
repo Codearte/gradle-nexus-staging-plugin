@@ -14,14 +14,14 @@
     },
     {
       "deployURI": "https://oss.sonatype.org/service/local/staging/deploy/maven2",
-      "id": "93c08fdebde1ff",
+      "id": "5027d084a01a3a",
       "inProgress": false,
       "mode": "BOTH",
       "name": "io.codearte",
       "order": 8981,
       "promotionTargetRepository": "releases",
       "repositoryType": "maven2",
-      "resourceURI": "https://oss.sonatype.org/service/local/staging/profiles/93c08fdebde1ff",
+      "resourceURI": "https://oss.sonatype.org/service/local/staging/profiles/5027d084a01a3a",
       "targetGroups": ["staging"]
     }
   ]

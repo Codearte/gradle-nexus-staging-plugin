@@ -8,6 +8,7 @@ import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
 import io.codearte.gradle.nexus.logic.RepositoryPromoter
+import io.codearte.gradle.nexus.logic.RepositoryStateFetcher
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
@@ -53,6 +54,10 @@ abstract class BaseStagingTask extends DefaultTask {
 
     protected RepositoryFetcher createRepositoryFetcherWithGivenClient(SimplifiedHttpJsonRestClient client) {
         return new RepositoryFetcher(client, getServerUrl())
+    }
+
+    protected RepositoryStateFetcher createRepositoryStateFetcherWithGivenClient(SimplifiedHttpJsonRestClient client) {
+        return new RepositoryStateFetcher(client, getServerUrl())
     }
 
     protected RepositoryCloser createRepositoryCloserWithGivenClient(SimplifiedHttpJsonRestClient client) {

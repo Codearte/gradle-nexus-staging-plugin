@@ -10,7 +10,7 @@ trait FetcherResponseTrait {
     Map aRepoInStateAndId(String type, String id) {
         return [
                 policy               : "release",
-                profileId            : "93c08fdebde1ff",
+                profileId            : "5027d084a01a3a",
                 profileName          : "io.codearte",
                 profileType          : "repository",
                 releaseRepositoryId  : "releases",
@@ -20,7 +20,14 @@ trait FetcherResponseTrait {
         ]
     }
 
-    Map aRepoInStateAndIdFull(String state, String id, boolean isTransitioning = false) {
+
+    @SuppressWarnings("GrDeprecatedAPIUsage")
+    Map aRepoInStateAndIdFull(String id, RepositoryState state, boolean isTransitioning = false) {
+        return aRepoInStateAndIdFull(id, state.toString(), isTransitioning)
+    }
+
+    @Deprecated //Variant with "state" as String only to reproduce issues with unsupported states
+    Map aRepoInStateAndIdFull(String id, String state, boolean isTransitioning = false) {
         return [
             created: "2017-03-25T15:44:11.248Z",
             createdDate: "Sat Mar 25 15:44:11 UTC 2017",

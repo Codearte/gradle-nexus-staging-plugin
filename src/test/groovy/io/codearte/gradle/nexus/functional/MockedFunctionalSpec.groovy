@@ -4,11 +4,11 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import groovy.json.JsonOutput
 import io.codearte.gradle.nexus.logic.FetcherResponseTrait
+import io.codearte.gradle.nexus.logic.RepositoryState
 import nebula.test.functional.ExecutionResult
 import org.gradle.api.logging.LogLevel
 import org.junit.Rule
 import spock.lang.Ignore
-import spock.lang.Issue
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import static com.github.tomakehurst.wiremock.client.WireMock.containing
@@ -25,12 +25,16 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8089)
 
-    protected static final String stagingProfileId = "93c08fdebde1ff"
+    private static final String stagingProfileId = "5027d084a01a3a"
+    private static final String REPO_ID_1 = "testRepo1"
+    private static final String REPO_ID_2 = "testRepo2"
 
     def "should not do request for staging profile when provided in configuration on #testedTaskName task"() {
         given:
             stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
-                    createResponseMapWithGivenRepos([aRepoInStateAndId(repoTypeToReturn, "ignored")]))
+                    createResponseMapWithGivenRepos([aRepoInStateAndId(repoTypeToReturn, REPO_ID_1)]))
+        and:
+            stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, repositoryStatesToGetById)
         and:
             stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
         and:
@@ -52,9 +56,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         and:
             verify(0, getRequestedFor(urlEqualTo("/staging/profiles")))
         where:
-            testedTaskName      | repoTypeToReturn
-            "closeRepository"   | "open"
-            "promoteRepository" | "closed"
+            testedTaskName      | repoTypeToReturn | repositoryStatesToGetById
+            "closeRepository"   | "open"           | [RepositoryState.CLOSED]
+            "promoteRepository" | "closed"         | [RepositoryState.RELEASED]
     }
 
     def "should send request for staging profile when not provided in configuration on #testedTaskName task"() {
@@ -62,7 +66,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
         and:
             stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
-                    createResponseMapWithGivenRepos([aRepoInStateAndId(repoTypeToReturn, "ignored")]))
+                    createResponseMapWithGivenRepos([aRepoInStateAndId(repoTypeToReturn, REPO_ID_1)]))
+        and:
+            stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, repositoryStatesToGetById)
         and:
             stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
         and:
@@ -73,7 +79,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 ${getDefaultConfigurationClosure()}
             """.stripIndent()
         when:
-            def result = runTasksSuccessfully(testedTaskName)
+            ExecutionResult result = runTasksSuccessfully(testedTaskName)
         then:
             result.wasExecuted(testedTaskName)
             !result.standardOutput.contains("Using configured staging profile id: $stagingProfileId")
@@ -81,17 +87,20 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         and:
             verify(1, getRequestedFor(urlEqualTo("/staging/profiles")))
         where:
-            testedTaskName      | repoTypeToReturn
-            "closeRepository"   | "open"
-            "promoteRepository" | "closed"
+            testedTaskName      | repoTypeToReturn | repositoryStatesToGetById
+            "closeRepository"   | "open"           | [RepositoryState.CLOSED]
+            "promoteRepository" | "closed"         | [RepositoryState.RELEASED]
     }
 
     //TODO: Remove when 'stagingProfileId AND stagingRepositoryId' case is fixed
     def "should reuse stagingProfileId from closeRepository in promoteRepository when called together"() {
         given:
-            stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
+            stubGetStagingProfilesWithJson(getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
         and:
-            stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(stagingProfileId)
+            stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(stagingProfileId)  //TODO: Just one call
+        and:
+            //TODO: Should be in scenario with others?
+            stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, [RepositoryState.CLOSED, RepositoryState.RELEASED])
         and:
             stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
         and:
@@ -189,13 +198,15 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         when:
             ExecutionResult result = runTasksSuccessfully('getStagingProfile')
         then:
-            result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
+            result.standardOutput.contains("Received staging profile id: $stagingProfileId")
     }
 
     def "should call close and promote in closeAndPromoteRepository task"() {
         given:
 //            stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(stagingProfileId)    //TODO: Temporary disabled due to #44
             stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(stagingProfileId)
+        and:
+            stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, [RepositoryState.CLOSED, RepositoryState.RELEASED])
         and:
             stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
         and:
@@ -230,7 +241,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         when:
             ExecutionResult result = runTasksSuccessfully('getStagingProfile')
         then:
-            result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
+            result.standardOutput.contains("Received staging profile id: $stagingProfileId")
     }
 
     def "explicitly defined packageGroup should override default value"() {
@@ -245,7 +256,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         when:
             ExecutionResult result = runTasksSuccessfully('getStagingProfile')
         then:
-            result.standardOutput.contains("Received staging profile id: 93c08fdebde1ff")
+            result.standardOutput.contains("Received staging profile id: $stagingProfileId")
     }
 
     @Override
@@ -276,7 +287,22 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 .willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
-                .withBody(JsonOutput.toJson(response))))
+                .withBody(JsonOutput.prettyPrint(JsonOutput.toJson(response)))))
+    }
+
+    private void stubGetRepositoryStateByIdForConsecutiveStates(String repoId, List<RepositoryState> repoStates) {
+        repoStates.eachWithIndex { repoState, index ->
+            stubFor(get(urlEqualTo("/staging/repository/$repoId"))
+                .inScenario("StateById")
+                .whenScenarioStateIs(index == 0 ? Scenario.STARTED : repoStates[index].name())
+                .withHeader("Content-Type", containing("application/json"))
+                .withHeader("Accept", containing("application/json"))
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(JsonOutput.prettyPrint(JsonOutput.toJson(aRepoInStateAndIdFull(repoId, repoState)))))
+                .willSetStateTo(repoStates[index < repoStates.size() - 2 ? index + 1 : index].name()))  //TODO: Simplify/extract...
+        }
     }
 
     private void stubSuccessfulCloseRepositoryWithProfileId(String stagingProfileId) {
@@ -291,9 +317,10 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         stubFor(post(urlEqualTo("/staging/profiles/$stagingProfileId/$restCommandName"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withHeader("Accept", containing("application/json"))
+                //TODO: Content matching
                 .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")))
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")))
     }
 
     private void stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(String stagingProfileId) {
@@ -304,8 +331,8 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
 
     private void stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(String stagingProfileId) {
         stubGetGivenRepositoriesInFirstAndSecondCall(stagingProfileId,
-                [aRepoInStateAndId("open", "ignored")],
-                [aRepoInStateAndId("closed", "ignored")])
+                [aRepoInStateAndId("open", REPO_ID_1)],
+                [aRepoInStateAndId("closed", REPO_ID_2)])
     }
 
     private void stubGetGivenRepositoriesInFirstAndSecondCall(String stagingProfileId, List<Map> repositoriesToReturnInFirstCall,
@@ -318,7 +345,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
                 .withBody(
-                    JsonOutput.toJson(createResponseMapWithGivenRepos(repositoriesToReturnInFirstCall))
+                    JsonOutput.prettyPrint(JsonOutput.toJson(createResponseMapWithGivenRepos(repositoriesToReturnInFirstCall)))
                 )
             )
             .willSetStateTo("CLOSED"))
@@ -331,7 +358,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
                 .withBody(
-                    JsonOutput.toJson(createResponseMapWithGivenRepos(repositoriesToReturnInSecondCall))
+                    JsonOutput.prettyPrint(JsonOutput.toJson(createResponseMapWithGivenRepos(repositoriesToReturnInSecondCall)))
                 )
             )
         )
