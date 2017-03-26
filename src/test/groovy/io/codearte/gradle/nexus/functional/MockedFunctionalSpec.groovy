@@ -32,7 +32,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     def "should not do request for staging profile when provided in configuration on #testedTaskName task"() {
         given:
             stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
-                    createResponseMapWithGivenRepos([aRepoInStateAndId(repoTypeToReturn, REPO_ID_1)]))
+                    createResponseMapWithGivenRepos([aRepoInStateAndIdFull(REPO_ID_1, repoTypeToReturn)]))
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, repositoryStatesToGetById)
         and:
@@ -56,9 +56,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         and:
             verify(0, getRequestedFor(urlEqualTo("/staging/profiles")))
         where:
-            testedTaskName      | repoTypeToReturn | repositoryStatesToGetById
-            "closeRepository"   | "open"           | [RepositoryState.CLOSED]
-            "promoteRepository" | "closed"         | [RepositoryState.RELEASED]
+            testedTaskName      | repoTypeToReturn       | repositoryStatesToGetById
+            "closeRepository"   | RepositoryState.OPEN   | [RepositoryState.CLOSED]
+            "promoteRepository" | RepositoryState.CLOSED | [RepositoryState.RELEASED]
     }
 
     def "should send request for staging profile when not provided in configuration on #testedTaskName task"() {
@@ -66,7 +66,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
         and:
             stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
-                    createResponseMapWithGivenRepos([aRepoInStateAndId(repoTypeToReturn, REPO_ID_1)]))
+                    createResponseMapWithGivenRepos([aRepoInStateAndIdFull(REPO_ID_1, repoTypeToReturn)]))
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, repositoryStatesToGetById)
         and:
@@ -90,9 +90,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         and:
             verify(1, getRequestedFor(urlEqualTo("/staging/profiles")))
         where:
-            testedTaskName      | repoTypeToReturn | repositoryStatesToGetById
-            "closeRepository"   | "open"           | [RepositoryState.CLOSED]
-            "promoteRepository" | "closed"         | [RepositoryState.RELEASED]
+            testedTaskName      | repoTypeToReturn       | repositoryStatesToGetById
+            "closeRepository"   | RepositoryState.OPEN   | [RepositoryState.CLOSED]
+            "promoteRepository" | RepositoryState.CLOSED | [RepositoryState.RELEASED]
     }
 
     def "should reuse stagingProfileId AND stagingRepositoryId from closeRepository in promoteRepository when called together"() {
@@ -235,7 +235,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     def "should wait on #operationName operation until transitioning is finished"() {
         given:
             stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
-                createResponseMapWithGivenRepos([aRepoInStateAndId(repoStates[0].name(), REPO_ID_1)]))
+                createResponseMapWithGivenRepos([aRepoInStateAndIdFull(REPO_ID_1, repoStates[0])]))
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, repoStates, [true, false])
         and:
@@ -332,14 +332,14 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
 
     private void stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(String stagingProfileId) {
         stubGetGivenRepositoriesInFirstAndSecondCall(stagingProfileId,
-                [aRepoInStateAndId("open", REPO_ID_1), aRepoInStateAndId("closed", REPO_ID_2)],
-                [aRepoInStateAndId("closed", REPO_ID_1), aRepoInStateAndId("closed", REPO_ID_2)])
+                [aRepoInStateAndIdFull(REPO_ID_1, RepositoryState.OPEN), aRepoInStateAndIdFull(REPO_ID_2, RepositoryState.CLOSED)],
+                [aRepoInStateAndIdFull(REPO_ID_1, RepositoryState.CLOSED), aRepoInStateAndIdFull(REPO_ID_2, RepositoryState.CLOSED)])
     }
 
     private void stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(String stagingProfileId) {
         stubGetGivenRepositoriesInFirstAndSecondCall(stagingProfileId,
-                [aRepoInStateAndId("open", REPO_ID_1)],
-                [aRepoInStateAndId("closed", REPO_ID_1)])
+                [aRepoInStateAndIdFull(REPO_ID_1, RepositoryState.OPEN)],
+                [aRepoInStateAndIdFull(REPO_ID_1, RepositoryState.CLOSED)])
     }
 
     private void stubGetGivenRepositoriesInFirstAndSecondCall(String stagingProfileId, List<Map> repositoriesToReturnInFirstCall,

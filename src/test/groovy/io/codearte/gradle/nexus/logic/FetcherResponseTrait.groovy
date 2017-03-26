@@ -6,12 +6,6 @@ trait FetcherResponseTrait {
         return [data: repositories]
     }
 
-    @Deprecated
-    Map aRepoInStateAndId(String type, String id) {
-        return aRepoInStateAndIdFull(id, RepositoryState.parseString(type))
-    }
-
-
     @SuppressWarnings("GrDeprecatedAPIUsage")
     Map aRepoInStateAndIdFull(String id, RepositoryState state, boolean isTransitioning = false) {
         return aRepoInStateAndIdFull(id, state.toString(), isTransitioning)

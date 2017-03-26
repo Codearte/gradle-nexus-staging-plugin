@@ -51,18 +51,18 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
     def "should fail with meaningful exception on too many repositories in given state #state"() {
         given:
             client.get(GET_REPOSITORY_ID_FULL_URL) >> {
-                createResponseMapWithGivenRepos([aRepoInStateAndId(state, TEST_REPOSITORY_ID),
-                                                 aRepoInStateAndId(state, TEST_REPOSITORY_ID + "2")])
+                createResponseMapWithGivenRepos([aRepoInStateAndIdFull(TEST_REPOSITORY_ID, state),
+                                                 aRepoInStateAndIdFull(TEST_REPOSITORY_ID + "2", state)])
             }
         when:
-            fetcher."get${state.capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
+            fetcher."get${state.name().toLowerCase().capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
         then:
             def e = thrown(WrongNumberOfRepositories)
             e.message == "Wrong number of received repositories in state '$state'. Expected 1, received 2".toString()
             e.numberOfRepositories == 2
-            e.state == state
+            e.state == state.toString()
         where:
-            state << ["open", "closed"]
+            state << [RepositoryState.OPEN, RepositoryState.CLOSED]
     }
 
     def "should fail with meaningful exception on wrong repo state returned from server"() {
@@ -80,14 +80,14 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
     }
 
     private Map anOpenRepo() {
-        return aRepoInStateAndId("open", TEST_REPOSITORY_ID)
+        return aRepoInStateAndIdFull(TEST_REPOSITORY_ID, RepositoryState.OPEN)
     }
 
     private Map aClosedRepo() {
-        return aRepoInStateAndId("closed", TEST_REPOSITORY_ID)
+        return aRepoInStateAndIdFull(TEST_REPOSITORY_ID, RepositoryState.CLOSED)
     }
 
-    private Map aRepoInState(String type) {
-        return aRepoInStateAndId(type, TEST_REPOSITORY_ID)
+    private Map aRepoInState(String state) {
+        return aRepoInStateAndIdFull(TEST_REPOSITORY_ID, RepositoryState.parseString(state))
     }
 }
