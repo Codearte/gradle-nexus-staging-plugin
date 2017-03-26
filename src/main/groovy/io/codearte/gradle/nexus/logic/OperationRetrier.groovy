@@ -28,7 +28,7 @@ class OperationRetrier<T> {
                 counter++
                 log.debug("Attempt $counter/$numberOfAttempts...")
                 return operation()
-            } catch (WrongNumberOfRepositories | RepositoryInTransitionException | IllegalArgumentException e) { //Exceptions to catch could be configurable if needed
+            } catch (WrongNumberOfRepositories | RepositoryInTransitionException e) { //Exceptions to catch could be configurable if needed
                 String message = "Attempt $counter/$numberOfAttempts failed. ${e.getClass().getSimpleName()} was thrown with message '${e.message}'"
                 if (counter >= numberOfAttempts) {
                     //TODO: Switch to Gradle logger and use lifecycle level

@@ -30,8 +30,7 @@ class OperationRetrierSpec extends Specification {
             returnedValue == "valueToReturn"
         where:
             exceptionToThrow << [new WrongNumberOfRepositories(0, "open"),
-                                 new RepositoryInTransitionException('repoId', 'open'),
-                                 new IllegalArgumentException('something wrong')]   //TODO: Why IAE? Can it still in use?
+                                 new RepositoryInTransitionException('repoId', 'open')]
     }
 
     def "should propagate original exception on too many retry attempts"() {
