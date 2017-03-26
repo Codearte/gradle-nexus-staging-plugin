@@ -8,7 +8,6 @@ import io.codearte.gradle.nexus.logic.RepositoryState
 import nebula.test.functional.ExecutionResult
 import org.gradle.api.logging.LogLevel
 import org.junit.Rule
-import spock.lang.Ignore
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import static com.github.tomakehurst.wiremock.client.WireMock.containing
@@ -92,40 +91,13 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             "promoteRepository" | "closed"         | [RepositoryState.RELEASED]
     }
 
-    //TODO: Remove when 'stagingProfileId AND stagingRepositoryId' case is fixed
-    def "should reuse stagingProfileId from closeRepository in promoteRepository when called together"() {
-        given:
-            stubGetStagingProfilesWithJson(getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
-        and:
-            stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(stagingProfileId)  //TODO: Just one call
-        and:
-            //TODO: Should be in scenario with others?
-            stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, [RepositoryState.CLOSED, RepositoryState.RELEASED])
-        and:
-            stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
-        and:
-            stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId)
-        and:
-            buildFile << """
-                ${getApplyPluginBlock()}
-                ${getDefaultConfigurationClosure()}
-            """.stripIndent()
-        when:
-            ExecutionResult result = runTasksSuccessfully("closeRepository", "promoteRepository")
-        then:
-            result.wasExecuted("closeRepository")
-            result.wasExecuted("promoteRepository")
-        and:
-            verify(2, getRequestedFor(urlEqualTo("/staging/profile_repositories/$stagingProfileId")))
-            verify(1, getRequestedFor(urlEqualTo("/staging/profiles")))
-    }
-
-    @Ignore("Due to https://github.com/Codearte/gradle-nexus-staging-plugin/issues/44")
     def "should reuse stagingProfileId AND stagingRepositoryId from closeRepository in promoteRepository when called together"() {
         given:
             stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
         and:
             stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(stagingProfileId)
+        and:
+            stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, [RepositoryState.CLOSED, RepositoryState.RELEASED])
         and:
             stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
         and:
@@ -175,8 +147,6 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 ${getDefaultConfigurationClosure()}
                 nexusStaging {
                     stagingProfileId = "$stagingProfileId"
-                    delayBetweenRetriesInMillis = 50
-                    numberOfRetries = 2
                 }
             """.stripIndent()
         when:
@@ -268,6 +238,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                     username = "codearte"
                     packageGroup = "io.codearte"
                     serverUrl = "http://localhost:8089/"
+                    //To do not wait too long in case of failure
+                    delayBetweenRetriesInMillis = 50
+                    numberOfRetries = 2
                 }
         """
     }
@@ -327,8 +300,8 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
 
     private void stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(String stagingProfileId) {
         stubGetGivenRepositoriesInFirstAndSecondCall(stagingProfileId,
-                [aRepoInStateAndId("open", "ignored"), aRepoInStateAndId("closed", "ignoredClosed")],
-                [aRepoInStateAndId("closed", "ignored"), aRepoInStateAndId("closed", "ignoredClosed")])
+                [aRepoInStateAndId("open", REPO_ID_1), aRepoInStateAndId("closed", REPO_ID_2)],
+                [aRepoInStateAndId("closed", REPO_ID_1), aRepoInStateAndId("closed", REPO_ID_2)])
     }
 
     private void stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(String stagingProfileId) {

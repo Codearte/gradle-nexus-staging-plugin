@@ -43,11 +43,14 @@ class PromoteRepositoryTask extends BaseStagingTask {
     }
 
     private String getRepositoryIdFromCloseTaskOrFromServer(String stagingProfileId, RepositoryFetcher repositoryFetcher) {
-        //TODO: Add debug statement
+        String repositoryIdFromCloseTask = getCloseRepositoryTask().stagingRepositoryId
+        if (repositoryIdFromCloseTask != null) {
+            logger.debug("Reusing staging repository id from closeRepository task: $repositoryIdFromCloseTask")
+            return repositoryIdFromCloseTask
+        }
+
         OperationRetrier<String> retrier = createOperationRetrier()
-        String repositoryId = /*getCloseRepositoryTask().stagingRepositoryId ?:*/   //Temporary disabled due to https://github.com/Codearte/gradle-nexus-staging-plugin/issues/44
-                retrier.doWithRetry { repositoryFetcher.getClosedRepositoryIdForStagingProfileId(stagingProfileId) }
-        return repositoryId
+        return retrier.doWithRetry { repositoryFetcher.getClosedRepositoryIdForStagingProfileId(stagingProfileId) }
     }
 
     private void promoteRepositoryByIdAndProfileIdWithRetrying(String repositoryId, String stagingProfileId) {
