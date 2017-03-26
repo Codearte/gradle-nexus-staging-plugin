@@ -33,6 +33,7 @@ class OperationRetrier<T> {
                 if (counter >= numberOfAttempts) {
                     //TODO: Switch to Gradle logger and use lifecycle level
                     log.warn("$message. Giving up. Configure longer timeout if necessary.")
+                    //Maybe wrap exception with retrying exception suggesting timeout issues (and original message appended at the end?
                     throw e
                 } else {
                     if (counter == 1) {

@@ -19,6 +19,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import static com.github.tomakehurst.wiremock.client.WireMock.verify
 
+//TODO: Split into two files: basic and transition related
 class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements FetcherResponseTrait {
 
     @Rule
@@ -231,6 +232,31 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             result.standardOutput.contains("Received staging profile id: $stagingProfileId")
     }
 
+    def "should wait on #operationName operation until transitioning is finished"() {
+        given:
+            stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
+                createResponseMapWithGivenRepos([aRepoInStateAndId(repoStates[0].name(), REPO_ID_1)]))
+        and:
+            stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, repoStates, [true, false])
+        and:
+            stubbingOperation()
+        and:
+            buildFile << """
+                ${getApplyPluginBlock()}
+                ${getDefaultConfigurationClosure()}
+            """.stripIndent()
+        when:
+            ExecutionResult result = runTasksSuccessfully("${operationName}Repository")
+        then:
+            result.wasExecuted("${operationName}Repository")
+            result.standardOutput.contains("Attempt 1/3 failed.")
+            !result.standardOutput.contains("Attempt 2/3 failed.")
+        where:
+            operationName | repoStates                                         | stubbingOperation
+            "close"       | [RepositoryState.OPEN, RepositoryState.CLOSED]     | { stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId) }
+            "promote"     | [RepositoryState.CLOSED, RepositoryState.RELEASED] | { stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId) }
+    }
+
     @Override
     protected String getDefaultConfigurationClosure() {
         return """
@@ -251,22 +277,27 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 .withHeader("Content-Type", containing("application/json"))
                 .withHeader("Accept", containing("application/json"))
                 .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")
-                .withBody(responseAsJson)))
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(responseAsJson)))
     }
 
+    //TODO: Do not pass stagingProfileId as argument - use constant - only one is used everywhere
     private void stubGetOneRepositoryWithProfileIdAndContent(String stagingProfileId, Map response) {
         stubFor(get(urlEqualTo("/staging/profile_repositories/$stagingProfileId"))
                 .withHeader("Content-Type", containing("application/json"))
                 .withHeader("Accept", containing("application/json"))
                 .willReturn(aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")
-                .withBody(JsonOutput.prettyPrint(JsonOutput.toJson(response)))))
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(JsonOutput.prettyPrint(JsonOutput.toJson(response)))))
     }
 
-    private void stubGetRepositoryStateByIdForConsecutiveStates(String repoId, List<RepositoryState> repoStates) {
+    private void stubGetRepositoryStateByIdForConsecutiveStates(String repoId, List<RepositoryState> repoStates,
+                                                                List<Boolean> isTransitioningList = null) {
+        if (isTransitioningList == null) {
+            isTransitioningList = repoStates.collect { false }
+        }
         repoStates.eachWithIndex { repoState, index ->
             stubFor(get(urlEqualTo("/staging/repository/$repoId"))
                 .inScenario("StateById")
@@ -276,7 +307,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 .willReturn(aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
-                    .withBody(JsonOutput.prettyPrint(JsonOutput.toJson(aRepoInStateAndIdFull(repoId, repoState)))))
+                    .withBody(JsonOutput.prettyPrint(JsonOutput.toJson(aRepoInStateAndIdFull(repoId, repoState, isTransitioningList[index])))))
                 .willSetStateTo(repoStates[index < repoStates.size() - 1 ? index + 1 : index].name()))  //TODO: Simplify/extract...
         }
     }

@@ -6,18 +6,9 @@ trait FetcherResponseTrait {
         return [data: repositories]
     }
 
-    //TODO: Rewrite tests to use full sample
+    @Deprecated
     Map aRepoInStateAndId(String type, String id) {
-        return [
-                policy               : "release",
-                profileId            : "5027d084a01a3a",
-                profileName          : "io.codearte",
-                profileType          : "repository",
-                releaseRepositoryId  : "releases",
-                releaseRepositoryName: "Releases",
-                repositoryId         : id,
-                type                 : type
-        ]
+        return aRepoInStateAndIdFull(id, RepositoryState.parseString(type))
     }
 
 
