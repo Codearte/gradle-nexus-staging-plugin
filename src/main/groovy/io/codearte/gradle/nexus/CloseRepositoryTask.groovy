@@ -51,5 +51,6 @@ class CloseRepositoryTask extends BaseStagingTask {
         RetryingRepositoryTransitioner retryingCloser = new RetryingRepositoryTransitioner(repositoryCloser, repositoryStateFetcher, retrier)
 
         retryingCloser.performWithRepositoryIdAndStagingProfileId(repositoryId, stagingProfileId)
+        logger.info("Repository '$repositoryId' has been effectively closed")
     }
 }

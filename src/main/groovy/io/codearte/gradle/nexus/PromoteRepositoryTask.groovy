@@ -60,5 +60,6 @@ class PromoteRepositoryTask extends BaseStagingTask {
         RetryingRepositoryTransitioner retryingPromoter = new RetryingRepositoryTransitioner(repositoryPromoter, repositoryStateFetcher, retrier)
 
         retryingPromoter.performWithRepositoryIdAndStagingProfileId(repositoryId, stagingProfileId)
+        logger.info("Repository '$repositoryId' has been effectively released/promoted")
     }
 }
