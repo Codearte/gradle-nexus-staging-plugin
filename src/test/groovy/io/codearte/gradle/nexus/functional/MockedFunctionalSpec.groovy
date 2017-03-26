@@ -76,6 +76,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             buildFile << """
                 ${getApplyPluginBlock()}
                 ${getDefaultConfigurationClosure()}
+                nexusStaging {
+                    stagingProfileId = null //by default set in tests
+                }
             """.stripIndent()
         when:
             ExecutionResult result = runTasksSuccessfully(testedTaskName)
@@ -106,6 +109,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             buildFile << """
                 ${getApplyPluginBlock()}
                 ${getDefaultConfigurationClosure()}
+                nexusStaging {
+                    stagingProfileId = null //by default set in tests
+                }
             """.stripIndent()
         when:
             ExecutionResult result = runTasksSuccessfully("closeRepository", "promoteRepository")
@@ -145,9 +151,6 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             buildFile << """
                 ${getApplyPluginBlock()}
                 ${getDefaultConfigurationClosure()}
-                nexusStaging {
-                    stagingProfileId = "$stagingProfileId"
-                }
             """.stripIndent()
         when:
             ExecutionResult result = runTasksSuccessfully("promoteRepository")
@@ -175,8 +178,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
 
     def "should call close and promote in closeAndPromoteRepository task"() {
         given:
-//            stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(stagingProfileId)    //TODO: Temporary disabled due to #44
-            stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(stagingProfileId)
+            stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(stagingProfileId)
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, [RepositoryState.CLOSED, RepositoryState.RELEASED])
         and:
@@ -187,9 +189,6 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             buildFile << """
                 ${getApplyPluginBlock()}
                 ${getDefaultConfigurationClosure()}
-                nexusStaging {
-                    stagingProfileId = "$stagingProfileId"
-                }
             """.stripIndent()
         when:
             ExecutionResult result = runTasksSuccessfully("closeAndPromoteRepository")
@@ -205,8 +204,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         and:
             buildFile << """
                 ${getApplyPluginBlock()}
+                ${getDefaultConfigurationClosure()}
                 nexusStaging {
-                    serverUrl = "http://localhost:8089/"
+                    stagingProfileId = null
                 }
                 project.group = "io.codearte"
             """.stripIndent()
@@ -235,6 +235,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     protected String getDefaultConfigurationClosure() {
         return """
                 nexusStaging {
+                    stagingProfileId = "$stagingProfileId"
                     username = "codearte"
                     packageGroup = "io.codearte"
                     serverUrl = "http://localhost:8089/"
