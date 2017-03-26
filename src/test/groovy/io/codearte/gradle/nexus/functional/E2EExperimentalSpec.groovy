@@ -23,11 +23,15 @@ import spock.lang.Stepwise
 class E2EExperimentalSpec extends Specification implements FunctionalTestHelperTrait {
 
     private SimplifiedHttpJsonRestClient client
+    private RepositoryStateFetcher repoStateFetcher
+    private OperationRetrier<String> retrier
 
     private static String resolvedStagingRepositoryId
 
     def setup() {
         client = new SimplifiedHttpJsonRestClient(new RESTClient(), getNexusUsernameAT(), tryToReadNexusPasswordAT())
+        repoStateFetcher = new RepositoryStateFetcher(client, E2E_SERVER_BASE_PATH)
+        retrier = new OperationRetrier<>()
     }
 
     @NotYetImplemented
@@ -60,10 +64,8 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
     def "should get not in transition open repository state by repository id from server e2e"() {
         given:
             assert resolvedStagingRepositoryId
-        and:
-            RepositoryStateFetcher byIdFetcher = new RepositoryStateFetcher(client, E2E_SERVER_BASE_PATH)
         when:
-            String receivedRepoState = byIdFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
+            String receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
         then:
             receivedRepoState == RepositoryState.OPEN.value()
     }
@@ -73,11 +75,9 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
             assert resolvedStagingRepositoryId
         and:
             RepositoryCloser closer = new RepositoryCloser(client, E2E_SERVER_BASE_PATH)
-            RepositoryStateFetcher repoStateFetcher = new RepositoryStateFetcher(client, E2E_SERVER_BASE_PATH)
-            OperationRetrier<String> retrier = new OperationRetrier<>()
-            RetryingRepositoryTransitioner awareCloser = new RetryingRepositoryTransitioner(closer, repoStateFetcher, retrier)
+            RetryingRepositoryTransitioner retryingCloser = new RetryingRepositoryTransitioner(closer, repoStateFetcher, retrier)
         when:
-            awareCloser.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
+            retryingCloser.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
         then:
             noExceptionThrown()
         and:
@@ -92,11 +92,9 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
             assert resolvedStagingRepositoryId
         and:
             RepositoryDropper dropper = new RepositoryDropper(client, E2E_SERVER_BASE_PATH)
-            RepositoryStateFetcher repoStateFetcher = new RepositoryStateFetcher(client, E2E_SERVER_BASE_PATH)
-            OperationRetrier<String> retrier = new OperationRetrier<>()
-            RetryingRepositoryTransitioner awareDropper = new RetryingRepositoryTransitioner(dropper, repoStateFetcher, retrier)
+            RetryingRepositoryTransitioner retryingDropper = new RetryingRepositoryTransitioner(dropper, repoStateFetcher, retrier)
         when:
-            awareDropper.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
+            retryingDropper.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
         then:
             noExceptionThrown()
         when:
@@ -110,11 +108,9 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
             assert resolvedStagingRepositoryId
         and:
             RepositoryPromoter promoter = new RepositoryPromoter(client, E2E_SERVER_BASE_PATH)
-            RepositoryStateFetcher repoStateFetcher = new RepositoryStateFetcher(client, E2E_SERVER_BASE_PATH)
-            OperationRetrier<String> retrier = new OperationRetrier<>()
-            RetryingRepositoryTransitioner repoTransitioner = new RetryingRepositoryTransitioner(promoter, repoStateFetcher, retrier)
+            RetryingRepositoryTransitioner retryingPromoter = new RetryingRepositoryTransitioner(promoter, repoStateFetcher, retrier)
         when:
-            repoTransitioner.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
+            retryingPromoter.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
         then:
             noExceptionThrown()
         when:
@@ -128,9 +124,5 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
 
     private void propagateStagingRepositoryIdToAnotherTest(String stagingRepositoryId) {
         resolvedStagingRepositoryId = stagingRepositoryId
-    }
-
-    private void waitForOperationToFinish() {
-        sleep(6000)     //TODO: until waiting for "transition complete" is not implemented - https://github.com/Codearte/gradle-nexus-staging-plugin/issues/21
     }
 }
