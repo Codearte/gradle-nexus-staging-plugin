@@ -3,6 +3,7 @@ package io.codearte.gradle.nexus.logic
 import com.google.common.annotations.VisibleForTesting
 import groovy.transform.PackageScope
 import groovy.util.logging.Slf4j
+import io.codearte.gradle.nexus.exception.RepositoryInTransitionException
 import io.codearte.gradle.nexus.infra.WrongNumberOfRepositories
 
 @Slf4j
@@ -27,11 +28,11 @@ class OperationRetrier<T> {
                 counter++
                 log.debug("Attempt $counter/$numberOfAttempts...")
                 return operation()
-            } catch (WrongNumberOfRepositories | IllegalArgumentException e) { //Exceptions to catch could be configurable if needed
+            } catch (WrongNumberOfRepositories | RepositoryInTransitionException | IllegalArgumentException e) { //Exceptions to catch could be configurable if needed
                 String message = "Attempt $counter/$numberOfAttempts failed. ${e.getClass().getSimpleName()} was thrown with message '${e.message}'"
                 if (counter >= numberOfAttempts) {
                     //TODO: Switch to Gradle logger and use lifecycle level
-                    log.warn("$message. Giving up. Configure longer timeout if needed.")
+                    log.warn("$message. Giving up. Configure longer timeout if necessary.")
                     throw e
                 } else {
                     if (counter == 1) {

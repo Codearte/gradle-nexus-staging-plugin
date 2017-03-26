@@ -1,5 +1,6 @@
 package io.codearte.gradle.nexus.logic
 
+import io.codearte.gradle.nexus.exception.RepositoryInTransitionException
 import io.codearte.gradle.nexus.infra.WrongNumberOfRepositories
 import spock.lang.Specification
 
@@ -11,7 +12,7 @@ class OperationRetrierSpec extends Specification {
         sut = new OperationRetrier<String>(2, 0)
     }
 
-    def "should retry operation and pass returned value"() {
+    def "should retry operation and pass returned value on #exceptionToThrow.class.simpleName"() {
         given:
             def fetcherMock = Mock(RepositoryFetcher)
             int counter = 0
@@ -20,13 +21,17 @@ class OperationRetrierSpec extends Specification {
         then:
             2 * fetcherMock.getClosedRepositoryIdForStagingProfileId(_) >> {
                 if (counter++ == 0) {
-                    throw new WrongNumberOfRepositories(0, "open")
+                    throw exceptionToThrow
                 } else {
-                    return "repoId"
+                    return "valueToReturn"
                 }
             }
         and:
-            returnedValue == "repoId"
+            returnedValue == "valueToReturn"
+        where:
+            exceptionToThrow << [new WrongNumberOfRepositories(0, "open"),
+                                 new RepositoryInTransitionException('repoId', 'open'),
+                                 new IllegalArgumentException('something wrong')]   //TODO: Why IAE? Can it still in use?
     }
 
     def "should propagate original exception on too many retry attempts"() {

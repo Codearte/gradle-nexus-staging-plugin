@@ -5,7 +5,7 @@ import groovy.transform.InheritConstructors
 
 @InheritConstructors
 @CompileStatic
-abstract class AbstractStagingOperationExecutor extends BaseOperationExecutor {
+abstract class AbstractRepositoryTransitioner extends BaseOperationExecutor implements RepositoryTransition {
 
     protected Map<String, Map> prepareStagingPostContentWithGivenRepositoryIdAndStagingId(String repositoryId, String stagingProfileId) {
         return [data: [
