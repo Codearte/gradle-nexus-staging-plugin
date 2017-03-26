@@ -23,29 +23,29 @@ class CloseRepositoryTask extends BaseStagingTask {
     void doAction() {
         StagingProfileFetcher stagingProfileFetcher = createFetcherWithGivenClient(createClient())  //Here or in fetchAndCacheStagingProfileId()?
         RepositoryFetcher repositoryFetcher = createRepositoryFetcherWithGivenClient(createClient())
-        RepositoryCloser repositoryCloser = createRepositoryCloserWithGivenClient(createClient())
-        OperationRetrier<String> legacyRetrier = createOperationRetrier()
 
         String stagingProfileId = fetchAndCacheStagingProfileId(stagingProfileFetcher)
 
-        String repositoryId = findOneOpenRepositoryIdForStagingProfileIdWithRetrying(stagingProfileId, repositoryFetcher, legacyRetrier)
+        String repositoryId = findOneOpenRepositoryIdForStagingProfileIdWithRetrying(stagingProfileId, repositoryFetcher)
 
         memorizeRepositoryIdForReusingInInOtherTasks(repositoryId)
 
-        closeRepositoryByIdAndProfileIdWithRetrying(repositoryCloser, repositoryId, stagingProfileId)
+        closeRepositoryByIdAndProfileIdWithRetrying(repositoryId, stagingProfileId)
     }
 
-    private String findOneOpenRepositoryIdForStagingProfileIdWithRetrying(String stagingProfileId, RepositoryFetcher repositoryFetcher, OperationRetrier<String> legacyRetrier) {
+    private String findOneOpenRepositoryIdForStagingProfileIdWithRetrying(String stagingProfileId, RepositoryFetcher repositoryFetcher) {
         //TODO: Repository provided by Gradle upload mechanism should be used, but unfortunately it seems to be unsupported by Gradle.
         //      Therefore, check for just one repository in "open" state
-        return legacyRetrier.doWithRetry { repositoryFetcher.getOpenRepositoryIdForStagingProfileId(stagingProfileId) }
+        OperationRetrier<String> retrier = createOperationRetrier()
+        return retrier.doWithRetry { repositoryFetcher.getOpenRepositoryIdForStagingProfileId(stagingProfileId) }
     }
 
     private void memorizeRepositoryIdForReusingInInOtherTasks(String repositoryId) {
         stagingRepositoryId = repositoryId
     }
 
-    private void closeRepositoryByIdAndProfileIdWithRetrying(RepositoryCloser repositoryCloser, String repositoryId, String stagingProfileId) {
+    private void closeRepositoryByIdAndProfileIdWithRetrying(String repositoryId, String stagingProfileId) {
+        RepositoryCloser repositoryCloser = createRepositoryCloserWithGivenClient(createClient())
         RepositoryStateFetcher repositoryStateFetcher = createRepositoryStateFetcherWithGivenClient(createClient())
         OperationRetrier<RepositoryState> retrier = createOperationRetrier()
         RetryingRepositoryTransitioner retryingCloser = new RetryingRepositoryTransitioner(repositoryCloser, repositoryStateFetcher, retrier)

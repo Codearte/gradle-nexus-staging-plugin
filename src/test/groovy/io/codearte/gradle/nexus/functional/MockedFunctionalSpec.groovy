@@ -164,6 +164,8 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         given:
             stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(stagingProfileId)
         and:
+            stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, [RepositoryState.RELEASED])
+        and:
             stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
         and:
             stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId)
@@ -301,7 +303,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
                     .withBody(JsonOutput.prettyPrint(JsonOutput.toJson(aRepoInStateAndIdFull(repoId, repoState)))))
-                .willSetStateTo(repoStates[index < repoStates.size() - 2 ? index + 1 : index].name()))  //TODO: Simplify/extract...
+                .willSetStateTo(repoStates[index < repoStates.size() - 1 ? index + 1 : index].name()))  //TODO: Simplify/extract...
         }
     }
 
@@ -332,7 +334,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     private void stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(String stagingProfileId) {
         stubGetGivenRepositoriesInFirstAndSecondCall(stagingProfileId,
                 [aRepoInStateAndId("open", REPO_ID_1)],
-                [aRepoInStateAndId("closed", REPO_ID_2)])
+                [aRepoInStateAndId("closed", REPO_ID_1)])
     }
 
     private void stubGetGivenRepositoriesInFirstAndSecondCall(String stagingProfileId, List<Map> repositoriesToReturnInFirstCall,
