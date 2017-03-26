@@ -11,8 +11,8 @@ class UnexpectedRepositoryState extends NexusStagingException {
     final String actualState
     final String expectedState
 
-    UnexpectedRepositoryState(String repoId, String actualState, RepositoryState expectedState) {
-        super("Wrong repository '$repoId' state '$actualState' after transition (expected '${expectedState.value()}'). " +
+    UnexpectedRepositoryState(String repoId, RepositoryState actualState, RepositoryState expectedState) {
+        super("Wrong repository '$repoId' state '$actualState' after transition (expected '$expectedState'). " +
             "Possible staging rules violation. Check repository status using Nexus UI.")
         this.expectedState = expectedState
         this.actualState = actualState

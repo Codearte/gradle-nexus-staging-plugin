@@ -8,21 +8,22 @@ import io.codearte.gradle.nexus.exception.UnexpectedRepositoryState
 @Slf4j
 class RetryingRepositoryTransitioner {
 
-    private final AbstractRepositoryTransitioner repositoryCloser
-    private final RepositoryStateFetcher byIdRepositoryFetcher
-    private final OperationRetrier<String> retrier
+    private final AbstractRepositoryTransitioner repositoryTransitioner
+    private final RepositoryStateFetcher repositoryStateFetcher
+    private final OperationRetrier<RepositoryState> retrier
 
-    RetryingRepositoryTransitioner(AbstractRepositoryTransitioner repositoryCloser, RepositoryStateFetcher byIdRepositoryFetcher, OperationRetrier<String> retrier) {
-        this.repositoryCloser = repositoryCloser
-        this.byIdRepositoryFetcher = byIdRepositoryFetcher
+    RetryingRepositoryTransitioner(AbstractRepositoryTransitioner repositoryTransitioner, RepositoryStateFetcher repositoryStateFetcher,
+                                   OperationRetrier<RepositoryState> retrier) {
+        this.repositoryTransitioner = repositoryTransitioner
+        this.repositoryStateFetcher = repositoryStateFetcher
         this.retrier = retrier
     }
 
     void performWithRepositoryIdAndStagingProfileId(String repoId, String stagingProfileId) {
-        repositoryCloser.performWithRepositoryIdAndStagingProfileId(repoId, stagingProfileId)
-        String state = retrier.doWithRetry { byIdRepositoryFetcher.getNonTransitioningRepositoryStateById(repoId) }
-        if (state != repositoryCloser.desiredAfterTransitionRepositoryState().value()) {    //TODO: How to detect missing ".value()"?
-            throw new UnexpectedRepositoryState(repoId, state, repositoryCloser.desiredAfterTransitionRepositoryState())
+        repositoryTransitioner.performWithRepositoryIdAndStagingProfileId(repoId, stagingProfileId)
+        RepositoryState state = retrier.doWithRetry { repositoryStateFetcher.getNonTransitioningRepositoryStateById(repoId) }
+        if (state != repositoryTransitioner.desiredAfterTransitionRepositoryState()) {
+            throw new UnexpectedRepositoryState(repoId, state, repositoryTransitioner.desiredAfterTransitionRepositoryState())
         }
     }
 }

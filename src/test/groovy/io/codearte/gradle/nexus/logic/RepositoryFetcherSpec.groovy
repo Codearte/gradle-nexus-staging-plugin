@@ -1,10 +1,9 @@
 package io.codearte.gradle.nexus.logic
 
-import io.codearte.gradle.nexus.FunctionalTestHelperTrait
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.infra.WrongNumberOfRepositories
 
-class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements FetcherResponseTrait, FunctionalTestHelperTrait {
+class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements FetcherResponseTrait {
 
     private static final String GET_REPOSITORY_ID_PATH = "/staging/profile_repositories/"
     private static final String GET_REPOSITORY_ID_FULL_URL = MOCK_SERVER_HOST + GET_REPOSITORY_ID_PATH + TEST_STAGING_PROFILE_ID

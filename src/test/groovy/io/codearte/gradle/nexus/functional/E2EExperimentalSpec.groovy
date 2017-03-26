@@ -24,7 +24,7 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
 
     private SimplifiedHttpJsonRestClient client
     private RepositoryStateFetcher repoStateFetcher
-    private OperationRetrier<String> retrier
+    private OperationRetrier<RepositoryState> retrier
 
     private static String resolvedStagingRepositoryId
 
@@ -65,9 +65,9 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
         given:
             assert resolvedStagingRepositoryId
         when:
-            String receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
+            RepositoryState receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
         then:
-            receivedRepoState == RepositoryState.OPEN.value()
+            receivedRepoState == RepositoryState.OPEN
     }
 
     def "should close open repository waiting for transition to finish e2e"() {
@@ -81,9 +81,9 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
         then:
             noExceptionThrown()
         and:
-            String closedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
+            RepositoryState receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
         then:
-            closedRepoState == RepositoryState.CLOSED.value()
+            receivedRepoState == RepositoryState.CLOSED
     }
 
     @Ignore //Not implemented yet
@@ -98,9 +98,9 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
         then:
             noExceptionThrown()
         when:
-            String state = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
+            RepositoryState receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
         then:
-            state == "not found"    //TODO
+            receivedRepoState == null   //TODO: "not found"
     }
 
     def "should promote closed repository e2e"() {
@@ -114,9 +114,9 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
         then:
             noExceptionThrown()
         when:
-            String repoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
+            RepositoryState receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
         then:
-            repoState == RepositoryState.RELEASED.value()
+            receivedRepoState == RepositoryState.RELEASED
     }
 
     @NotYetImplemented

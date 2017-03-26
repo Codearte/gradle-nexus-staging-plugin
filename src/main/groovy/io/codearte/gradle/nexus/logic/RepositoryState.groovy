@@ -1,6 +1,7 @@
 package io.codearte.gradle.nexus.logic
 
 import groovy.transform.CompileStatic
+import io.codearte.gradle.nexus.exception.UnsupportedRepositoryState
 
 @CompileStatic
 enum RepositoryState {
@@ -12,7 +13,16 @@ enum RepositoryState {
     RELEASED,
     NOT_FOUND
 
-    String value() {
+    @Override
+    String toString() {
         return name().toLowerCase()
+    }
+
+    static RepositoryState parseString(String stateAsString) {
+        try {
+            return valueOf(stateAsString?.toUpperCase())
+        } catch (IllegalArgumentException | NullPointerException ignored) {
+            throw new UnsupportedRepositoryState(stateAsString)
+        }
     }
 }

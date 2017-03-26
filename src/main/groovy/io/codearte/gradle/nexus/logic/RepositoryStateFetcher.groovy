@@ -10,9 +10,8 @@ import io.codearte.gradle.nexus.exception.RepositoryInTransitionException
 @Slf4j
 class RepositoryStateFetcher extends BaseOperationExecutor {
 
-    //TODO: Retyrn RepositoryState? Throw exception for unsupported/unknown state
-    //TODO: Map 404 to State.NOT_FOUND (for drop operation and drop after release)
-    String getNonTransitioningRepositoryStateById(String repoId) {
+    //TODO: Map 404 to State.NOT_FOUND (for drop and drop after release operations)
+    RepositoryState getNonTransitioningRepositoryStateById(String repoId) {
         Map<String, Object> repoResponseAsMap = getRepositoryWithId(repoId)
         parseResponseAndThrowExceptionIfInTransition(repoResponseAsMap, repoId)
         return parseRepoStateFromRepsponse(repoResponseAsMap)
@@ -31,8 +30,7 @@ class RepositoryStateFetcher extends BaseOperationExecutor {
         throw new RepositoryInTransitionException(repoId, (String)repoResponseAsMap.type)
     }
 
-    private String parseRepoStateFromRepsponse(Map<String, Object> repoResponseAsMap) {
-        //TODO: Verify that field exist
-        return (String) repoResponseAsMap.type
+    private RepositoryState parseRepoStateFromRepsponse(Map<String, Object> repoResponseAsMap) {
+        return RepositoryState.parseString((String)repoResponseAsMap.type)
     }
 }
