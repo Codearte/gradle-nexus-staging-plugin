@@ -51,8 +51,8 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
     def "should fail with meaningful exception on too many repositories in given state #state"() {
         given:
             client.get(GET_REPOSITORY_ID_FULL_URL) >> {
-                createResponseMapWithGivenRepos([aRepoInStateAndIdFull(TEST_REPOSITORY_ID, state),
-                                                 aRepoInStateAndIdFull(TEST_REPOSITORY_ID + "2", state)])
+                createResponseMapWithGivenRepos([aRepoInStateAndId(TEST_REPOSITORY_ID, state),
+                                                 aRepoInStateAndId(TEST_REPOSITORY_ID + "2", state)])
             }
         when:
             fetcher."get${state.name().toLowerCase().capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
@@ -80,14 +80,14 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
     }
 
     private Map anOpenRepo() {
-        return aRepoInStateAndIdFull(TEST_REPOSITORY_ID, RepositoryState.OPEN)
+        return aRepoInStateAndId(TEST_REPOSITORY_ID, RepositoryState.OPEN)
     }
 
     private Map aClosedRepo() {
-        return aRepoInStateAndIdFull(TEST_REPOSITORY_ID, RepositoryState.CLOSED)
+        return aRepoInStateAndId(TEST_REPOSITORY_ID, RepositoryState.CLOSED)
     }
 
     private Map aRepoInState(String state) {
-        return aRepoInStateAndIdFull(TEST_REPOSITORY_ID, RepositoryState.parseString(state))
+        return aRepoInStateAndId(TEST_REPOSITORY_ID, RepositoryState.parseString(state))
     }
 }

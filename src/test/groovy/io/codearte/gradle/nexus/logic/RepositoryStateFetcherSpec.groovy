@@ -19,7 +19,7 @@ class RepositoryStateFetcherSpec extends BaseOperationExecutorSpec implements Fe
     @SuppressWarnings("GrDeprecatedAPIUsage")
     def "should return state received from server mapped to enum"() {
         given:
-            client.get(getGetRepositoryStateFullUrlForRepoId(TEST_REPOSITORY_ID)) >> { aRepoInStateAndIdFull(TEST_REPOSITORY_ID, 'closed') }
+            client.get(getGetRepositoryStateFullUrlForRepoId(TEST_REPOSITORY_ID)) >> { aRepoInStateAndId(TEST_REPOSITORY_ID, 'closed') }
         when:
             RepositoryState repoState = repoStateFetcher.getNonTransitioningRepositoryStateById(TEST_REPOSITORY_ID)
         then:
@@ -29,7 +29,7 @@ class RepositoryStateFetcherSpec extends BaseOperationExecutorSpec implements Fe
     @SuppressWarnings("GrDeprecatedAPIUsage")
     def "should throw exception with meaningful message if unsupported or missing state"() {
         given:
-            client.get(getGetRepositoryStateFullUrlForRepoId(TEST_REPOSITORY_ID)) >> { aRepoInStateAndIdFull(TEST_REPOSITORY_ID, unsupportedState) }
+            client.get(getGetRepositoryStateFullUrlForRepoId(TEST_REPOSITORY_ID)) >> { aRepoInStateAndId(TEST_REPOSITORY_ID, unsupportedState) }
         when:
             repoStateFetcher.getNonTransitioningRepositoryStateById(TEST_REPOSITORY_ID)
         then:

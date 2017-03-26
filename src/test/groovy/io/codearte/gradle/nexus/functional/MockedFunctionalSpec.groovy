@@ -32,7 +32,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     def "should not do request for staging profile when provided in configuration on #testedTaskName task"() {
         given:
             stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
-                    createResponseMapWithGivenRepos([aRepoInStateAndIdFull(REPO_ID_1, repoTypeToReturn)]))
+                    createResponseMapWithGivenRepos([aRepoInStateAndId(REPO_ID_1, repoTypeToReturn)]))
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, repositoryStatesToGetById)
         and:
@@ -66,7 +66,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
         and:
             stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
-                    createResponseMapWithGivenRepos([aRepoInStateAndIdFull(REPO_ID_1, repoTypeToReturn)]))
+                    createResponseMapWithGivenRepos([aRepoInStateAndId(REPO_ID_1, repoTypeToReturn)]))
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, repositoryStatesToGetById)
         and:
@@ -235,7 +235,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     def "should wait on #operationName operation until transitioning is finished"() {
         given:
             stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
-                createResponseMapWithGivenRepos([aRepoInStateAndIdFull(REPO_ID_1, repoStates[0])]))
+                createResponseMapWithGivenRepos([aRepoInStateAndId(REPO_ID_1, repoStates[0])]))
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, repoStates, [true, false])
         and:
@@ -307,7 +307,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 .willReturn(aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
-                    .withBody(JsonOutput.prettyPrint(JsonOutput.toJson(aRepoInStateAndIdFull(repoId, repoState, isTransitioningList[index])))))
+                    .withBody(JsonOutput.prettyPrint(JsonOutput.toJson(aRepoInStateAndId(repoId, repoState, isTransitioningList[index])))))
                 .willSetStateTo(repoStates[index < repoStates.size() - 1 ? index + 1 : index].name()))  //TODO: Simplify/extract...
         }
     }
@@ -332,14 +332,14 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
 
     private void stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(String stagingProfileId) {
         stubGetGivenRepositoriesInFirstAndSecondCall(stagingProfileId,
-                [aRepoInStateAndIdFull(REPO_ID_1, RepositoryState.OPEN), aRepoInStateAndIdFull(REPO_ID_2, RepositoryState.CLOSED)],
-                [aRepoInStateAndIdFull(REPO_ID_1, RepositoryState.CLOSED), aRepoInStateAndIdFull(REPO_ID_2, RepositoryState.CLOSED)])
+                [aRepoInStateAndId(REPO_ID_1, RepositoryState.OPEN), aRepoInStateAndId(REPO_ID_2, RepositoryState.CLOSED)],
+                [aRepoInStateAndId(REPO_ID_1, RepositoryState.CLOSED), aRepoInStateAndId(REPO_ID_2, RepositoryState.CLOSED)])
     }
 
     private void stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(String stagingProfileId) {
         stubGetGivenRepositoriesInFirstAndSecondCall(stagingProfileId,
-                [aRepoInStateAndIdFull(REPO_ID_1, RepositoryState.OPEN)],
-                [aRepoInStateAndIdFull(REPO_ID_1, RepositoryState.CLOSED)])
+                [aRepoInStateAndId(REPO_ID_1, RepositoryState.OPEN)],
+                [aRepoInStateAndId(REPO_ID_1, RepositoryState.CLOSED)])
     }
 
     private void stubGetGivenRepositoriesInFirstAndSecondCall(String stagingProfileId, List<Map> repositoriesToReturnInFirstCall,

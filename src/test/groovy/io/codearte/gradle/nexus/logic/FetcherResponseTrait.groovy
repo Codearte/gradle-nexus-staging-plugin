@@ -7,12 +7,12 @@ trait FetcherResponseTrait {
     }
 
     @SuppressWarnings("GrDeprecatedAPIUsage")
-    Map aRepoInStateAndIdFull(String id, RepositoryState state, boolean isTransitioning = false) {
-        return aRepoInStateAndIdFull(id, state.toString(), isTransitioning)
+    Map aRepoInStateAndId(String id, RepositoryState state, boolean isTransitioning = false) {
+        return aRepoInStateAndId(id, state.toString(), isTransitioning)
     }
 
     @Deprecated //Variant with "state" as String only to reproduce issues with unsupported states
-    Map aRepoInStateAndIdFull(String id, String state, boolean isTransitioning = false) {
+    Map aRepoInStateAndId(String id, String state, boolean isTransitioning = false) {
         return [
             created: "2017-03-25T15:44:11.248Z",
             createdDate: "Sat Mar 25 15:44:11 UTC 2017",
