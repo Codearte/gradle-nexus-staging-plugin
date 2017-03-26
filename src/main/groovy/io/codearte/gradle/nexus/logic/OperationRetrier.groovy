@@ -12,11 +12,11 @@ class OperationRetrier<T> {
     public static final int DEFAULT_DELAY_BETWEEN_RETRIES_IN_MILLIS = 1000
 
     private final int numberOfRetries
-    private final int delayBetweenRetries
+    private final int delayBetweenRetriesInMillis
 
-    OperationRetrier(int numberOfRetries = DEFAULT_NUMBER_OF_RETRIES, int delayBetweenRetries = DEFAULT_DELAY_BETWEEN_RETRIES_IN_MILLIS) {
+    OperationRetrier(int numberOfRetries = DEFAULT_NUMBER_OF_RETRIES, int delayBetweenRetriesInMillis = DEFAULT_DELAY_BETWEEN_RETRIES_IN_MILLIS) {
         this.numberOfRetries = numberOfRetries
-        this.delayBetweenRetries = delayBetweenRetries
+        this.delayBetweenRetriesInMillis = delayBetweenRetriesInMillis
     }
 
     T doWithRetry(Closure<T> operation) {
@@ -30,10 +30,15 @@ class OperationRetrier<T> {
             } catch (WrongNumberOfRepositories | IllegalArgumentException e) { //Exceptions to catch could be configurable if needed
                 String message = "Attempt $counter/$numberOfAttempts failed. ${e.getClass().getSimpleName()} was thrown with message '${e.message}'"
                 if (counter >= numberOfAttempts) {
-                    log.info("$message. Giving up.")
+                    //TODO: Switch to Gradle logger and use lifecycle level
+                    log.warn("$message. Giving up. Configure longer timeout if needed.")
                     throw e
                 } else {
-                    log.info("$message. Waiting $delayBetweenRetries ms before next retry.")
+                    if (counter == 1) {
+                        //TODO: Switch to Gradle logger and use lifecycle level
+                        log.warn("Requested operation failed in first try. Retrying for maximum ${formatMaximumRetryingTime()}.")
+                    }
+                    log.info("$message. Waiting $delayBetweenRetriesInMillis ms before next retry.")
                     waitBeforeNextAttempt()
                 }
             }
@@ -44,6 +49,10 @@ class OperationRetrier<T> {
     @PackageScope
     void waitBeforeNextAttempt() {
         //sleep() hangs the thread, but in that case it doesn't matter - switch to https://github.com/nurkiewicz/async-retry/ if really needed
-        sleep(delayBetweenRetries)
+        sleep(delayBetweenRetriesInMillis)
+    }
+
+    private String formatMaximumRetryingTime() {
+        return "${numberOfRetries * delayBetweenRetriesInMillis / 1000} seconds"
     }
 }
