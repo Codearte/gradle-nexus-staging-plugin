@@ -4,6 +4,7 @@
  - Re-enable sharing stagingRepositoryId between close and promote - [#46](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/46)
  - Basic functional tests with different Gradle versions - [#41](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/41)
  - Suggest longer timeout if failed on time related operations even without `--info` enabled - [#34](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/34) 
+ - Longer default retry period  - [#12](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/12)
 
 0.6.1 - 2017-03-20
 
