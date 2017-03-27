@@ -21,7 +21,7 @@ class MockedResponseErrorHandlingSpec extends Specification {
 
     private static final String TEST_MOCKED_USERNAME = ''
     private static final String TEST_MOCKED_PASSWORD = ''
-    private static final String TEST_MOCKED_STAGING_PROFILE_ID = "93c08fdebde1ff"
+    private static final String TEST_MOCKED_STAGING_PROFILE_ID = "5027d084a01a3a"
     private static final String TEST_MOCKED_NOT_EXISTING_REPOSITORY_ID = "xxx"
     private static final String TEST_MOCKED_SERVER_ERROR_JSON_RESPONSE = """
                         {

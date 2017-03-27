@@ -4,6 +4,9 @@ import groovy.transform.CompileStatic
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
 import io.codearte.gradle.nexus.logic.RepositoryPromoter
+import io.codearte.gradle.nexus.logic.RepositoryState
+import io.codearte.gradle.nexus.logic.RepositoryStateFetcher
+import io.codearte.gradle.nexus.logic.RetryingRepositoryTransitioner
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
 import org.gradle.api.tasks.TaskAction
 
@@ -14,13 +17,13 @@ class PromoteRepositoryTask extends BaseStagingTask {
     void doAction() {
         StagingProfileFetcher stagingProfileFetcher = createFetcherWithGivenClient(createClient())
         RepositoryFetcher repositoryFetcher = createRepositoryFetcherWithGivenClient(createClient())
-        RepositoryPromoter repositoryPromoter = createRepositoryPromoterWithGivenClient(createClient())
 
         tryToTakeStagingProfileIdFromCloseRepositoryTask()
         String stagingProfileId = fetchAndCacheStagingProfileId(stagingProfileFetcher)
 
         String repositoryId = getRepositoryIdFromCloseTaskOrFromServer(stagingProfileId, repositoryFetcher)
-        repositoryPromoter.promoteRepositoryWithIdAndStagingProfileId(repositoryId, stagingProfileId)
+
+        promoteRepositoryByIdAndProfileIdWithRetrying(repositoryId, stagingProfileId)
     }
 
     private void tryToTakeStagingProfileIdFromCloseRepositoryTask() {
@@ -40,10 +43,23 @@ class PromoteRepositoryTask extends BaseStagingTask {
     }
 
     private String getRepositoryIdFromCloseTaskOrFromServer(String stagingProfileId, RepositoryFetcher repositoryFetcher) {
-        //TODO: Add debug statement
+        String repositoryIdFromCloseTask = getCloseRepositoryTask().stagingRepositoryId
+        if (repositoryIdFromCloseTask != null) {
+            logger.debug("Reusing staging repository id from closeRepository task: $repositoryIdFromCloseTask")
+            return repositoryIdFromCloseTask
+        }
+
         OperationRetrier<String> retrier = createOperationRetrier()
-        String repositoryId = /*getCloseRepositoryTask().stagingRepositoryId ?:*/   //Temporary disabled due to https://github.com/Codearte/gradle-nexus-staging-plugin/issues/44
-                retrier.doWithRetry { repositoryFetcher.getClosedRepositoryIdForStagingProfileId(stagingProfileId) }
-        return repositoryId
+        return retrier.doWithRetry { repositoryFetcher.getClosedRepositoryIdForStagingProfileId(stagingProfileId) }
+    }
+
+    private void promoteRepositoryByIdAndProfileIdWithRetrying(String repositoryId, String stagingProfileId) {
+        RepositoryPromoter repositoryPromoter = createRepositoryPromoterWithGivenClient(createClient())
+        RepositoryStateFetcher repositoryStateFetcher = createRepositoryStateFetcherWithGivenClient(createClient())
+        OperationRetrier<RepositoryState> retrier = createOperationRetrier()
+        RetryingRepositoryTransitioner retryingPromoter = new RetryingRepositoryTransitioner(repositoryPromoter, repositoryStateFetcher, retrier)
+
+        retryingPromoter.performWithRepositoryIdAndStagingProfileId(repositoryId, stagingProfileId)
+        logger.info("Repository '$repositoryId' has been effectively released/promoted")
     }
 }

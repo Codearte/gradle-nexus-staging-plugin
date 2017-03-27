@@ -1,3 +1,10 @@
+0.7.0 - 2017-03-27
+
+ - Verify that repository has been really closed - [#21](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/21)
+ - Re-enable sharing stagingRepositoryId between close and promote - [#46](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/46)
+ - Basic functional tests with different Gradle versions - [#41](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/41)
+ - Suggest longer timeout if failed on time related operations even without `--info` enabled - [#34](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/34) 
+
 0.6.1 - 2017-03-20
 
  - Reusing `stagingRepositoryId` from close task bypasses retry mechanism and fails - [#44](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/44) - reusing `stagingRepositoryId` is temporary disabled
@@ -10,7 +17,7 @@
 
 0.5.3 - 2015-06-13
 
- - `packageGroup` should be taken from project.group by default - [#11](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/11) 
+ - `packageGroup` should be taken from project.group by default - [#11](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/11)
 
 0.5.2 - 2015-06-09
 
@@ -19,7 +26,7 @@
 
 0.5.1 - 2015-03-08
 
- - Credentials should be automatically fetched from configured deployer - [#7](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/7) 
+ - Credentials should be automatically fetched from configured deployer - [#7](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/7)
  - Credentials should be automatically fetched from Gradle properties (when available) - [#6](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/6)
 
 0.5.0 - 2015-03-02

@@ -31,6 +31,7 @@ class SimplifiedHttpJsonRestClient {
     Map get(String uri) {
         setUriAndAuthentication(uri)
         Map params = createAndInitializeCallParametersMap()
+        log.debug("GET request URL: ${uri}")
         HttpResponseDecorator response = (HttpResponseDecorator)restClient.get(params)
         log.debug("GET response data: ${response.data}")
         return (Map)response.data

@@ -9,12 +9,18 @@ import org.gradle.api.Incubating
 @InheritConstructors
 @Slf4j
 @Incubating
-class RepositoryDropper extends AbstractStagingOperationExecutor {
+class RepositoryDropper extends AbstractRepositoryTransitioner {
 
-    void dropRepositoryWithIdAndStagingProfileId(String repositoryId, String stagingProfileId) {
+    @Override
+    void performWithRepositoryIdAndStagingProfileId(String repositoryId, String stagingProfileId) {
         log.info("Droping repository '$repositoryId' with staging profile '$stagingProfileId'")
         Map<String, Map> postContent = prepareStagingPostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId)
         client.post(nexusUrl + "/staging/profiles/$stagingProfileId/drop", postContent)
         log.info("Repository '$repositoryId' with staging profile '$stagingProfileId' has been dropped")
+    }
+
+    @Override
+    RepositoryState desiredAfterTransitionRepositoryState() {
+        throw new UnsupportedOperationException("Not implemented yet")
     }
 }

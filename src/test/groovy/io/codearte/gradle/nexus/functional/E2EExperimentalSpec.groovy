@@ -4,12 +4,15 @@ import groovy.transform.NotYetImplemented
 import groovyx.net.http.RESTClient
 import io.codearte.gradle.nexus.FunctionalTestHelperTrait
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
-import io.codearte.gradle.nexus.infra.WrongNumberOfRepositories
+import io.codearte.gradle.nexus.logic.RepositoryStateFetcher
+import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
 import io.codearte.gradle.nexus.logic.RepositoryDropper
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
 import io.codearte.gradle.nexus.logic.RepositoryPromoter
+import io.codearte.gradle.nexus.logic.RepositoryState
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
+import io.codearte.gradle.nexus.logic.RetryingRepositoryTransitioner
 import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -20,11 +23,15 @@ import spock.lang.Stepwise
 class E2EExperimentalSpec extends Specification implements FunctionalTestHelperTrait {
 
     private SimplifiedHttpJsonRestClient client
+    private RepositoryStateFetcher repoStateFetcher
+    private OperationRetrier<RepositoryState> retrier
 
     private static String resolvedStagingRepositoryId
 
     def setup() {
         client = new SimplifiedHttpJsonRestClient(new RESTClient(), getNexusUsernameAT(), tryToReadNexusPasswordAT())
+        repoStateFetcher = new RepositoryStateFetcher(client, E2E_SERVER_BASE_PATH)
+        retrier = new OperationRetrier<>()
     }
 
     @NotYetImplemented
@@ -54,42 +61,46 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
             propagateStagingRepositoryIdToAnotherTest(stagingRepositoryId)
     }
 
-    def "should close open repository e2e"() {
+    def "should get not in transition open repository state by repository id from server e2e"() {
+        given:
+            assert resolvedStagingRepositoryId
+        when:
+            RepositoryState receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
+        then:
+            receivedRepoState == RepositoryState.OPEN
+    }
+
+    def "should close open repository waiting for transition to finish e2e"() {
         given:
             assert resolvedStagingRepositoryId
         and:
             RepositoryCloser closer = new RepositoryCloser(client, E2E_SERVER_BASE_PATH)
-            RepositoryFetcher fetcher = new RepositoryFetcher(client, E2E_SERVER_BASE_PATH)
+            RetryingRepositoryTransitioner retryingCloser = new RetryingRepositoryTransitioner(closer, repoStateFetcher, retrier)
         when:
-            closer.closeRepositoryWithIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
+            retryingCloser.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
         then:
             noExceptionThrown()
-        when:
-            waitForOperationToFinish()
         and:
-            String closedRepositoryId = fetcher.getClosedRepositoryIdForStagingProfileId(E2E_STAGING_PROFILE_ID)
+            RepositoryState receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
         then:
-            closedRepositoryId == resolvedStagingRepositoryId
+            receivedRepoState == RepositoryState.CLOSED
     }
 
-    @Ignore
+    @Ignore //Not implemented yet
     def "should drop open repository e2e"() {
         given:
             assert resolvedStagingRepositoryId
         and:
             RepositoryDropper dropper = new RepositoryDropper(client, E2E_SERVER_BASE_PATH)
-            RepositoryFetcher fetcher = new RepositoryFetcher(client, E2E_SERVER_BASE_PATH)
+            RetryingRepositoryTransitioner retryingDropper = new RetryingRepositoryTransitioner(dropper, repoStateFetcher, retrier)
         when:
-            dropper.dropRepositoryWithIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
+            retryingDropper.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
         then:
             noExceptionThrown()
         when:
-            waitForOperationToFinish()
-        and:
-            fetcher.getOpenRepositoryIdForStagingProfileId(E2E_STAGING_PROFILE_ID)
+            RepositoryState receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
         then:
-            WrongNumberOfRepositories e = thrown()
-            e.numberOfRepositories == 0
+            receivedRepoState == null   //TODO: "not found"
     }
 
     def "should promote closed repository e2e"() {
@@ -97,10 +108,15 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
             assert resolvedStagingRepositoryId
         and:
             RepositoryPromoter promoter = new RepositoryPromoter(client, E2E_SERVER_BASE_PATH)
+            RetryingRepositoryTransitioner retryingPromoter = new RetryingRepositoryTransitioner(promoter, repoStateFetcher, retrier)
         when:
-            promoter.promoteRepositoryWithIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
+            retryingPromoter.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
         then:
             noExceptionThrown()
+        when:
+            RepositoryState receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
+        then:
+            receivedRepoState == RepositoryState.RELEASED
     }
 
     @NotYetImplemented
@@ -108,9 +124,5 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
 
     private void propagateStagingRepositoryIdToAnotherTest(String stagingRepositoryId) {
         resolvedStagingRepositoryId = stagingRepositoryId
-    }
-    
-    private void waitForOperationToFinish() {
-        sleep(6000)     //TODO: until waiting for "transition complete" is not implemented - https://github.com/Codearte/gradle-nexus-staging-plugin/issues/21
     }
 }
