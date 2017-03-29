@@ -7,7 +7,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
-        classpath 'pl.allegro.tech.build:axion-release-plugin:1.2.3'
+        classpath 'pl.allegro.tech.build:axion-release-plugin:1.5.0'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.7.0'
         classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.3.0'
         classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
@@ -27,11 +27,11 @@ scmVersion {
         prefix = 'release'
         versionSeparator = '/'
     }
-    createReleaseCommit = true
     releaseCommitMessage { version, position -> "Release version: ${version}\n\n[ci skip]" }
     hooks {
         pre 'fileUpdate', [file: 'README.md', pattern: {v, p -> /"io\.codearte\.gradle\.nexus:gradle-nexus-staging-plugin:.*"/},
                            replacement: {v, p -> "\"io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$v\""}]
+        pre 'commit', { version, position -> "Release version: ${version}\n\n[ci skip]" }
     }
 }
 
