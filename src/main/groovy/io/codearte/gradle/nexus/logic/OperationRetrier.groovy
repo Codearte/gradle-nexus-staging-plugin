@@ -1,6 +1,5 @@
 package io.codearte.gradle.nexus.logic
 
-import com.google.common.annotations.VisibleForTesting
 import groovy.transform.PackageScope
 import groovy.util.logging.Slf4j
 import io.codearte.gradle.nexus.exception.RepositoryInTransitionException
@@ -47,7 +46,7 @@ class OperationRetrier<T> {
         }
     }
 
-    @VisibleForTesting
+    //visible for testing
     @PackageScope
     void waitBeforeNextAttempt() {
         //sleep() hangs the thread, but in that case it doesn't matter - switch to https://github.com/nurkiewicz/async-retry/ if really needed

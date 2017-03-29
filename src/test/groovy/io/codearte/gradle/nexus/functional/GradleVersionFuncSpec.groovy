@@ -4,6 +4,7 @@ import com.google.common.base.Predicate
 import com.google.common.base.Predicates
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
+import spock.util.Exceptions
 
 /**
  * Verifies that plugin doesn't fail during Gradle initialization (e.g. due to ClassCastException error) with different "supported" Gradle versions.
@@ -26,7 +27,10 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec {
             result.wasExecuted(':getStagingProfile')
         and:
             result.failure.cause.message.contains("Execution failed for task ':getStagingProfile'")
-            result.failure.cause.cause.message.contains("HttpHostConnectException: Connection to http://localhost:61942 refused")
+            Exceptions.getRootCause(result.failure).with {
+                getClass() == ConnectException
+                message.contains("Connection refused")
+            }
         where:
             requestedGradleVersion << resolveRequestedGradleVersions()
     }
