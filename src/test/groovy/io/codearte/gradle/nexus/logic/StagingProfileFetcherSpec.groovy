@@ -1,11 +1,10 @@
 package io.codearte.gradle.nexus.logic
 
 import groovy.json.JsonSlurper
-import io.codearte.gradle.nexus.FunctionalTestHelperTrait
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.infra.WrongNumberOfStagingProfiles
 
-class StagingProfileFetcherSpec extends BaseOperationExecutorSpec implements FunctionalTestHelperTrait {
+class StagingProfileFetcherSpec extends BaseOperationExecutorSpec {
 
     private static final String GET_STAGING_PROFILES_PATH = "/staging/profiles"
     private static final String GET_STAGING_PROFILES_FULL_URL = MOCK_SERVER_HOST + GET_STAGING_PROFILES_PATH

@@ -44,6 +44,14 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    funcTest {
+        java.srcDir file('src/funcTest/java')
+        groovy.srcDir file('src/funcTest/groovy')
+        resources.srcDir file('src/funcTest/resources')
+    }
+}
+
 dependencies {
     compile gradleApi()
     compile localGroovy()
@@ -54,14 +62,44 @@ dependencies {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
+    testCompile 'org.objenesis:objenesis:2.5.1'
     testCompile 'cglib:cglib-nodep:3.2.5'   //for Spying in Spock
+
     testCompile 'junit:junit:4.12'
 
-    /*funcT*/testCompile('com.netflix.nebula:nebula-test:6.0.0') {
+    funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
+    funcTestCompile sourceSets.test.output  //to depends on common unit and integration helper classes
+    funcTestCompile configurations.testCompile
+    funcTestRuntime configurations.testRuntime
+    funcTestCompile('com.netflix.nebula:nebula-test:6.0.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-    /*funcT*/testCompile 'com.github.tomakehurst:wiremock:1.50' //1.54+ makes GroovyBuilder to fail with parsing empty response on POST
+    funcTestCompile 'com.github.tomakehurst:wiremock:1.50' //1.54+ makes GroovyBuilder to fail with parsing empty response on POST
+
     signature 'org.codehaus.mojo.signature:java17:1.0@signature'
+}
+
+//noinspection GroovyAssignabilityCheck
+task funcTest(type: Test) {
+    description = 'Run the functional tests.'
+    group = 'Verification'
+
+    testClassesDir = sourceSets.funcTest.output.classesDir
+    classpath = sourceSets.funcTest.runtimeClasspath
+
+    reports.html {
+        destination = file("${reporting.baseDir}/funcTests")
+    }
+}
+
+funcTest.shouldRunAfter test
+check.shouldRunAfter funcTest
+check.dependsOn funcTestClasses
+uploadArchives.dependsOn funcTest, check
+
+task testReport(type: TestReport) {
+    destinationDir = file("$buildDir/reports/allTests")
+    reportOn test, funcTest
 }
 
 tasks.withType(ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer) {
