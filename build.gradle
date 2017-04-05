@@ -28,7 +28,7 @@ scmVersion {
         versionSeparator = '/'
     }
     versionIncrementer 'incrementMinor'
-    releaseCommitMessage { version, position -> "Release version: ${version}\n\n[ci skip]" }
+    releaseCommitMessage = { version, position -> "Release version: ${version}\n\n[ci skip]" }
     hooks {
         pre 'fileUpdate', [file: 'README.md', pattern: {v, p -> /"io\.codearte\.gradle\.nexus:gradle-nexus-staging-plugin:.*"/},
                            replacement: {v, p -> "\"io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$v\""}]
