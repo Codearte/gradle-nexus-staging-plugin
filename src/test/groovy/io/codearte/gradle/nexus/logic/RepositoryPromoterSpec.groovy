@@ -9,10 +9,10 @@ class RepositoryPromoterSpec extends BaseOperationExecutorSpec {
 
     def "should promote repository"() {
         given:
-            def client = Mock(SimplifiedHttpJsonRestClient)
-            def closer = new RepositoryPromoter(client, MOCK_SERVER_HOST)
+            SimplifiedHttpJsonRestClient client = Mock()
+            RepositoryPromoter promoter = new RepositoryPromoter(client, MOCK_SERVER_HOST)
         when:
-            closer.performWithRepositoryIdAndStagingProfileId(TEST_REPOSITORY_ID, TEST_STAGING_PROFILE_ID)
+            promoter.performWithRepositoryIdAndStagingProfileId(TEST_REPOSITORY_ID, TEST_STAGING_PROFILE_ID)
         then:
             1 * client.post(PROMOTE_REPOSITORY_FULL_URL, _) >> { uri, content ->
                 assert content == new JsonSlurper().parse(this.getClass().getResource("commonStagingRepositoryRequest.json"))

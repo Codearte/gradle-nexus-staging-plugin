@@ -12,7 +12,7 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
     private RepositoryFetcher fetcher
 
     void setup() {
-        client = Mock(SimplifiedHttpJsonRestClient)
+        client = Mock()
         fetcher = new RepositoryFetcher(client, MOCK_SERVER_HOST)
     }
 
@@ -40,7 +40,7 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
         when:
             fetcher."get${state.capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
         then:
-            def e = thrown(WrongNumberOfRepositories)
+            WrongNumberOfRepositories e = thrown()
             e.message == "Wrong number of received repositories in state '$state'. Expected 1, received 0".toString()
             e.numberOfRepositories == 0
             e.state == state
@@ -57,7 +57,7 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
         when:
             fetcher."get${state.name().toLowerCase().capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
         then:
-            def e = thrown(WrongNumberOfRepositories)
+            WrongNumberOfRepositories e = thrown()
             e.message == "Wrong number of received repositories in state '$state'. Expected 1, received 2".toString()
             e.numberOfRepositories == 2
             e.state == state.toString()
@@ -71,7 +71,7 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
         when:
             fetcher."get${expectedState.capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
         then:
-            def e = thrown(WrongNumberOfRepositories)
+            WrongNumberOfRepositories e = thrown()
             e.message == "Wrong number of received repositories in state '$expectedState'. Expected 1, received 0".toString()
         where:
             expectedState | receivedState

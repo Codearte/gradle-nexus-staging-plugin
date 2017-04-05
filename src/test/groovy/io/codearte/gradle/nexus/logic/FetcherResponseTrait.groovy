@@ -1,5 +1,8 @@
 package io.codearte.gradle.nexus.logic
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 trait FetcherResponseTrait {
 
     Map createResponseMapWithGivenRepos(List<Map> repositories) {
