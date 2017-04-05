@@ -1,7 +1,7 @@
 package io.codearte.gradle.nexus.logic
 
-import groovy.transform.NotYetImplemented
 import io.codearte.gradle.nexus.exception.UnsupportedRepositoryState
+import io.codearte.gradle.nexus.infra.NexusHttpResponseException
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 
 class RepositoryStateFetcherSpec extends BaseOperationExecutorSpec implements FetcherResponseTrait {
@@ -39,8 +39,15 @@ class RepositoryStateFetcherSpec extends BaseOperationExecutorSpec implements Fe
             unsupportedState << ['completely wrong', null]
     }
 
-    @NotYetImplemented
-    def "should map 404 error from server to NOT_FOUND state"() {   //needed for 'drop' or 'dropAfterRelease' operations
+    def "should map 404 error from server to NOT_FOUND state"() {
+        given:
+            client.get(getGetRepositoryStateFullUrlForRepoId(TEST_REPOSITORY_ID)) >> {
+                throw new NexusHttpResponseException(404, "404: Not Found, body: ${aNotFoundRepo(TEST_REPOSITORY_ID)}", null)
+            }
+        when:
+            RepositoryState repoState = repoStateFetcher.getNonTransitioningRepositoryStateById(TEST_REPOSITORY_ID)
+        then:
+            repoState == RepositoryState.NOT_FOUND
     }
 
     private String getGetRepositoryStateFullUrlForRepoId(String repoId) {

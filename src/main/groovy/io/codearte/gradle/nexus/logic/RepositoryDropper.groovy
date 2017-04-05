@@ -20,7 +20,7 @@ class RepositoryDropper extends AbstractRepositoryTransitioner {
     }
 
     @Override
-    RepositoryState desiredAfterTransitionRepositoryState() {
+    List<RepositoryState> desiredAfterTransitionRepositoryState() {
         throw new UnsupportedOperationException("Not implemented yet")
     }
 }

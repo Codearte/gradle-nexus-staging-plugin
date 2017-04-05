@@ -31,10 +31,16 @@ class SimplifiedHttpJsonRestClient {
     Map get(String uri) {
         setUriAndAuthentication(uri)
         Map params = createAndInitializeCallParametersMap()
-        log.debug("GET request URL: ${uri}")
-        HttpResponseDecorator response = (HttpResponseDecorator)restClient.get(params)
-        log.debug("GET response data: ${response.data}")
-        return (Map)response.data
+        try {
+            log.debug("GET request URL: $uri")
+            HttpResponseDecorator response = (HttpResponseDecorator)restClient.get(params)
+            return (Map) response.data
+        } catch (HttpResponseException e) {
+            HttpResponseDecorator resp = e.getResponse();
+            String message = "${resp.statusLine.statusCode}: ${resp.statusLine.reasonPhrase}, body: ${resp.data}"
+            log.warn("GET request failed. ${message}")
+            throw new NexusHttpResponseException(e.getStatusCode(), message, e)
+        }
     }
 
     private Map createAndInitializeCallParametersMap() {    //New for every call - it is cleared up after call by RESTClient
@@ -53,6 +59,7 @@ class SimplifiedHttpJsonRestClient {
         Map params = createAndInitializeCallParametersMap()
         params.body = content
         try {
+            log.debug("POST request URL: $uri")
             log.debug("POST request content: $content")
             HttpResponseDecorator response = (HttpResponseDecorator) restClient.post(params)
             log.debug("POST response status ${response.status}, data: ${response.data}")

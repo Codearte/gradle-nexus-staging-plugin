@@ -24,7 +24,7 @@ class RepositoryPromoter extends AbstractRepositoryTransitioner {
     }
 
     @Override
-    RepositoryState desiredAfterTransitionRepositoryState() {
-        return RepositoryState.RELEASED
+    List<RepositoryState> desiredAfterTransitionRepositoryState() {
+        return [RepositoryState.RELEASED, RepositoryState.NOT_FOUND]
     }
 }

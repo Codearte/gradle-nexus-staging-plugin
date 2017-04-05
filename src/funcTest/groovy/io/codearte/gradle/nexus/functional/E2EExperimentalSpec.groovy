@@ -100,10 +100,10 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
         when:
             RepositoryState receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
         then:
-            receivedRepoState == null   //TODO: "not found"
+            receivedRepoState == RepositoryState.NOT_FOUND
     }
 
-    def "should promote closed repository e2e"() {
+    def "should promote closed repository with auto drop e2e"() {
         given:
             assert resolvedStagingRepositoryId
         and:
@@ -116,7 +116,7 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
         when:
             RepositoryState receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
         then:
-            receivedRepoState == RepositoryState.RELEASED
+            receivedRepoState == RepositoryState.NOT_FOUND
     }
 
     @NotYetImplemented

@@ -23,7 +23,7 @@ class RepositoryCloser extends AbstractRepositoryTransitioner {
     }
 
     @Override
-    RepositoryState desiredAfterTransitionRepositoryState() {
-        return RepositoryState.CLOSED
+    List<RepositoryState> desiredAfterTransitionRepositoryState() {
+        return [RepositoryState.CLOSED]
     }
 }

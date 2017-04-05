@@ -41,4 +41,12 @@ trait FetcherResponseTrait {
             userId: "nexus-at"
         ]
     }
+
+    Map aNotFoundRepo(String id) {
+        return [
+            errors: [
+                    [id: "*", msg: "No such repository: $id"]
+            ]
+        ]
+    }
 }

@@ -22,7 +22,7 @@ class RetryingRepositoryTransitioner {
     void performWithRepositoryIdAndStagingProfileId(String repoId, String stagingProfileId) {
         repositoryTransitioner.performWithRepositoryIdAndStagingProfileId(repoId, stagingProfileId)
         RepositoryState state = retrier.doWithRetry { repositoryStateFetcher.getNonTransitioningRepositoryStateById(repoId) }
-        if (state != repositoryTransitioner.desiredAfterTransitionRepositoryState()) {
+        if (!repositoryTransitioner.desiredAfterTransitionRepositoryState().contains(state)) {
             throw new UnexpectedRepositoryState(repoId, state, repositoryTransitioner.desiredAfterTransitionRepositoryState())
         }
     }
