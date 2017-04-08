@@ -184,12 +184,17 @@ class NexusStagingPlugin implements Plugin<Project> {
             createDeprecatedTaskDependingOnNewOne(project, CLOSE_AND_RELEASE_REPOSITORY_OLD_TASK_NAME, CLOSE_AND_RELEASE_REPOSITORY_TASK_NAME)
         }
 
-        private Task createDeprecatedTaskDependingOnNewOne(Project project, String depreacatedTaskName, String newTaskName) {
-            project.tasks.create(depreacatedTaskName).with {
-                description = "This task is DEPRECATED. Use '${newTaskName}' instead."
+        private void createDeprecatedTaskDependingOnNewOne(Project project, String deprecatedTaskName, String newTaskName) {
+            project.tasks.create(deprecatedTaskName).with { task ->
+                description = "DEPRECATION WARNING. This task is DEPRECATED. Use '$newTaskName' instead."
                 group = "release"
                 dependsOn project.tasks.getByName(newTaskName)
-                //TODO: Add warning message
+
+                project.gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
+                    if (taskGraph.hasTask(task)) {
+                        log.warn("DEPRECATION WARNING. Task '$deprecatedTaskName' is deprecated. Switch to '$newTaskName'.")
+                    }
+                }
             }
         }
     }
