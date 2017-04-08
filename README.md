@@ -118,10 +118,18 @@ situation.
 
 ## Additional information 
 
-**The released version is available as a technology preview and it definitely will be evolving breaking backward compatibility. Please take it into
-account before using it in production.**
+[gradle-nexus-staging-plugin](https://github.com/Codearte/gradle-nexus-staging-plugin) was written by Marcin Zajączkowski
+with the help of the [contributors](https://github.com/Codearte/gradle-nexus-staging-plugin/graphs/contributors).
+The author can be contacted directly via email: `mszpak ATT wp DOTT pl`.
+There is also Marcin's blog available: [Solid Soft](http://blog.solidsoft.info) - working code is not enough.
 
-Project [changelog](https://github.com/Codearte/gradle-nexus-staging-plugin/releases)
+The PoC leading to the initial version of the plugin was brought to life during one of the hackathons held at [Codearte](http://codearte.io/). 
+
+The first version of the project has been released in 2015 and the plugin seems to be quite stable. Nevertheless, documentation for the Nexus
+staging REST API and in addition Gradle support for uploading artifacts to selected Nexus staging repositories leaves much to be desired.
+Therefore, the current plugin version is still before 1.0.0.
+
+The project [changelog](https://github.com/Codearte/gradle-nexus-staging-plugin/releases).
 
 The plugin is licensed under the terms of [the Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
