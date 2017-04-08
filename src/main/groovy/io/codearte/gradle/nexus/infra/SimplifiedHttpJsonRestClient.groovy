@@ -45,7 +45,7 @@ class SimplifiedHttpJsonRestClient {
             return prepareAndSendRequest(uri, content, clientMethodHandler, requestTypeName)
         } catch (HttpResponseException e) {
             HttpResponseDecorator resp = e.getResponse();
-            String message = "${resp.statusLine.statusCode}: ${resp.statusLine.reasonPhrase}, body: ${resp.data}"
+            String message = "${resp.statusLine.statusCode}: ${resp.statusLine.reasonPhrase}, body: ${resp.data ?: '<empty>'}"
             //TODO: Suppress error message on 404 if waiting for drop?
             log.warn("$requestTypeName request failed. ${message}")
             throw new NexusHttpResponseException(e.getStatusCode(), message, e)
