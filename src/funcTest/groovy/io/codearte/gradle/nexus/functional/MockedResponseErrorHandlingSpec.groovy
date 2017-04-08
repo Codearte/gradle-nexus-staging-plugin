@@ -45,7 +45,7 @@ class MockedResponseErrorHandlingSpec extends Specification {
             SimplifiedHttpJsonRestClient client = new SimplifiedHttpJsonRestClient(new RESTClient(), TEST_MOCKED_USERNAME, TEST_MOCKED_PASSWORD)
             RepositoryCloser closer = new RepositoryCloser(client, mockedUrl)
         and:
-            stubFor(post(urlEqualTo("/staging/profiles/$TEST_MOCKED_STAGING_PROFILE_ID/finish"))
+            stubFor(post(urlEqualTo("/staging/bulk/close"))
                     .withHeader("Content-Type", equalTo("application/json"))
                     .withHeader("Accept", containing("application/json"))
                     .willReturn(aResponse()

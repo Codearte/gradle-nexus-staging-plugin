@@ -6,18 +6,18 @@ import spock.lang.Specification
 
 class OperationRetrierSpec extends Specification {
 
-    private OperationRetrier<String> sut
+    private OperationRetrier<String> retrier
 
     void setup() {
-        sut = new OperationRetrier<String>(2, 0)
+        retrier = new OperationRetrier<String>(2, 0)
     }
 
     def "should retry operation and pass returned value on #exceptionToThrow.class.simpleName"() {
         given:
-            def fetcherMock = Mock(RepositoryFetcher)
+            RepositoryFetcher fetcherMock = Mock()
             int counter = 0
         when:
-            String returnedValue = sut.doWithRetry { fetcherMock.getClosedRepositoryIdForStagingProfileId("profileId") }
+            String returnedValue = retrier.doWithRetry { fetcherMock.getClosedRepositoryIdForStagingProfileId("profileId") }
         then:
             2 * fetcherMock.getClosedRepositoryIdForStagingProfileId(_) >> {
                 if (counter++ == 0) {
@@ -35,9 +35,9 @@ class OperationRetrierSpec extends Specification {
 
     def "should propagate original exception on too many retry attempts"() {
         given:
-            def fetcherMock = Mock(RepositoryFetcher)
+            RepositoryFetcher fetcherMock = Mock()
         when:
-            sut.doWithRetry { fetcherMock.getClosedRepositoryIdForStagingProfileId("profileId") }
+            retrier.doWithRetry { fetcherMock.getClosedRepositoryIdForStagingProfileId("profileId") }
         then:
             3 * fetcherMock.getClosedRepositoryIdForStagingProfileId(_) >> {
                 throw new WrongNumberOfRepositories(0, "open")
@@ -48,9 +48,9 @@ class OperationRetrierSpec extends Specification {
 
     def "should fail immediately on other exception"() {
         given:
-            def fetcherMock = Mock(RepositoryFetcher)
+            RepositoryFetcher fetcherMock = Mock()
         when:
-            sut.doWithRetry { fetcherMock.getClosedRepositoryIdForStagingProfileId("profileId") }
+            retrier.doWithRetry { fetcherMock.getClosedRepositoryIdForStagingProfileId("profileId") }
         then:
             1 * fetcherMock.getClosedRepositoryIdForStagingProfileId(_) >> {
                 throw new NullPointerException()

@@ -11,7 +11,7 @@ class StagingProfileFetcherSpec extends BaseOperationExecutorSpec {
 
     def "should get staging profile id from server"() {
         given:
-            def client = Mock(SimplifiedHttpJsonRestClient)
+            SimplifiedHttpJsonRestClient client = Mock()
             client.get(GET_STAGING_PROFILES_FULL_URL) >> {
                 new JsonSlurper().parse(this.getClass().getResource("2stagingProfilesShrunkResponse.json"))
             }
@@ -19,13 +19,12 @@ class StagingProfileFetcherSpec extends BaseOperationExecutorSpec {
         when:
             String stagingProfileId = fetcher.getStagingProfileIdForPackageGroup("io.codearte")
         then:
-            println stagingProfileId
             stagingProfileId == TEST_STAGING_PROFILE_ID
     }
 
     def "should throw meaningful exception for not matching profiles for package group"() {
         given:
-            def client = Mock(SimplifiedHttpJsonRestClient)
+            SimplifiedHttpJsonRestClient client = Mock()
             client.get(GET_STAGING_PROFILES_FULL_URL) >> {
                 [data: [[id: 1, name: "other1"], [id: 2, name: "other2"]]]
             }
@@ -33,14 +32,14 @@ class StagingProfileFetcherSpec extends BaseOperationExecutorSpec {
         when:
             fetcher.getStagingProfileIdForPackageGroup("wrongGroup")
         then:
-            def e = thrown(WrongNumberOfStagingProfiles)
+            WrongNumberOfStagingProfiles e = thrown()
             e.packageGroup == "wrongGroup"
             e.numberOfProfiles == 0
     }
 
     def "should throw meaningful exception for too many matching profiles for package group"() {
         given:
-            def client = Mock(SimplifiedHttpJsonRestClient)
+            SimplifiedHttpJsonRestClient client = Mock()
             client.get(GET_STAGING_PROFILES_FULL_URL) >> {
                 [data: [[id: 1, name: "tooMuch"], [id: 2, name: "tooMuch"]]]
             }
@@ -48,7 +47,7 @@ class StagingProfileFetcherSpec extends BaseOperationExecutorSpec {
         when:
             fetcher.getStagingProfileIdForPackageGroup("tooMuch")
         then:
-            def e = thrown(WrongNumberOfStagingProfiles)
+            WrongNumberOfStagingProfiles e = thrown()
             e.packageGroup == "tooMuch"
             e.numberOfProfiles == 2
     }

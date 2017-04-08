@@ -1,5 +1,8 @@
 package io.codearte.gradle.nexus.logic
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 trait FetcherResponseTrait {
 
     Map createResponseMapWithGivenRepos(List<Map> repositories) {
@@ -36,6 +39,14 @@ trait FetcherResponseTrait {
             updatedTimestamp: 1490456887342,
             userAgent: "Aether",
             userId: "nexus-at"
+        ]
+    }
+
+    Map aNotFoundRepo(String id) {
+        return [
+            errors: [
+                    [id: "*", msg: "No such repository: $id"]
+            ]
         ]
     }
 }

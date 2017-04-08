@@ -50,41 +50,45 @@ The plugin itself does not upload any artifacts. It only closes/promotes a repos
 
 The plugin provides three main tasks:
 
- - `closeRepository` - closes open repository with uploaded artifacts. There should be just one open repository available in the staging profile
-(possible old/broken repositories can be dropped with Nexus GUI)
- - `promoteRepository` - promotes/releases closed repository (required to put artifacts to Maven Central)
- - `closeAndPromoteRepository` - closes and promotes/releases repository (an equivalent to `closeRepository promoteRepository`)
+ - `closeRepository` - closes an open repository with the uploaded artifacts. There should be just one open repository available in the staging
+ profile (possible old/broken repositories can be dropped with Nexus GUI)
+ - `releaseRepository` - releases a closed repository (required to put artifacts to Maven Central aka The Central Repository)
+ - `closeAndReleaseRepository` - closes and releases a repository (an equivalent to `closeRepository releaseRepository`)
  
 And one additional:
 
- - `getStagingProfile` - gets and displays staging profile id for given package group. This is a diagnostic task to get the value and put it
+ - `getStagingProfile` - gets and displays a staging profile id for a given package group. This is a diagnostic task to get the value and put it
 into the configuration closure as `stagingProfileId`.
 
-It has to be mentioned that calling Nexus REST API ends immediately, but the closing operation takes a moment, so to make it possible to call
-`closeRepository promoteRepository` together (or `closeAndPromoteRepository`) there is a built-in retry mechanism.
+It has to be mentioned that calling Nexus REST API ends immediately, but closing/release operations takes a moment. Therefore, to make it possible
+to call `closeRepository promoteRepository` together (or use `closeAndPromoteRepository`) there is a built-in retry mechanism.
+
+**Deprecation note**. Starting with version 0.8.0 `promoteRepository` and `closeAndPromoteRepository` are marked as deprecated and will be removed
+in the one of the future versions. `releaseRepository` and `closeAndReleaseRepository` can be used as drop-in replacements. The reasons behind that
+change can be found in the corresponding [issue](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/50).
 
 ## Configuration
 
 The plugin defines the following configuration properties in the `nexusStaging` closure:
 
- - `serverUrl` (optional) - stable release repository - by default Sonatype OSSRH - `https://oss.sonatype.org/service/local/`
- - `username` (optional) - username to the server
- - `password` (optional) - password
- - `packageGroup` (optional) - package group as registered in Nexus staging profile - by default set to a project group (has to be overridden
+ - `serverUrl` (optional) - the stable release repository URL - by default Sonatype OSSRH - `https://oss.sonatype.org/service/local/`
+ - `username` (optional) - the username to the server
+ - `password` (optional) - the password to the server (an auth token [can be used](https://solidsoft.wordpress.com/2015/09/08/deploy-to-maven-central-using-api-key-aka-auth-token/) instead)
+ - `packageGroup` (optional) - the package group as registered in Nexus staging profile - by default set to a project group (has to be overridden
 if packageGroup in Nexus was requested for a few packages in the same domain)
- - `stagingProfileId` (optional) - staging profile used to release given project - can be get with `getStagingProfile` task - when not set
-one additional request is set to Nexus server to determine the value using `packageGroup`
- - `numberOfRetries` (optional) - number of retries when waiting for a repository to change a state - by default `7`
- - `delayBetweenRetriesInMillis` (optional) - delay between retries - by default `1000` milliseconds
+ - `stagingProfileId` (optional) - the staging profile used to release given project - can be get with the `getStagingProfile` task - when not set
+one additional request is send to the Nexus server to determine the value using `packageGroup`
+ - `numberOfRetries` (optional) - the number of retries when waiting for a repository state transition to finish - by default `20`
+ - `delayBetweenRetriesInMillis` (optional) - the delay between retries - by default `2000` milliseconds
 
-For sensible configuration example see the plugin's own release configuration in [build.gradle](build.gradle).
+For the sensible configuration example see the plugin's own release configuration in [build.gradle](build.gradle).
 
 ## Server credentials
 
 Production Nexus instances usually require an user to authenticate before perform staging operations. In the nexus-staging plugin there are few
 ways to provide credentials:
  - manually set an username and a password in the `nexusStaging` configuration closure (probably reading them from Gradle or system properties)
- - provide the authentication section in MavenDeloyer (from the Gradle `maven` plugin) - it will be reused by the nexus-staging plugin
+ - provide the authentication section in `MavenDeloyer` (from the Gradle `maven` plugin) - it will be reused by the nexus-staging plugin
  - set the Gradle properties `nexusUsername` abd `nexusPassword` (via a command line or `~/.gradle/gradle.properties`) - properties with these
 names are also used by [gradle-nexus-plugin](https://github.com/bmuschko/gradle-nexus-plugin/).
 

@@ -16,6 +16,10 @@ import groovyx.net.http.RESTClient
 @Slf4j
 class SimplifiedHttpJsonRestClient {
 
+    private enum RequestType {
+        GET, POST
+    }
+
     private final RESTClient restClient
     private final String username
     private final String password
@@ -29,16 +33,34 @@ class SimplifiedHttpJsonRestClient {
     }
 
     Map get(String uri) {
-        setUriAndAuthentication(uri)
-        Map params = createAndInitializeCallParametersMap()
-        log.debug("GET request URL: ${uri}")
-        HttpResponseDecorator response = (HttpResponseDecorator)restClient.get(params)
-        log.debug("GET response data: ${response.data}")
-        return (Map)response.data
+        return (Map) sendRequestHandlingErrors(uri, null, restClient.&get, RequestType.GET).data
     }
 
-    private Map createAndInitializeCallParametersMap() {    //New for every call - it is cleared up after call by RESTClient
-        return [contentType: ContentType.JSON]
+    void post(String uri, Map content) {
+        sendRequestHandlingErrors(uri, content, restClient.&post, RequestType.POST)
+    }
+
+    private HttpResponseDecorator sendRequestHandlingErrors(String uri, Map content, Closure<Object> clientMethodHandler, RequestType requestTypeName) {
+        try {
+            return prepareAndSendRequest(uri, content, clientMethodHandler, requestTypeName)
+        } catch (HttpResponseException e) {
+            HttpResponseDecorator resp = e.getResponse();
+            String message = "${resp.statusLine.statusCode}: ${resp.statusLine.reasonPhrase}, body: ${resp.data ?: '<empty>'}"
+            //TODO: Suppress error message on 404 if waiting for drop?
+            log.warn("$requestTypeName request failed. ${message}")
+            throw new NexusHttpResponseException(e.getStatusCode(), message, e)
+        }
+    }
+
+    private HttpResponseDecorator prepareAndSendRequest(String uri, Map content, Closure<Object> clientMethodHandler, RequestType requestType) {
+        setUriAndAuthentication(uri)
+        Map params = createAndInitializeCallParametersMap()
+        if (content != null) {
+            params.body = content
+            log.debug("$requestType request content: $content")
+        }
+        log.debug("$requestType request URL: $uri")
+        return (HttpResponseDecorator) clientMethodHandler(params)
     }
 
     private void setUriAndAuthentication(String uri) {
@@ -48,21 +70,7 @@ class SimplifiedHttpJsonRestClient {
         }
     }
 
-    void post(String uri, Map content) {
-        setUriAndAuthentication(uri)
-        Map params = createAndInitializeCallParametersMap()
-        params.body = content
-        try {
-            log.debug("POST request content: $content")
-            HttpResponseDecorator response = (HttpResponseDecorator) restClient.post(params)
-            log.debug("POST response status ${response.status}, data: ${response.data}")
-        } catch (HttpResponseException e) {
-            //Enhance rethrown exception to contain also response body - #5
-            //TODO: Still better handle response content type on 404 and 50x - server returns 'text/plain', but RESTClient from Groovy Builder tries to parse it as JSON
-            HttpResponseDecorator resp = e.getResponse();
-            String message = "${resp.statusLine.statusCode}: ${resp.statusLine.reasonPhrase}, body: ${resp.data}"
-            log.warn("POST request failed. ${message}")
-            throw new NexusHttpResponseException(e.getStatusCode(), message, e)
-        }
+    private Map createAndInitializeCallParametersMap() {    //New for every call - it is cleared up after call by RESTClient
+        return [contentType: ContentType.JSON]
     }
 }

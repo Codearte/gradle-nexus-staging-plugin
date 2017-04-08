@@ -36,9 +36,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, repositoryStatesToGetById)
         and:
-            stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
+            stubSuccessfulCloseRepositoryWithProfileId()
         and:
-            stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId)
+            stubSuccessfulReleaseRepositoryWithProfileId()
         and:
             buildFile << """
                 ${getApplyPluginBlock()}
@@ -58,7 +58,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         where:
             testedTaskName      | repoTypeToReturn       | repositoryStatesToGetById
             "closeRepository"   | RepositoryState.OPEN   | [RepositoryState.CLOSED]
-            "promoteRepository" | RepositoryState.CLOSED | [RepositoryState.RELEASED]
+            "releaseRepository" | RepositoryState.CLOSED | [RepositoryState.RELEASED]
     }
 
     def "should send request for staging profile when not provided in configuration on #testedTaskName task"() {
@@ -70,9 +70,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, repositoryStatesToGetById)
         and:
-            stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
+            stubSuccessfulCloseRepositoryWithProfileId()
         and:
-            stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId)
+            stubSuccessfulReleaseRepositoryWithProfileId()
         and:
             buildFile << """
                 ${getApplyPluginBlock()}
@@ -92,10 +92,10 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         where:
             testedTaskName      | repoTypeToReturn       | repositoryStatesToGetById
             "closeRepository"   | RepositoryState.OPEN   | [RepositoryState.CLOSED]
-            "promoteRepository" | RepositoryState.CLOSED | [RepositoryState.RELEASED]
+            "releaseRepository" | RepositoryState.CLOSED | [RepositoryState.RELEASED]
     }
 
-    def "should reuse stagingProfileId AND stagingRepositoryId from closeRepository in promoteRepository when called together"() {
+    def "should reuse stagingProfileId AND stagingRepositoryId from closeRepository in releaseRepository when called together"() {
         given:
             stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
         and:
@@ -103,9 +103,9 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, [RepositoryState.CLOSED, RepositoryState.RELEASED])
         and:
-            stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
+            stubSuccessfulCloseRepositoryWithProfileId()
         and:
-            stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId)
+            stubSuccessfulReleaseRepositoryWithProfileId()
         and:
             buildFile << """
                 ${getApplyPluginBlock()}
@@ -115,10 +115,10 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                 }
             """.stripIndent()
         when:
-            ExecutionResult result = runTasksSuccessfully("closeRepository", "promoteRepository")
+            ExecutionResult result = runTasksSuccessfully("closeRepository", "releaseRepository")
         then:
             result.wasExecuted("closeRepository")
-            result.wasExecuted("promoteRepository")
+            result.wasExecuted("releaseRepository")
         and:
             verify(1, getRequestedFor(urlEqualTo("/staging/profile_repositories/$stagingProfileId")))
             verify(1, getRequestedFor(urlEqualTo("/staging/profiles")))
@@ -139,24 +139,24 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             runTasksSuccessfully('getStagingProfile', 'getValue')
     }
 
-    def "should retry promotion when repository has not been already closed"() {
+    def "should retry release when repository has not been already closed"() {
         given:
             stubGetOneOpenRepositoryInFirstCallAndOneClosedInTheNext(stagingProfileId)
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, [RepositoryState.RELEASED])
         and:
-            stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
+            stubSuccessfulCloseRepositoryWithProfileId()
         and:
-            stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId)
+            stubSuccessfulReleaseRepositoryWithProfileId()
         and:
             buildFile << """
                 ${getApplyPluginBlock()}
                 ${getDefaultConfigurationClosure()}
             """.stripIndent()
         when:
-            ExecutionResult result = runTasksSuccessfully("promoteRepository")
+            ExecutionResult result = runTasksSuccessfully("releaseRepository")
         then:
-            result.wasExecuted("promoteRepository")
+            result.wasExecuted("releaseRepository")
             result.standardOutput.contains("Attempt 1/3 failed.")
             !result.standardOutput.contains("Attempt 2/3 failed.")
     }
@@ -177,26 +177,26 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             result.standardOutput.contains("Received staging profile id: $stagingProfileId")
     }
 
-    def "should call close and promote in closeAndPromoteRepository task"() {
+    def "should call close and release in closeAndReleaseRepository task"() {
         given:
             stubGetOneOpenRepositoryAndOneClosedInFirstCallAndTwoClosedInTheNext(stagingProfileId)
         and:
             stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, [RepositoryState.CLOSED, RepositoryState.RELEASED])
         and:
-            stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId)
+            stubSuccessfulCloseRepositoryWithProfileId()
         and:
-            stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId)
+            stubSuccessfulReleaseRepositoryWithProfileId()
         and:
             buildFile << """
                 ${getApplyPluginBlock()}
                 ${getDefaultConfigurationClosure()}
             """.stripIndent()
         when:
-            ExecutionResult result = runTasksSuccessfully("closeAndPromoteRepository")
+            ExecutionResult result = runTasksSuccessfully("closeAndReleaseRepository")
         then:
             result.wasExecuted("closeRepository")
-            result.wasExecuted("promoteRepository")
-            result.wasExecuted("closeAndPromoteRepository")
+            result.wasExecuted("releaseRepository")
+            result.wasExecuted("closeAndReleaseRepository")
     }
 
     def "packageGroup should be set to project.group by default "() {
@@ -253,8 +253,8 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             !result.standardOutput.contains("Attempt 2/3 failed.")
         where:
             operationName | repoStates                                         | stubbingOperation
-            "close"       | [RepositoryState.OPEN, RepositoryState.CLOSED]     | { stubSuccessfulCloseRepositoryWithProfileId(stagingProfileId) }
-            "promote"     | [RepositoryState.CLOSED, RepositoryState.RELEASED] | { stubSuccessfulPromoteRepositoryWithProfileId(stagingProfileId) }
+            "close"       | [RepositoryState.OPEN, RepositoryState.CLOSED]     | { stubSuccessfulCloseRepositoryWithProfileId() }
+            "release"     | [RepositoryState.CLOSED, RepositoryState.RELEASED] | { stubSuccessfulReleaseRepositoryWithProfileId() } //TODO: NOT_FOUND
     }
 
     @Override
@@ -312,16 +312,16 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
         }
     }
 
-    private void stubSuccessfulCloseRepositoryWithProfileId(String stagingProfileId) {
-        stubGivenSuccessfulTransitionOperationWithProfileId("finish", stagingProfileId)
+    private void stubSuccessfulCloseRepositoryWithProfileId() {
+        stubGivenSuccessfulTransitionOperationWithProfileId("close")
     }
 
-    private void stubSuccessfulPromoteRepositoryWithProfileId(String stagingProfileId) {
-        stubGivenSuccessfulTransitionOperationWithProfileId("promote", stagingProfileId)
+    private void stubSuccessfulReleaseRepositoryWithProfileId() {
+        stubGivenSuccessfulTransitionOperationWithProfileId("promote")  //yes promote...
     }
 
-    private void stubGivenSuccessfulTransitionOperationWithProfileId(String restCommandName, String stagingProfileId) {
-        stubFor(post(urlEqualTo("/staging/profiles/$stagingProfileId/$restCommandName"))
+    private void stubGivenSuccessfulTransitionOperationWithProfileId(String restCommandName) {
+        stubFor(post(urlEqualTo("/staging/bulk/$restCommandName"))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withHeader("Accept", containing("application/json"))
                 //TODO: Content matching

@@ -15,12 +15,12 @@ class RepositoryDropper extends AbstractRepositoryTransitioner {
     void performWithRepositoryIdAndStagingProfileId(String repositoryId, String stagingProfileId) {
         log.info("Droping repository '$repositoryId' with staging profile '$stagingProfileId'")
         Map<String, Map> postContent = prepareStagingPostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId)
-        client.post(nexusUrl + "/staging/profiles/$stagingProfileId/drop", postContent)
+        client.post(pathForGivenBulkOperation("drop"), postContent)
         log.info("Repository '$repositoryId' with staging profile '$stagingProfileId' has been dropped")
     }
 
     @Override
-    RepositoryState desiredAfterTransitionRepositoryState() {
+    List<RepositoryState> desiredAfterTransitionRepositoryState() {
         throw new UnsupportedOperationException("Not implemented yet")
     }
 }

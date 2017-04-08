@@ -3,7 +3,7 @@ package io.codearte.gradle.nexus
 import groovy.transform.CompileStatic
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
-import io.codearte.gradle.nexus.logic.RepositoryPromoter
+import io.codearte.gradle.nexus.logic.RepositoryReleaser
 import io.codearte.gradle.nexus.logic.RepositoryState
 import io.codearte.gradle.nexus.logic.RepositoryStateFetcher
 import io.codearte.gradle.nexus.logic.RetryingRepositoryTransitioner
@@ -11,7 +11,7 @@ import io.codearte.gradle.nexus.logic.StagingProfileFetcher
 import org.gradle.api.tasks.TaskAction
 
 @CompileStatic
-class PromoteRepositoryTask extends BaseStagingTask {
+class ReleaseRepositoryTask extends BaseStagingTask {
 
     @TaskAction
     void doAction() {
@@ -23,7 +23,7 @@ class PromoteRepositoryTask extends BaseStagingTask {
 
         String repositoryId = getRepositoryIdFromCloseTaskOrFromServer(stagingProfileId, repositoryFetcher)
 
-        promoteRepositoryByIdAndProfileIdWithRetrying(repositoryId, stagingProfileId)
+        releaseRepositoryByIdAndProfileIdWithRetrying(repositoryId, stagingProfileId)
     }
 
     private void tryToTakeStagingProfileIdFromCloseRepositoryTask() {
@@ -53,13 +53,13 @@ class PromoteRepositoryTask extends BaseStagingTask {
         return retrier.doWithRetry { repositoryFetcher.getClosedRepositoryIdForStagingProfileId(stagingProfileId) }
     }
 
-    private void promoteRepositoryByIdAndProfileIdWithRetrying(String repositoryId, String stagingProfileId) {
-        RepositoryPromoter repositoryPromoter = createRepositoryPromoterWithGivenClient(createClient())
+    private void releaseRepositoryByIdAndProfileIdWithRetrying(String repositoryId, String stagingProfileId) {
+        RepositoryReleaser repositoryReleaser = createRepositoryReleaserWithGivenClient(createClient())
         RepositoryStateFetcher repositoryStateFetcher = createRepositoryStateFetcherWithGivenClient(createClient())
         OperationRetrier<RepositoryState> retrier = createOperationRetrier()
-        RetryingRepositoryTransitioner retryingPromoter = new RetryingRepositoryTransitioner(repositoryPromoter, repositoryStateFetcher, retrier)
+        RetryingRepositoryTransitioner retryingReleaser = new RetryingRepositoryTransitioner(repositoryReleaser, repositoryStateFetcher, retrier)
 
-        retryingPromoter.performWithRepositoryIdAndStagingProfileId(repositoryId, stagingProfileId)
-        logger.info("Repository '$repositoryId' has been effectively released/promoted")
+        retryingReleaser.performWithRepositoryIdAndStagingProfileId(repositoryId, stagingProfileId)
+        logger.info("Repository '$repositoryId' has been effectively released")
     }
 }
