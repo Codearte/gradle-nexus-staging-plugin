@@ -1,3 +1,14 @@
+0.8.0 - 2017-04-08
+
+ - Auto drop repository after release - [#37](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/37)
+ - Rename "promote" operation to "release" - [#50](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/50)
+ - Upgrade project dependencies to 2017 - [#43](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/43)
+ - Separate functional tests from unit tests - [#48](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/48)
+ - Make functional tests work also on Windows - [#39](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/39)
+
+**Deprecation note**. The ~~promoteRepository~~ and ~~closeAndPromoteRepository~~ tasks are marked as deprecated and will be removed
+in the one of the future versions. `releaseRepository` and `closeAndReleaseRepository` can be used as drop-in replacements. 
+
 0.7.0 - 2017-03-27
 
  - Verify that repository has been really closed - [#21](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/21)
