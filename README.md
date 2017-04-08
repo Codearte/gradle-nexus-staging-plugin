@@ -71,24 +71,24 @@ change can be found in the corresponding [issue](https://github.com/Codearte/gra
 
 The plugin defines the following configuration properties in the `nexusStaging` closure:
 
- - `serverUrl` (optional) - stable release repository - by default Sonatype OSSRH - `https://oss.sonatype.org/service/local/`
- - `username` (optional) - username to the server
- - `password` (optional) - password
- - `packageGroup` (optional) - package group as registered in Nexus staging profile - by default set to a project group (has to be overridden
+ - `serverUrl` (optional) - the stable release repository URL - by default Sonatype OSSRH - `https://oss.sonatype.org/service/local/`
+ - `username` (optional) - the username to the server
+ - `password` (optional) - the password to the server (an auth token [can be used](https://solidsoft.wordpress.com/2015/09/08/deploy-to-maven-central-using-api-key-aka-auth-token/) instead)
+ - `packageGroup` (optional) - the package group as registered in Nexus staging profile - by default set to a project group (has to be overridden
 if packageGroup in Nexus was requested for a few packages in the same domain)
- - `stagingProfileId` (optional) - staging profile used to release given project - can be get with `getStagingProfile` task - when not set
-one additional request is set to Nexus server to determine the value using `packageGroup`
- - `numberOfRetries` (optional) - number of retries when waiting for a repository to change a state - by default `7`
- - `delayBetweenRetriesInMillis` (optional) - delay between retries - by default `1000` milliseconds
+ - `stagingProfileId` (optional) - the staging profile used to release given project - can be get with the `getStagingProfile` task - when not set
+one additional request is send to the Nexus server to determine the value using `packageGroup`
+ - `numberOfRetries` (optional) - the number of retries when waiting for a repository state transition to finish - by default `20`
+ - `delayBetweenRetriesInMillis` (optional) - the delay between retries - by default `2000` milliseconds
 
-For sensible configuration example see the plugin's own release configuration in [build.gradle](build.gradle).
+For the sensible configuration example see the plugin's own release configuration in [build.gradle](build.gradle).
 
 ## Server credentials
 
 Production Nexus instances usually require an user to authenticate before perform staging operations. In the nexus-staging plugin there are few
 ways to provide credentials:
  - manually set an username and a password in the `nexusStaging` configuration closure (probably reading them from Gradle or system properties)
- - provide the authentication section in MavenDeloyer (from the Gradle `maven` plugin) - it will be reused by the nexus-staging plugin
+ - provide the authentication section in `MavenDeloyer` (from the Gradle `maven` plugin) - it will be reused by the nexus-staging plugin
  - set the Gradle properties `nexusUsername` abd `nexusPassword` (via a command line or `~/.gradle/gradle.properties`) - properties with these
 names are also used by [gradle-nexus-plugin](https://github.com/bmuschko/gradle-nexus-plugin/).
 
