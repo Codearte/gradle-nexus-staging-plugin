@@ -19,10 +19,10 @@ class NexusStagingPlugin implements Plugin<Project> {
 
     private static final String GET_STAGING_PROFILE_TASK_NAME = "getStagingProfile"
     private static final String CLOSE_REPOSITORY_TASK_NAME = "closeRepository"
-    private static final String PROMOTE_REPOSITORY_TASK_NAME = "promoteRepository"
-    private static final String CLOSE_AND_PROMOTE_REPOSITORY_TASK_NAME = "closeAndPromoteRepository"
+    private static final String RELEASE_REPOSITORY_TASK_NAME = "releaseRepository"
+    private static final String CLOSE_AND_RELEASE_REPOSITORY_TASK_NAME = "closeAndReleaseRepository"
 
-    private static final Set<Class> STAGING_TASK_CLASSES = [GetStagingProfileTask, CloseRepositoryTask, PromoteRepositoryTask]
+    private static final Set<Class> STAGING_TASK_CLASSES = [GetStagingProfileTask, CloseRepositoryTask, ReleaseRepositoryTask]
 
     private static final String NEXUS_USERNAME_PROPERTY = 'nexusUsername'
     private static final String NEXUS_PASSWORD_PROPERTY = 'nexusPassword'
@@ -37,11 +37,13 @@ class NexusStagingPlugin implements Plugin<Project> {
         emitWarningIfAppliedNotToRootProject(project)
         createAndConfigureGetStagingProfileTask(project)
         def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)
-        def promoteRepositoryTask = createAndConfigurePromoteRepositoryTask(project)
-        promoteRepositoryTask.mustRunAfter(closeRepositoryTask)
-        def closeAndPromoteRepositoryTask = createAndConfigureCloseAndPromoteRepositoryTask(project)
-        closeAndPromoteRepositoryTask.dependsOn(closeRepositoryTask, promoteRepositoryTask)
+        def releaseRepositoryTask = createAndConfigureReleaseRepositoryTask(project)
+        releaseRepositoryTask.mustRunAfter(closeRepositoryTask)
+        def closeAndReleaseRepositoryTask = createAndConfigureCloseAndReleaseRepositoryTask(project)
+        closeAndReleaseRepositoryTask.dependsOn(closeRepositoryTask, releaseRepositoryTask)
         tryToDetermineCredentials(project, extension)
+        //just during the transition period - see https://github.com/Codearte/gradle-nexus-staging-plugin/issues/50
+        new LegacyTasksCreator().createAndConfigureLegacyTasks(project)
     }
 
     private void emitWarningIfAppliedNotToRootProject(Project project) {
@@ -73,16 +75,16 @@ class NexusStagingPlugin implements Plugin<Project> {
         return task
     }
 
-    private PromoteRepositoryTask createAndConfigurePromoteRepositoryTask(Project project) {
-        PromoteRepositoryTask task = project.tasks.create(PROMOTE_REPOSITORY_TASK_NAME, PromoteRepositoryTask)
-        setTaskDescriptionAndGroup(task, "Promotes/releases a closed artifacts repository in Nexus")
+    private ReleaseRepositoryTask createAndConfigureReleaseRepositoryTask(Project project) {
+        ReleaseRepositoryTask task = project.tasks.create(RELEASE_REPOSITORY_TASK_NAME, ReleaseRepositoryTask)
+        setTaskDescriptionAndGroup(task, "Releases a closed artifacts repository in Nexus")
         setTaskDefaultsAndDescription(task)
         return task
     }
 
-    private Task createAndConfigureCloseAndPromoteRepositoryTask(Project project) {
-        Task task = project.tasks.create(CLOSE_AND_PROMOTE_REPOSITORY_TASK_NAME, DefaultTask)
-        setTaskDescriptionAndGroup(task, "Closes and promotes an artifacts repository in Nexus")
+    private Task createAndConfigureCloseAndReleaseRepositoryTask(Project project) {
+        Task task = project.tasks.create(CLOSE_AND_RELEASE_REPOSITORY_TASK_NAME, DefaultTask)   //TODO: DefaultTask is redundant?
+        setTaskDescriptionAndGroup(task, "Closes and releases an artifacts repository in Nexus")
         return task
     }
 
@@ -144,8 +146,8 @@ class NexusStagingPlugin implements Plugin<Project> {
             return  //username and password already set
         }
 
-        Upload uploadTask = project.tasks.findByPath("uploadArchives")
-        uploadTask?.repositories?.withType(MavenDeployer).each { MavenDeployer deployer ->
+        Upload uploadTask = (Upload) project.tasks.findByPath("uploadArchives")
+        uploadTask?.repositories?.withType(MavenDeployer)?.each { MavenDeployer deployer ->
             project.logger.debug("Trying to read credentials from repository '${deployer.name}'")
             def authentication = deployer.repository?.authentication //Not to use class names as maven-ant-task is not on classpath when plugin is executed
             if (authentication?.userName != null) {
@@ -165,6 +167,30 @@ class NexusStagingPlugin implements Plugin<Project> {
         if (extension.password == null && project.hasProperty(NEXUS_PASSWORD_PROPERTY)) {
             extension.password = project.property(NEXUS_PASSWORD_PROPERTY)
             project.logger.info("Using password '*****' from Gradle property '${NEXUS_PASSWORD_PROPERTY}'")
+        }
+    }
+
+    /**
+     * See https://github.com/Codearte/gradle-nexus-staging-plugin/issues/50 for more details.
+     */
+    @Deprecated
+    private static class LegacyTasksCreator {
+
+        private static final String RELEASE_REPOSITORY_OLD_TASK_NAME = "promoteRepository"
+        private static final String CLOSE_AND_RELEASE_REPOSITORY_OLD_TASK_NAME = "closeAndPromoteRepository"
+
+        void createAndConfigureLegacyTasks(Project project) {
+            createDeprecatedTaskDependingOnNewOne(project, RELEASE_REPOSITORY_OLD_TASK_NAME, RELEASE_REPOSITORY_TASK_NAME)
+            createDeprecatedTaskDependingOnNewOne(project, CLOSE_AND_RELEASE_REPOSITORY_OLD_TASK_NAME, CLOSE_AND_RELEASE_REPOSITORY_TASK_NAME)
+        }
+
+        private Task createDeprecatedTaskDependingOnNewOne(Project project, String depreacatedTaskName, String newTaskName) {
+            project.tasks.create(depreacatedTaskName).with {
+                description = "This task is DEPRECATED. Use '${newTaskName}' instead."
+                group = "release"
+                dependsOn project.tasks.getByName(newTaskName)
+                //TODO: Add warning message
+            }
         }
     }
 }

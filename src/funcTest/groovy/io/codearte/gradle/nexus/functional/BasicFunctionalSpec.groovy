@@ -43,17 +43,17 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Func
     }
 
     @Ignore
-    def "should promote closed repository"() {
+    def "should release closed repository"() {
         given:
             buildFile << """
                 ${getApplyPluginBlock()}
                 ${getDefaultConfigurationClosure()}
             """.stripIndent()
         when:
-            def result = runTasksSuccessfully('promoteRepository')
+            def result = runTasksSuccessfully('releaseRepository')
         then:
-            result.wasExecuted(':promoteRepository')
+            result.wasExecuted(':releaseRepository')
         and:
-            result.standardOutput.contains("has been promoted")   //TODO: Match with regexp
+            result.standardOutput.contains("has been released")   //TODO: Match with regexp
     }
 }

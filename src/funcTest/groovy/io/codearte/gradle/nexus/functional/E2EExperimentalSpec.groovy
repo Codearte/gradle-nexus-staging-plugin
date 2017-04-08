@@ -9,7 +9,7 @@ import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
 import io.codearte.gradle.nexus.logic.RepositoryDropper
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
-import io.codearte.gradle.nexus.logic.RepositoryPromoter
+import io.codearte.gradle.nexus.logic.RepositoryReleaser
 import io.codearte.gradle.nexus.logic.RepositoryState
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
 import io.codearte.gradle.nexus.logic.RetryingRepositoryTransitioner
@@ -103,14 +103,14 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
             receivedRepoState == RepositoryState.NOT_FOUND
     }
 
-    def "should promote closed repository with auto drop e2e"() {
+    def "should release closed repository with auto drop e2e"() {
         given:
             assert resolvedStagingRepositoryId
         and:
-            RepositoryPromoter promoter = new RepositoryPromoter(client, E2E_SERVER_BASE_PATH)
-            RetryingRepositoryTransitioner retryingPromoter = new RetryingRepositoryTransitioner(promoter, repoStateFetcher, retrier)
+            RepositoryReleaser releaser = new RepositoryReleaser(client, E2E_SERVER_BASE_PATH)
+            RetryingRepositoryTransitioner retryingReleaser = new RetryingRepositoryTransitioner(releaser, repoStateFetcher, retrier)
         when:
-            retryingPromoter.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
+            retryingReleaser.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
         then:
             noExceptionThrown()
         when:
@@ -120,7 +120,7 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
     }
 
     @NotYetImplemented
-    def "repository after promotion should be dropped immediately"() {}
+    def "repository after release should be dropped immediately"() {}
 
     private void propagateStagingRepositoryIdToAnotherTest(String stagingRepositoryId) {
         resolvedStagingRepositoryId = stagingRepositoryId
