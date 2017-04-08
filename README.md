@@ -50,18 +50,22 @@ The plugin itself does not upload any artifacts. It only closes/promotes a repos
 
 The plugin provides three main tasks:
 
- - `closeRepository` - closes open repository with uploaded artifacts. There should be just one open repository available in the staging profile
-(possible old/broken repositories can be dropped with Nexus GUI)
- - `promoteRepository` - promotes/releases closed repository (required to put artifacts to Maven Central)
- - `closeAndPromoteRepository` - closes and promotes/releases repository (an equivalent to `closeRepository promoteRepository`)
+ - `closeRepository` - closes an open repository with the uploaded artifacts. There should be just one open repository available in the staging
+ profile (possible old/broken repositories can be dropped with Nexus GUI)
+ - `releaseRepository` - releases a closed repository (required to put artifacts to Maven Central aka The Central Repository)
+ - `closeAndReleaseRepository` - closes and releases a repository (an equivalent to `closeRepository releaseRepository`)
  
 And one additional:
 
- - `getStagingProfile` - gets and displays staging profile id for given package group. This is a diagnostic task to get the value and put it
+ - `getStagingProfile` - gets and displays a staging profile id for a given package group. This is a diagnostic task to get the value and put it
 into the configuration closure as `stagingProfileId`.
 
-It has to be mentioned that calling Nexus REST API ends immediately, but the closing operation takes a moment, so to make it possible to call
-`closeRepository promoteRepository` together (or `closeAndPromoteRepository`) there is a built-in retry mechanism.
+It has to be mentioned that calling Nexus REST API ends immediately, but closing/release operations takes a moment. Therefore, to make it possible
+to call `closeRepository promoteRepository` together (or use `closeAndPromoteRepository`) there is a built-in retry mechanism.
+
+**Deprecation note**. Starting with version 0.8.0 `promoteRepository` and `closeAndPromoteRepository` are marked as deprecated and will be removed
+in the one of the future versions. `releaseRepository` and `closeAndReleaseRepository` can be used as drop-in replacements. The reasons behind that
+change can be found in the corresponding [issue](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/50).
 
 ## Configuration
 
