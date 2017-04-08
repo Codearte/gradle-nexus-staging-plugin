@@ -4,15 +4,15 @@ import groovy.transform.NotYetImplemented
 import groovyx.net.http.RESTClient
 import io.codearte.gradle.nexus.FunctionalTestHelperTrait
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
-import io.codearte.gradle.nexus.logic.RepositoryStateFetcher
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
 import io.codearte.gradle.nexus.logic.RepositoryDropper
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
 import io.codearte.gradle.nexus.logic.RepositoryReleaser
 import io.codearte.gradle.nexus.logic.RepositoryState
-import io.codearte.gradle.nexus.logic.StagingProfileFetcher
+import io.codearte.gradle.nexus.logic.RepositoryStateFetcher
 import io.codearte.gradle.nexus.logic.RetryingRepositoryTransitioner
+import io.codearte.gradle.nexus.logic.StagingProfileFetcher
 import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -103,7 +103,7 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
             receivedRepoState == RepositoryState.NOT_FOUND
     }
 
-    def "should release closed repository with auto drop e2e"() {
+    def "should release closed repository e2e"() {
         given:
             assert resolvedStagingRepositoryId
         and:
@@ -113,14 +113,16 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
             retryingReleaser.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
         then:
             noExceptionThrown()
+    }
+
+    def "repository after release should be dropped immediately e2e"() {
+        given:
+            assert resolvedStagingRepositoryId
         when:
             RepositoryState receivedRepoState = repoStateFetcher.getNonTransitioningRepositoryStateById(resolvedStagingRepositoryId)
         then:
             receivedRepoState == RepositoryState.NOT_FOUND
     }
-
-    @NotYetImplemented
-    def "repository after release should be dropped immediately"() {}
 
     private void propagateStagingRepositoryIdToAnotherTest(String stagingRepositoryId) {
         resolvedStagingRepositoryId = stagingRepositoryId
