@@ -11,7 +11,7 @@ build_script:
   - gradlew.bat assemble --stacktrace --no-daemon
 
 test_script:
-  - gradlew.bat check -Pcompatibility --stacktrace --no-daemon --continue
+  - gradlew.bat check funcTest -Pcompatibility --stacktrace --no-daemon --continue
 
 environment:
   matrix:
