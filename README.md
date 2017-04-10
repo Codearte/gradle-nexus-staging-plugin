@@ -116,6 +116,31 @@ from the one created by our another project. There is an [idea](https://github.c
 handled using the Nexus API. Please comment in that [issue](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/29) if you are in that
 situation. 
 
+## Notable users
+
+The plugin is used by [hundreds of projects](https://github.com/search?q=io.codearte.nexus-staging&type=Code&utf8=%E2%9C%93) around the web.
+
+Just to mention a few FOSS projects which leverage the plugin to automatize releasing and Continuous Delivery:
+[Frege](https://github.com/Frege/frege-interpreter), 
+[Geb](https://github.com/geb/geb), 
+[Grails](https://github.com/grails/grails-core), 
+[Javers](https://github.com/javers/javers), 
+[JSON Assert](https://github.com/marcingrzejszczak/jsonassert), 
+[logback-android](https://github.com/tony19/logback-android), 
+[mini2Dx](https://github.com/mini2Dx/minibus), 
+[Nextflow](https://github.com/nextflow-io/nextflow) and 
+[TestNG](https://github.com/cbeust/testng).
+
+The plugin is also used by the tools and the libraries created by various more or less known companies including:
+[Allegro](https://github.com/allegro/hermes), 
+[Braintree](https://github.com/braintree/braintree_android), 
+[Google](https://github.com/google/FreeBuilder), 
+[IBM](https://github.com/IBM-UrbanCode/groovy-plugin-utils), 
+[PayPal](https://github.com/paypal/PayPal-Java-SDK), 
+[Schibsted Spain](https://github.com/scm-spain/karyon-rest-router), 
+[TouK](https://github.com/TouK/bubble) and 
+[Zalando](https://github.com/zalando-incubator/straw).
+
 ## Additional information 
 
 [gradle-nexus-staging-plugin](https://github.com/Codearte/gradle-nexus-staging-plugin) was written by Marcin Zajączkowski
