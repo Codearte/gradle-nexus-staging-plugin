@@ -42,6 +42,16 @@ After successful archives upload (with [`maven`](https://gradle.org/docs/current
 to close staging repository and promote/release it and its artifacts. If a synchronization with Maven Central was enabled the artifacts should
 automatically appear into Maven Central within several minutes.
 
+### New plugin syntax
+
+In addition to Maven Central the plugin is available also from the [Plugin Portal](https://plugins.gradle.org/plugin/io.codearte.nexus-staging) and (in most cases) can be applied in a simplified way:
+
+    plugins {
+        id "io.codearte.nexus-staging" version "0.8.0"
+    }
+
+Buildscript and `apply plugin` sections can be ommited in that case.
+
 ### Multi-project build
 
 The plugin itself does not upload any artifacts. It only closes/promotes a repository with all already uploaded using the `maven` or `maven-publish` plugin artifacts (in the same or previous Gradle execution). Therefore it is enough to apply `io.codearte.nexus-staging` only on the root project in a multi-project build.
