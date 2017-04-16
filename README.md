@@ -37,7 +37,7 @@ After successful archives upload (with [`maven`](https://gradle.org/docs/current
 [`maven-publish`](https://gradle.org/docs/current/userguide/publishing_maven.html) or 
 [`nexus`](https://github.com/bmuschko/gradle-nexus-plugin/) plugin) to Sonatype OSSRH call:
 
-    ./gradlew closeAndPromoteRepository
+    ./gradlew closeAndReleaseRepository
 
 to close staging repository and promote/release it and its artifacts. If a synchronization with Maven Central was enabled the artifacts should
 automatically appear into Maven Central within several minutes.
@@ -71,7 +71,7 @@ And one additional:
 into the configuration closure as `stagingProfileId`.
 
 It has to be mentioned that calling Nexus REST API ends immediately, but closing/release operations takes a moment. Therefore, to make it possible
-to call `closeRepository promoteRepository` together (or use `closeAndPromoteRepository`) there is a built-in retry mechanism.
+to call `closeRepository releaseRepository` together (or use `closeAndReleaseRepository`) there is a built-in retry mechanism.
 
 **Deprecation note**. Starting with version 0.8.0 `promoteRepository` and `closeAndPromoteRepository` are marked as deprecated and will be removed
 in the one of the future versions. `releaseRepository` and `closeAndReleaseRepository` can be used as drop-in replacements. The reasons behind that
