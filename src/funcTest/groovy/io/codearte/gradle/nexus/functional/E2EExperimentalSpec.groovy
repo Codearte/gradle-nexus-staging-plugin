@@ -13,14 +13,14 @@ import io.codearte.gradle.nexus.logic.RepositoryState
 import io.codearte.gradle.nexus.logic.RepositoryStateFetcher
 import io.codearte.gradle.nexus.logic.RetryingRepositoryTransitioner
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
+import nebula.test.functional.ExecutionResult
 import spock.lang.Ignore
-import spock.lang.Specification
 import spock.lang.Stepwise
 
 //TODO: Duplication with BasicFunctionalSpec done at Gradle level - decide which tests are better/easier to use and maintain
 @Stepwise
 @Ignore
-class E2EExperimentalSpec extends Specification implements FunctionalTestHelperTrait {
+class E2EExperimentalSpec extends BaseNexusStagingFunctionalSpec implements FunctionalTestHelperTrait {
 
     private SimplifiedHttpJsonRestClient client
     private RepositoryStateFetcher repoStateFetcher
@@ -46,8 +46,14 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
             stagingProfileId == E2E_STAGING_PROFILE_ID
     }
 
-    @NotYetImplemented
-    def "should upload artifacts to server"() {}
+    def "should upload artifacts to server"() {
+        given:
+            copyResources("sampleProjects//nexus-at-minimal", "")
+        when:
+            ExecutionResult result = runTasksSuccessfully('uploadArchives')
+        then:
+            result.standardOutput.contains('Uploading: io/gitlab/nexus-at/minimal/nexus-at-minimal/')
+    }
 
     def "should get open repository id from server e2e"() {
         given:
