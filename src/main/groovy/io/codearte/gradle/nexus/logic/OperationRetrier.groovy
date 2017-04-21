@@ -54,6 +54,6 @@ class OperationRetrier<T> {
     }
 
     private String formatMaximumRetryingPeriodMessage() {
-        return "Retrying maximum $numberOfRetries times with ${delayBetweenRetriesInMillis / 1000} seconds delay between"
+        return "Retrying maximum $numberOfRetries times with ${delayBetweenRetriesInMillis / 1000} seconds delay between attempts"
     }
 }
