@@ -1,25 +1,19 @@
 package io.codearte.gradle.nexus.functional
 
 import io.codearte.gradle.nexus.FunctionalTestHelperTrait
+import nebula.test.functional.ExecutionResult
 import spock.lang.Ignore
-import spock.lang.IgnoreIf
+import spock.lang.Stepwise
 
+@Stepwise
+@Ignore
 class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec implements FunctionalTestHelperTrait {
 
-    @Override
-    void setup() {
-        nexusPassword = tryToReadNexusPasswordAT()
-    }
-
-    @IgnoreIf({ !env.containsKey("nexusPasswordAT") })
-    def "should run"() {
+    def "should get staging profile"() {
         given:
-            buildFile << """
-                ${getApplyPluginBlock()}
-                ${getDefaultConfigurationClosure()}
-            """.stripIndent()
+            copyResources("sampleProjects//nexus-at-minimal", "")
         when:
-            def result = runTasksSuccessfully('getStagingProfile')
+            ExecutionResult result = runTasksSuccessfully('getStagingProfile')
         then:
             result.wasExecuted(':getStagingProfile')
         and:
@@ -27,33 +21,25 @@ class BasicFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Func
             result.standardOutput.contains("Received staging profile id: $E2E_STAGING_PROFILE_ID")
     }
 
-    @Ignore
-    def "should close open repository"() {
+    def "should upload artifacts to server"() {
         given:
-            buildFile << """
-                ${getApplyPluginBlock()}
-                ${getDefaultConfigurationClosure()}
-            """.stripIndent()
+            copyResources("sampleProjects//nexus-at-minimal", "")
         when:
-            def result = runTasksSuccessfully('closeRepository')
+            ExecutionResult result = runTasksSuccessfully('clean', 'uploadArchives')
         then:
-            result.wasExecuted(':closeRepository')
-        and:
-            result.standardOutput.contains("has been closed")   //TODO: Match with regexp
+            result.standardOutput.contains('Uploading: io/gitlab/nexus-at/minimal/nexus-at-minimal/')
     }
 
-    @Ignore
-    def "should release closed repository"() {
+    def "should close and release repository"() {
         given:
-            buildFile << """
-                ${getApplyPluginBlock()}
-                ${getDefaultConfigurationClosure()}
-            """.stripIndent()
+            copyResources("sampleProjects//nexus-at-minimal", "")
         when:
-            def result = runTasksSuccessfully('releaseRepository')
+            ExecutionResult result = runTasksSuccessfully('closeAndReleaseRepository')
         then:
-            result.wasExecuted(':releaseRepository')
+            result.wasExecuted("closeRepository")
+            result.wasExecuted("releaseRepository")
+            result.wasExecuted("closeAndReleaseRepository")
         and:
-            result.standardOutput.contains("has been released")   //TODO: Match with regexp
+            result.standardOutput.contains('has been effectively released')
     }
 }
