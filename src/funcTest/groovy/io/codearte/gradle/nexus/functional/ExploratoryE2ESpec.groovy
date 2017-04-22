@@ -91,7 +91,7 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
             receivedRepoState == RepositoryState.CLOSED
     }
 
-    @Ignore //Not the base path
+    @Ignore('Not the base path')
     def "should drop open repository e2e"() {
         given:
             assert resolvedStagingRepositoryId
