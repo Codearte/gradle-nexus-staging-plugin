@@ -1,6 +1,9 @@
 package io.codearte.gradle.nexus.functional.e2e
 
+import groovy.transform.PackageScope
+
 //Separate interface as there is problem with constants visibility in traits
+@PackageScope
 interface E2ESpecConstants {
 
     public static final String E2E_SERVER_BASE_PATH = "https://oss.sonatype.org/service/local/"

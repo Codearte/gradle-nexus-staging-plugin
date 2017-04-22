@@ -1,5 +1,8 @@
 package io.codearte.gradle.nexus.functional
 
+import groovy.transform.PackageScope
+
+@PackageScope
 trait FunctionalSpecHelperTrait {
 
     String nexusPassword
