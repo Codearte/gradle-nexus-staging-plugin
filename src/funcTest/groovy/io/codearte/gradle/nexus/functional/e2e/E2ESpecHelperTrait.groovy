@@ -37,8 +37,7 @@ trait E2ESpecHelperTrait implements E2ESpecConstants {
             tryToReadPropertyFromGradleEnvironmentVariable(NEXUS_PASSWORD_AT_ENVIRONMENT_VARIABLE_NAME) ?:
                 tryToReadPropertyFromGradlePropertiesFile(NEXUS_PASSWORD_AT_ENVIRONMENT_VARIABLE_NAME) ?:
                     { throw new RuntimeException("Nexus password for AT tests is not set in 'gradle.properties' nor system variable " +
-                        "'$NEXUS_PASSWORD_AT_ENVIRONMENT_VARIABLE_NAME'. E2E tests can be disabled with '-PdisableE2ESpecs' or" +
-                        "'NEXUS_AT_DISABLE_E2E_SPECS=anyValue environment variable'") }()
+                        "'$NEXUS_PASSWORD_AT_ENVIRONMENT_VARIABLE_NAME' although E2E tests execution is enabled") }()
     }
 
     //TODO: It would be good to not reimplement Gradle logic

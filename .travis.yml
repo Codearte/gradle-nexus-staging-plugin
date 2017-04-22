@@ -13,12 +13,12 @@ script:
 
 language: groovy
 jdk:
-  - oraclejdk7
+  - oraclejdk8
 env:
   global:
   - secure: g95pWjS+RIusyf6t26YnH/HhL6j7aQb3nUpiF0i+9eumn1sT2g8c8X9bdDrncXetAs0+I50cP7jER2IDBG67wbqE2LD2TbCPMA/hJIqtWTatjKT1dUjVL4mxtZ7GsbHZyRM9nUbtOqBBaL+DqzkecO8lHMKB5nej7NdkFT1JO6c=
   - secure: dgqSFhIO5JuL6X2HgKt7RJLacl+MSZK4VV9710W0NolPAZlurSgg1vVeoI/4XFpdnt5KSfDUTZL2XS8kU5OgXMqTQcltXusk4fop21m1Z9X3NajqwXbnqDFPbsp2Rsz3B9Cwd5usFW9sdYXtvei5Qa26LnZMM7tIJiI2nxIJEtw=
 matrix:
   include:
-    - jdk: oraclejdk8
-      env: NEXUS_AT_DISABLE_E2E_SPECS=true
+    - jdk: oraclejdk7
+      env: NEXUS_AT_ENABLE_E2E_TESTS=true
