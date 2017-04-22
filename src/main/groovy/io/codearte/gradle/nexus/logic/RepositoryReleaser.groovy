@@ -16,7 +16,7 @@ class RepositoryReleaser extends AbstractRepositoryTransitioner {
         log.info("Releasing repository '$repositoryId' with staging profile '$stagingProfileId'")
         Map<String, Map> postContent = prepareStagingPostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId)
         client.post(pathForGivenBulkOperation(RELEASE_OPERATION_NAME_IN_NEXUS), postContent)
-        log.info("Repository '$repositoryId' with staging profile '$stagingProfileId' has been released")
+        log.info("Repository '$repositoryId' with staging profile '$stagingProfileId' has been accepted by server to be released")
     }
 
     @Override

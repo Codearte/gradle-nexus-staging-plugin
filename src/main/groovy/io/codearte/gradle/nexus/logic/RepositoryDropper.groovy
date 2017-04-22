@@ -16,7 +16,7 @@ class RepositoryDropper extends AbstractRepositoryTransitioner {
         log.info("Droping repository '$repositoryId' with staging profile '$stagingProfileId'")
         Map<String, Map> postContent = prepareStagingPostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId)
         client.post(pathForGivenBulkOperation("drop"), postContent)
-        log.info("Repository '$repositoryId' with staging profile '$stagingProfileId' has been dropped")
+        log.info("Repository '$repositoryId' with staging profile '$stagingProfileId' has been accepted by server to be dropped")
     }
 
     @Override
