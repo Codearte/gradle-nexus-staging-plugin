@@ -2,7 +2,7 @@ package io.codearte.gradle.nexus.functional
 
 import groovy.transform.NotYetImplemented
 import groovyx.net.http.RESTClient
-import io.codearte.gradle.nexus.E2EFunctionalTestHelperTrait
+import io.codearte.gradle.nexus.E2ESpecHelperTrait
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
@@ -20,7 +20,7 @@ import spock.lang.Stepwise
 //TODO: Duplication with BasicFunctionalSpec done at Gradle level - decide which tests are better/easier to use and maintain
 @Stepwise
 @Ignore
-class E2EExperimentalSpec extends BaseNexusStagingFunctionalSpec implements E2EFunctionalTestHelperTrait {
+class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESpecHelperTrait {
 
     private SimplifiedHttpJsonRestClient client
     private RepositoryStateFetcher repoStateFetcher

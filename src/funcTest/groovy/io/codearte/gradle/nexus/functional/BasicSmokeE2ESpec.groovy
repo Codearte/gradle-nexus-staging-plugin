@@ -1,13 +1,13 @@
 package io.codearte.gradle.nexus.functional
 
-import io.codearte.gradle.nexus.E2EFunctionalTestHelperTrait
+import io.codearte.gradle.nexus.E2ESpecHelperTrait
 import nebula.test.functional.ExecutionResult
 import spock.lang.Ignore
 import spock.lang.Stepwise
 
 @Stepwise
 @Ignore
-class E2EBasicSmokeSpec extends BaseNexusStagingFunctionalSpec implements E2EFunctionalTestHelperTrait {
+class BasicSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESpecHelperTrait {
 
     def "should get staging profile"() {
         given:
