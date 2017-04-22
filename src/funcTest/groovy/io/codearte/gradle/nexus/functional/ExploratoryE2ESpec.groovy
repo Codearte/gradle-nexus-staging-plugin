@@ -19,7 +19,6 @@ import spock.lang.Stepwise
 
 //TODO: Duplication with BasicFunctionalSpec done at Gradle level - decide which tests are better/easier to use and maintain
 @Stepwise
-@Ignore
 class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESpecHelperTrait {
 
     private SimplifiedHttpJsonRestClient client
@@ -92,7 +91,7 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
             receivedRepoState == RepositoryState.CLOSED
     }
 
-    @Ignore //Not implemented yet
+    @Ignore //Not the base path
     def "should drop open repository e2e"() {
         given:
             assert resolvedStagingRepositoryId

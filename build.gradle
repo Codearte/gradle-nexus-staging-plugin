@@ -87,6 +87,11 @@ task funcTest(type: Test) {
     testClassesDir = sourceSets.funcTest.output.classesDir
     classpath = sourceSets.funcTest.runtimeClasspath
 
+    if (project.hasProperty('disableE2ESpecs') || System.getenv().NEXUS_AT_DISABLE_E2E_SPECS != null) {
+        logger.lifecycle('E2E specifications execution disabled')
+        exclude '**/*E2ESpec.*'
+    }
+
     reports.html {
         destination = file("${reporting.baseDir}/funcTests")
     }
