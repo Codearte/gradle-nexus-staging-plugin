@@ -2,7 +2,7 @@ package io.codearte.gradle.nexus.functional
 
 import groovy.transform.NotYetImplemented
 import groovyx.net.http.RESTClient
-import io.codearte.gradle.nexus.FunctionalTestHelperTrait
+import io.codearte.gradle.nexus.E2EFunctionalTestHelperTrait
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
@@ -20,7 +20,7 @@ import spock.lang.Stepwise
 //TODO: Duplication with BasicFunctionalSpec done at Gradle level - decide which tests are better/easier to use and maintain
 @Stepwise
 @Ignore
-class E2EExperimentalSpec extends BaseNexusStagingFunctionalSpec implements FunctionalTestHelperTrait {
+class E2EExperimentalSpec extends BaseNexusStagingFunctionalSpec implements E2EFunctionalTestHelperTrait {
 
     private SimplifiedHttpJsonRestClient client
     private RepositoryStateFetcher repoStateFetcher
@@ -29,7 +29,7 @@ class E2EExperimentalSpec extends BaseNexusStagingFunctionalSpec implements Func
     private static String resolvedStagingRepositoryId
 
     def setup() {
-        client = new SimplifiedHttpJsonRestClient(new RESTClient(), getNexusUsernameAT(), tryToReadNexusPasswordAT())
+        client = new SimplifiedHttpJsonRestClient(new RESTClient(), nexusUsernameAT, nexusPasswordAT)
         repoStateFetcher = new RepositoryStateFetcher(client, E2E_SERVER_BASE_PATH)
         retrier = new OperationRetrier<>()
     }
