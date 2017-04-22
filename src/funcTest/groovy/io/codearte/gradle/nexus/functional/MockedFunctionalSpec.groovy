@@ -3,6 +3,7 @@ package io.codearte.gradle.nexus.functional
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import groovy.json.JsonOutput
+import io.codearte.gradle.nexus.FunctionalSpecHelperTrait
 import io.codearte.gradle.nexus.logic.FetcherResponseTrait
 import io.codearte.gradle.nexus.logic.RepositoryState
 import nebula.test.functional.ExecutionResult
@@ -20,7 +21,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import static com.github.tomakehurst.wiremock.client.WireMock.verify
 
 //TODO: Split into two files: basic and transition related
-class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements FetcherResponseTrait {
+class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements FetcherResponseTrait, FunctionalSpecHelperTrait {
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8089)
@@ -258,7 +259,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     }
 
     @Override
-    protected String getDefaultConfigurationClosure() {
+    String getDefaultConfigurationClosure() {
         return """
                 nexusStaging {
                     stagingProfileId = "$stagingProfileId"

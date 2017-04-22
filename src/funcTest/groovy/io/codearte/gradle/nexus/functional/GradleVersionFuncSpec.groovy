@@ -2,6 +2,7 @@ package io.codearte.gradle.nexus.functional
 
 import com.google.common.base.Predicate
 import com.google.common.base.Predicates
+import io.codearte.gradle.nexus.FunctionalSpecHelperTrait
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
 import spock.util.Exceptions
@@ -11,7 +12,7 @@ import java.util.regex.Pattern
 /**
  * Verifies that plugin doesn't fail during Gradle initialization (e.g. due to ClassCastException error) with different "supported" Gradle versions.
  */
-class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec {
+class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements FunctionalSpecHelperTrait {
 
     def "should not fail on plugin logic not initialization issue with Gradle #requestedGradleVersion"() {
         given:
