@@ -1,4 +1,4 @@
-package io.codearte.gradle.nexus
+package io.codearte.gradle.nexus.functional.e2e
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -7,7 +7,7 @@ import java.lang.invoke.MethodHandles
 
 //@CompileStatic    //as getNexus*AT() is called from static context, but unfortunately making them static results in:
                     //MissingMethodException: No signature of method: static io.codearte.gradle.nexus.E2EFunctionalTestHelperTrait.getNexusUsernameAT()
-trait E2ESpecHelperTrait implements FunctionalTestConstants {
+trait E2ESpecHelperTrait implements E2ESpecConstants {
 
     private static final Logger logT = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

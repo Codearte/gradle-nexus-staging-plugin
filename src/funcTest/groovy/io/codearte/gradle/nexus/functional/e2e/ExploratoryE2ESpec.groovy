@@ -1,8 +1,8 @@
-package io.codearte.gradle.nexus.functional
+package io.codearte.gradle.nexus.functional.e2e
 
 import groovy.transform.NotYetImplemented
 import groovyx.net.http.RESTClient
-import io.codearte.gradle.nexus.E2ESpecHelperTrait
+import io.codearte.gradle.nexus.functional.BaseNexusStagingFunctionalSpec
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser

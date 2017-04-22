@@ -1,4 +1,4 @@
-package io.codearte.gradle.nexus
+package io.codearte.gradle.nexus.functional
 
 trait FunctionalSpecHelperTrait {
 

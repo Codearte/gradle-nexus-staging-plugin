@@ -1,6 +1,6 @@
-package io.codearte.gradle.nexus.functional
+package io.codearte.gradle.nexus.functional.e2e
 
-import io.codearte.gradle.nexus.E2ESpecHelperTrait
+import io.codearte.gradle.nexus.functional.BaseNexusStagingFunctionalSpec
 import nebula.test.functional.ExecutionResult
 import spock.lang.Stepwise
 

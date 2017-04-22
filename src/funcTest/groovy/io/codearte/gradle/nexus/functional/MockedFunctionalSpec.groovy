@@ -3,7 +3,6 @@ package io.codearte.gradle.nexus.functional
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import groovy.json.JsonOutput
-import io.codearte.gradle.nexus.FunctionalSpecHelperTrait
 import io.codearte.gradle.nexus.logic.FetcherResponseTrait
 import io.codearte.gradle.nexus.logic.RepositoryState
 import nebula.test.functional.ExecutionResult

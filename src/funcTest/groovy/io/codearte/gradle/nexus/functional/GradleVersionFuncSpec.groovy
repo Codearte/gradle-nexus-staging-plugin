@@ -2,7 +2,6 @@ package io.codearte.gradle.nexus.functional
 
 import com.google.common.base.Predicate
 import com.google.common.base.Predicates
-import io.codearte.gradle.nexus.FunctionalSpecHelperTrait
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
 import spock.util.Exceptions

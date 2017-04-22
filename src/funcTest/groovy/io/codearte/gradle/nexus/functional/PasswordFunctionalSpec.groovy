@@ -1,6 +1,5 @@
 package io.codearte.gradle.nexus.functional
 
-import io.codearte.gradle.nexus.FunctionalSpecHelperTrait
 import org.codehaus.groovy.runtime.StackTraceUtils
 
 class PasswordFunctionalSpec extends BaseNexusStagingFunctionalSpec implements FunctionalSpecHelperTrait {
