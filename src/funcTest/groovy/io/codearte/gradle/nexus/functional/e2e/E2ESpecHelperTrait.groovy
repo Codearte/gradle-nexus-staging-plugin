@@ -11,6 +11,7 @@ trait E2ESpecHelperTrait implements E2ESpecConstants {
 
     private static final Logger logT = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private static final String GRADLE_ENVIRONMENT_VARIABLE_PREFIX = 'ORG_GRADLE_PROJECT_'
     private static final String NEXUS_USERNAME_AT_ENVIRONMENT_VARIABLE_NAME = 'nexusUsernameAT'
     private static final String NEXUS_PASSWORD_AT_ENVIRONMENT_VARIABLE_NAME = 'nexusPasswordAT'
 
@@ -25,17 +26,24 @@ trait E2ESpecHelperTrait implements E2ESpecConstants {
     //Cannot be private due to limitation of trait & Spock combination
     String readNexusUsernameAT() {
         return System.getenv(NEXUS_USERNAME_AT_ENVIRONMENT_VARIABLE_NAME) ?:
-            tryToReadPropertyFromGradlePropertiesFile(NEXUS_USERNAME_AT_ENVIRONMENT_VARIABLE_NAME) ?:
-                'nexus-at'
+            tryToReadPropertyFromGradleEnvironmentVariable(NEXUS_USERNAME_AT_ENVIRONMENT_VARIABLE_NAME) ?:
+                tryToReadPropertyFromGradlePropertiesFile(NEXUS_USERNAME_AT_ENVIRONMENT_VARIABLE_NAME) ?:
+                    'nexus-at'
     }
 
     String tryToReadNexusPasswordAT() {
         //Will not work with empty password. However, support for it would complicate '?;' statement
         return System.getenv(NEXUS_PASSWORD_AT_ENVIRONMENT_VARIABLE_NAME) ?:
-            tryToReadPropertyFromGradlePropertiesFile(NEXUS_PASSWORD_AT_ENVIRONMENT_VARIABLE_NAME) ?:
-                { throw new RuntimeException("Nexus password for AT tests is not set in 'gradle.properties' nor system variable " +
-                    "'$NEXUS_PASSWORD_AT_ENVIRONMENT_VARIABLE_NAME'. E2E tests can be disabled with '-PdisableE2ESpecs' or" +
-                    "'NEXUS_AT_DISABLE_E2E_SPECS=anyValue environment variable'") }()
+            tryToReadPropertyFromGradleEnvironmentVariable(NEXUS_PASSWORD_AT_ENVIRONMENT_VARIABLE_NAME) ?:
+                tryToReadPropertyFromGradlePropertiesFile(NEXUS_PASSWORD_AT_ENVIRONMENT_VARIABLE_NAME) ?:
+                    { throw new RuntimeException("Nexus password for AT tests is not set in 'gradle.properties' nor system variable " +
+                        "'$NEXUS_PASSWORD_AT_ENVIRONMENT_VARIABLE_NAME'. E2E tests can be disabled with '-PdisableE2ESpecs' or" +
+                        "'NEXUS_AT_DISABLE_E2E_SPECS=anyValue environment variable'") }()
+    }
+
+    //TODO: It would be good to not reimplement Gradle logic
+    private String tryToReadPropertyFromGradleEnvironmentVariable(String propertyName) {
+        return System.getenv("$GRADLE_ENVIRONMENT_VARIABLE_PREFIX$propertyName")
     }
 
     private String tryToReadPropertyFromGradlePropertiesFile(String propertyName) {
