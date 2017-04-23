@@ -20,7 +20,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import static com.github.tomakehurst.wiremock.client.WireMock.verify
 
 //TODO: Split into two files: basic and transition related
-class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements FetcherResponseTrait {
+class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements FetcherResponseTrait, FunctionalSpecHelperTrait {
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8089)
@@ -258,7 +258,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
     }
 
     @Override
-    protected String getDefaultConfigurationClosure() {
+    String getDefaultConfigurationClosure() {
         return """
                 nexusStaging {
                     stagingProfileId = "$stagingProfileId"

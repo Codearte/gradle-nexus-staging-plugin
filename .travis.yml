@@ -1,7 +1,25 @@
+before_install:
+  - openssl aes-256-cbc -K $encrypted_21cd6bba12a0_key -iv $encrypted_21cd6bba12a0_iv
+    -in gradle/gpg-key.asc.enc -d | gpg --fast-import
+  # Environment variables cannot have "." and it's problematic to pass them with "ORG_GRADLE_PROJECT_"
+  # In addition GRADLE_OPTS doesn't seem to be passed to Gradle started with Nebula
+  - mkdir -p ~/.gradle
+  - echo "signing.keyIdAT=0694F057" >> ~/.gradle/gradle.properties
+  - echo "signing.secretKeyRingFileAT=$HOME/.gnupg/secring.gpg" >> ~/.gradle/gradle.properties
+  - echo "signing.passwordAT=" >> ~/.gradle/gradle.properties
+install:
+  - ./gradlew assemble -s
+script:
+  - ./gradlew check funcTest -Pcompatibility -s -i --continue
+
 language: groovy
 jdk:
   - oraclejdk8
-  - oraclejdk7
-
-install: ./gradlew assemble --stacktrace --info
-script: ./gradlew check funcTest -Pcompatibility --stacktrace --info --continue
+env:
+  global:
+  - secure: g95pWjS+RIusyf6t26YnH/HhL6j7aQb3nUpiF0i+9eumn1sT2g8c8X9bdDrncXetAs0+I50cP7jER2IDBG67wbqE2LD2TbCPMA/hJIqtWTatjKT1dUjVL4mxtZ7GsbHZyRM9nUbtOqBBaL+DqzkecO8lHMKB5nej7NdkFT1JO6c=
+  - secure: dgqSFhIO5JuL6X2HgKt7RJLacl+MSZK4VV9710W0NolPAZlurSgg1vVeoI/4XFpdnt5KSfDUTZL2XS8kU5OgXMqTQcltXusk4fop21m1Z9X3NajqwXbnqDFPbsp2Rsz3B9Cwd5usFW9sdYXtvei5Qa26LnZMM7tIJiI2nxIJEtw=
+matrix:
+  include:
+    - jdk: oraclejdk7
+      env: NEXUS_AT_ENABLE_E2E_TESTS=true

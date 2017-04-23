@@ -1,8 +1,8 @@
-package io.codearte.gradle.nexus.functional
+package io.codearte.gradle.nexus.functional.e2e
 
 import groovy.transform.NotYetImplemented
 import groovyx.net.http.RESTClient
-import io.codearte.gradle.nexus.FunctionalTestHelperTrait
+import io.codearte.gradle.nexus.functional.BaseNexusStagingFunctionalSpec
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
@@ -13,14 +13,13 @@ import io.codearte.gradle.nexus.logic.RepositoryState
 import io.codearte.gradle.nexus.logic.RepositoryStateFetcher
 import io.codearte.gradle.nexus.logic.RetryingRepositoryTransitioner
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
+import nebula.test.functional.ExecutionResult
 import spock.lang.Ignore
-import spock.lang.Specification
 import spock.lang.Stepwise
 
 //TODO: Duplication with BasicFunctionalSpec done at Gradle level - decide which tests are better/easier to use and maintain
 @Stepwise
-@Ignore
-class E2EExperimentalSpec extends Specification implements FunctionalTestHelperTrait {
+class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESpecHelperTrait {
 
     private SimplifiedHttpJsonRestClient client
     private RepositoryStateFetcher repoStateFetcher
@@ -29,7 +28,7 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
     private static String resolvedStagingRepositoryId
 
     def setup() {
-        client = new SimplifiedHttpJsonRestClient(new RESTClient(), getNexusUsernameAT(), tryToReadNexusPasswordAT())
+        client = new SimplifiedHttpJsonRestClient(new RESTClient(), nexusUsernameAT, nexusPasswordAT)
         repoStateFetcher = new RepositoryStateFetcher(client, E2E_SERVER_BASE_PATH)
         retrier = new OperationRetrier<>()
     }
@@ -46,8 +45,14 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
             stagingProfileId == E2E_STAGING_PROFILE_ID
     }
 
-    @NotYetImplemented
-    def "should upload artifacts to server"() {}
+    def "should upload artifacts to server"() {
+        given:
+            copyResources("sampleProjects//nexus-at-minimal", "")
+        when:
+            ExecutionResult result = runTasksSuccessfully('uploadArchives')
+        then:
+            result.standardOutput.contains('Uploading: io/gitlab/nexus-at/minimal/nexus-at-minimal/')
+    }
 
     def "should get open repository id from server e2e"() {
         given:
@@ -86,7 +91,7 @@ class E2EExperimentalSpec extends Specification implements FunctionalTestHelperT
             receivedRepoState == RepositoryState.CLOSED
     }
 
-    @Ignore //Not implemented yet
+    @Ignore('Not the base path')
     def "should drop open repository e2e"() {
         given:
             assert resolvedStagingRepositoryId

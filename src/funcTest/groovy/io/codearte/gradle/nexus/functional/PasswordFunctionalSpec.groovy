@@ -2,7 +2,7 @@ package io.codearte.gradle.nexus.functional
 
 import org.codehaus.groovy.runtime.StackTraceUtils
 
-class PasswordFunctionalSpec extends BaseNexusStagingFunctionalSpec {
+class PasswordFunctionalSpec extends BaseNexusStagingFunctionalSpec implements FunctionalSpecHelperTrait {
 
     def "should read password from repository configured in uploadArchives"() {
         given:

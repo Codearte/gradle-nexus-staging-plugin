@@ -87,6 +87,11 @@ task funcTest(type: Test) {
     testClassesDir = sourceSets.funcTest.output.classesDir
     classpath = sourceSets.funcTest.runtimeClasspath
 
+    if (!project.hasProperty('enableE2ETests') && System.getenv().NEXUS_AT_ENABLE_E2E_TESTS == null) {
+        logger.lifecycle("E2E tests execution is disabled.")
+        exclude '**/*E2ESpec.*'
+    }
+
     reports.html {
         destination = file("${reporting.baseDir}/funcTests")
     }
@@ -104,6 +109,11 @@ task testReport(type: TestReport) {
 
 tasks.withType(ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer) {
     onlyIf { project.hasProperty('compatibility') }
+}
+
+animalsniffer {
+    sourceSets = [project.sourceSets.main]  //just for production classes - Animal Sniffer fails with: 'Undefined reference: void for Spock tests'
+                                            //https://github.com/mojohaus/animal-sniffer/issues/27
 }
 
 nexusStaging {

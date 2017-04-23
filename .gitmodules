@@ -1,0 +1,3 @@
+[submodule "src/funcTest/resources/sampleProjects/nexus-at-minimal"]
+	path = src/funcTest/resources/sampleProjects/nexus-at-minimal
+	url = https://gitlab.com/nexus-at/nexus-at-minimal.git

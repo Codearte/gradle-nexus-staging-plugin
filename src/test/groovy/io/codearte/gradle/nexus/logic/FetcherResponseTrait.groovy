@@ -1,8 +1,10 @@
 package io.codearte.gradle.nexus.logic
 
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 
 @CompileStatic
+@PackageScope
 trait FetcherResponseTrait {
 
     Map createResponseMapWithGivenRepos(List<Map> repositories) {

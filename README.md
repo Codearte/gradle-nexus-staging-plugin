@@ -4,7 +4,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.codearte.gradle.nexus/gradle-nexus-staging-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.codearte.gradle.nexus/gradle-nexus-staging-plugin)
 
 A gradle plugin providing tasks to close and promote/release staged repositories. It allows to do a full artifacts release to Maven Central through
-[Sonatype OSSRH](http://central.sonatype.org/pages/ossrh-guide.html) (OSS Repository Hosting) without the need to use Nexus GUI (to close and promote
+[Sonatype OSSRH](http://central.sonatype.org/pages/ossrh-guide.html) (Open Source Software Repository Hosting) without the need to use Nexus GUI (to close and release
 artifacts/repository).
 
 ## Quick start
