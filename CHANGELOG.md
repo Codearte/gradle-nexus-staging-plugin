@@ -9,7 +9,7 @@
  - Make functional tests work also on Windows - [#39](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/39)
 
 **Deprecation note**. The ~~promoteRepository~~ and ~~closeAndPromoteRepository~~ tasks are marked as deprecated and will be removed
-in the one of the future versions. `releaseRepository` and `closeAndReleaseRepository` can be used as drop-in replacements. 
+in one of the future versions. `releaseRepository` and `closeAndReleaseRepository` can be used as drop-in replacements. 
 
 ## 0.7.0 - 2017-03-27
 
