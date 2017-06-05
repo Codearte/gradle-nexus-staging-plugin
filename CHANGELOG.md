@@ -1,5 +1,14 @@
 # gradle-nexus-staging-plugin changelog
 
+## 0.9.0 - 2017-06-05
+
+This release provides no new features or bugfixes. It is focused on acceptance E2E testing and Continuous Delivery
+with [CDeliveryBoy](https://travis-ci.org/szpak/CDeliveryBoy). 
+
+ - Acceptance tests at Gradle level run before release against real Nexus - [#40](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/40)
+ - Automatic `CHANGELOG.md` synchronization with GitHub releases - [#52](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/52)
+ - Switch releasing to Continuous Delivery with CDeliveryBoy - [#54](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/54)
+
 ## 0.8.0 - 2017-04-08
 
  - Auto drop repository after release - [#37](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/37)

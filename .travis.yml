@@ -1,25 +1,57 @@
+language: groovy
+
 before_install:
   - openssl aes-256-cbc -K $encrypted_21cd6bba12a0_key -iv $encrypted_21cd6bba12a0_iv
     -in gradle/gpg-key.asc.enc -d | gpg --fast-import
   # Environment variables cannot have "." and it's problematic to pass them with "ORG_GRADLE_PROJECT_"
-  # In addition GRADLE_OPTS doesn't seem to be passed to Gradle started with Nebula
+  # In addition GRADLE_OPTS doesn't seem to be passed to Gradle started with Nebula (for AT/E2E tests)
   - mkdir -p ~/.gradle
   - echo "signing.keyIdAT=0694F057" >> ~/.gradle/gradle.properties
   - echo "signing.secretKeyRingFileAT=$HOME/.gnupg/secring.gpg" >> ~/.gradle/gradle.properties
   - echo "signing.passwordAT=" >> ~/.gradle/gradle.properties
+  # regular releasing (not AT/E2E)
+  - "export GRADLE_OPTS='-Dorg.gradle.project.signing.keyId=0694F057 -Dorg.gradle.project.signing.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Dorg.gradle.project.signing.password= -Dorg.gradle.project.gradle.publish.key=$PLUGIN_PORTAL_API_KEY -Dorg.gradle.project.gradle.publish.secret=$PLUGIN_PORTAL_API_SECRET'"
+  - "export TRAVIS_COMMIT_MSG=$(git log --format=%B -n 1 $TRAVIS_COMMIT)"
+  - git config user.email "oss-codearte@codearte.io"
+  - git config user.name "Codearte Continuous Delivery Bot"
+  # Chandler for release notes synchronization
+  - ruby --version
+  - rvm install 2.4.1
+  - ruby --version
+  - gem install chandler
+
 install:
   - ./gradlew assemble -s
-script:
-  - ./gradlew check funcTest -Pcompatibility -s -i --continue
 
-language: groovy
-jdk:
-  - oraclejdk8
+script:
+  - ./gradlew prepareForCiBuild -s -i -Prelease.disableChecks && ./gradlew funcTest ciBuild -s -i -Pcompatibility -Prelease.disableChecks -PpluginPortal -PchangelogSync
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -fr $HOME/.gradle/caches/*/scripts/
+  - rm -fr $HOME/.gradle/caches/*/scripts-remapped/
+  - rm -fr $HOME/.gradle/caches/*/fileHashes/
+  - rm -fr $HOME/.gradle/caches/transforms-1/transforms-1.lock
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.rvm/
+
 env:
   global:
   - secure: g95pWjS+RIusyf6t26YnH/HhL6j7aQb3nUpiF0i+9eumn1sT2g8c8X9bdDrncXetAs0+I50cP7jER2IDBG67wbqE2LD2TbCPMA/hJIqtWTatjKT1dUjVL4mxtZ7GsbHZyRM9nUbtOqBBaL+DqzkecO8lHMKB5nej7NdkFT1JO6c=
   - secure: dgqSFhIO5JuL6X2HgKt7RJLacl+MSZK4VV9710W0NolPAZlurSgg1vVeoI/4XFpdnt5KSfDUTZL2XS8kU5OgXMqTQcltXusk4fop21m1Z9X3NajqwXbnqDFPbsp2Rsz3B9Cwd5usFW9sdYXtvei5Qa26LnZMM7tIJiI2nxIJEtw=
+  - secure: DR1o+9sl7HMkkMPNSDw74B7BrenOhBf3fI0M8arNpX+I4zcMV/qX+PSoi+JJksTRRU8KKETXpEvz4dujqPrkvWpQ8WzeuM9cKhX3wz88TNTopptlDkPwNiEl406a8/PIOnuuSs6JfUvVinumOj5kH3BvsPv6DjB+qpWG69EZXNM=
+  - secure: Qn67rhyd3Zxf66pxXgTkIe4NpGNlY/OURVxNFFf6TR7Jn5iNVbyMgqS3mwZCbURnQhf3MHzfGQo6Y+625p76WeoovuQHg/FBoEUaRlDaMNWZsG6/ANrLrNKlCmhpkuOgCf/hyeo/O/I0c9g7eRb4lbPYfE6Z1pN4THh4Ht3xsHc=
+  - secure: BbhKYieYFifcqKl+iRTzUyB5huD5Dpxb3c/3iW6+9nFm3C3mAxya/aIV6Ue938noVULPgZmIeCQ+SZ1j/YDuRsw+Ou8g2Dks0EUFgycrEEaKKEjAtv9mB1KD1Y+U21JeyRGxSL+TNby/Zdu6VRtAIdD1Q53LWrKm7ZV1vyKPgzw=
+  - secure: ZBwOcMY2D+3C+r1R3m5dINJ9G552TyVQgSyvFWVpC1Og8xwg1oCdavORCOn1ulJkkMjeRSr2ghzLB42dx4q0Jp6cu/4pxsvhX7oDVweKdK67UqdeGuq/MHqvYCzOxPNQ0XCdKz4rdxx2zxJsN1NsVcv8hhvzhy3c1+eSleZS7sA=
+  - secure: SnNdz7Sf1PXnhOshWwwfgN0soiZK989dnUFvcB3jJ8vNXi4c6vOxvy7l/KheyNge0n6eMKBg/cppMCKK5c6firEvnU0G1NlzMZ06KllJmU3kM+UF9FD7Aw0sKU5w715FB+GqlgX8T/cpHkUSo4D8ELT4Qlj5fv475n7ajDSs1b4=
+  - secure: WbKPmXCd0N3wiwFspIYJhqRp3jagVt0w7lFSUIlnzhN3crt1IubtydgqhhcFYsLb2/iNwibU7mO8cwOYuoi1+SKuEdogAP05ndV81qq93HV8P3zESV75BnG7U1AVBaZjFdi+kYNhSALdWUmbZjcdogINgJMmezbqdL+tPOXEKaA=
 matrix:
   include:
     - jdk: oraclejdk7
       env: NEXUS_AT_ENABLE_E2E_TESTS=true
+    - jdk: oraclejdk8
+      env: SKIP_RELEASE=true
