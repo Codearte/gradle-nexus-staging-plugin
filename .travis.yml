@@ -14,12 +14,17 @@ before_install:
   - "export TRAVIS_COMMIT_MSG=$(git log --format=%B -n 1 $TRAVIS_COMMIT)"
   - git config user.email "oss-codearte@codearte.io"
   - git config user.name "Codearte Continuous Delivery Bot"
+  # Chandler for release notes synchronization
+  - ruby --version
+  - rvm install 2.4.1
+  - ruby --version
+  - gem install chandler
 
 install:
   - ./gradlew assemble -s
 
 script:
-  - ./gradlew prepareForCiBuild -s -i -Prelease.disableChecks && ./gradlew funcTest ciBuild -s -i -Pcompatibility -Prelease.disableChecks
+  - ./gradlew prepareForCiBuild -s -i -Prelease.disableChecks && ./gradlew funcTest ciBuild -s -i -Pcompatibility -Prelease.disableChecks -PpluginPortal -PchangelogSync
 
 env:
   global:

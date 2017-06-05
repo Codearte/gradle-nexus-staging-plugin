@@ -186,4 +186,24 @@ if (hasProperty('pluginPortal')) {
             artifactId = project.name
         }
     }
+
+    publishPlugins {
+        onlyIf { ciBuild.isInReleaseMode }
+        mustRunAfter releaseRepository
+    }
+    ciBuild.dependsOn publishPlugins
+}
+
+if (hasProperty('changelogSync')) {
+
+    task syncChangelog(type: Exec) {
+        doFirst { logger.info("Synchronizing changelog with GitHub for version ${project.version}") }
+        commandLine 'chandler', 'push', "release/${project.version}", '--tag-prefix=release/'
+    }
+
+    syncChangelog {
+        onlyIf { ciBuild.isInReleaseMode }
+        mustRunAfter releaseRepository, publishPlugins
+    }
+    ciBuild.dependsOn syncChangelog
 }
