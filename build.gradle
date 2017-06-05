@@ -28,10 +28,11 @@ scmVersion {
         versionSeparator = '/'
     }
     versionIncrementer 'incrementMinor'
-    releaseCommitMessage = { version, position -> "Release version: ${version}\n\n[ci skip]" }
     hooks {
-        pre 'fileUpdate', [file: 'README.md', pattern: {v, p -> /"io\.codearte\.gradle\.nexus:gradle-nexus-staging-plugin:.*"/},
-                           replacement: {v, p -> "\"io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$v\""}]
+        pre 'fileUpdate', [file       : 'README.md', pattern: { v, p -> /"io\.codearte\.gradle\.nexus:gradle-nexus-staging-plugin:.*"/ },
+                           replacement: { v, p -> "\"io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$v\"" }]
+        pre 'fileUpdate', [file       : 'README.md', pattern: { v, p -> /id\ 'io\.codearte\.nexus-staging'\ version\ '.*'/ },
+                           replacement: { v, p -> "id 'io.codearte.nexus-staging' version '$v'" }]
         pre 'commit', { version, position -> "Release version: ${version}\n\n[ci skip]" }
     }
 }
@@ -120,7 +121,6 @@ nexusStaging {
     packageGroup = "io.codearte"
     stagingProfileId = "93c08fdebde1ff"
 }
-
 
 modifyPom {
     project {
