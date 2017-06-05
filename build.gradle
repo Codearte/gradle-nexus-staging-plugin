@@ -160,10 +160,6 @@ modifyPom {
     }
 }
 
-wrapper {
-    gradleVersion "2.4"
-}
-
 if (hasProperty('pluginPortal')) {
 
     apply plugin: 'com.gradle.plugin-publish'
