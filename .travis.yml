@@ -9,6 +9,9 @@ before_install:
   - echo "signing.keyIdAT=0694F057" >> ~/.gradle/gradle.properties
   - echo "signing.secretKeyRingFileAT=$HOME/.gnupg/secring.gpg" >> ~/.gradle/gradle.properties
   - echo "signing.passwordAT=" >> ~/.gradle/gradle.properties
+  # Enable E2E tests if desired in given build variant and not in PR - #56
+  # Setting environment variables in "env" seems to be too primite to support it inline
+  - if [ "$NEXUS_AT_ENABLE_E2E_TESTS_IN_VARIANT" == "true" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then export NEXUS_AT_ENABLE_E2E_TESTS=true; fi;
   # regular releasing (not AT/E2E)
   - "export GRADLE_OPTS='-Dorg.gradle.project.signing.keyId=0694F057 -Dorg.gradle.project.signing.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Dorg.gradle.project.signing.password= -Dorg.gradle.project.gradle.publish.key=$PLUGIN_PORTAL_API_KEY -Dorg.gradle.project.gradle.publish.secret=$PLUGIN_PORTAL_API_SECRET'"
   - "export TRAVIS_COMMIT_MSG=$(git log --format=%B -n 1 $TRAVIS_COMMIT)"
@@ -52,6 +55,6 @@ env:
 matrix:
   include:
     - jdk: oraclejdk7
-      env: NEXUS_AT_ENABLE_E2E_TESTS=true
+      env: NEXUS_AT_ENABLE_E2E_TESTS_IN_VARIANT=true
     - jdk: oraclejdk8
       env: SKIP_RELEASE=true
