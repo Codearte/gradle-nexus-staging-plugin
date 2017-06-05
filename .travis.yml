@@ -12,7 +12,7 @@ before_install:
   # regular releasing (not AT/E2E)
   - "export GRADLE_OPTS='-Dorg.gradle.project.signing.keyId=0694F057 -Dorg.gradle.project.signing.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Dorg.gradle.project.signing.password= -Dorg.gradle.project.gradle.publish.key=$PLUGIN_PORTAL_API_KEY -Dorg.gradle.project.gradle.publish.secret=$PLUGIN_PORTAL_API_SECRET'"
   - "export TRAVIS_COMMIT_MSG=$(git log --format=%B -n 1 $TRAVIS_COMMIT)"
-  - git config user.email "oss-codearte@codearte.io"
+  - git config user.email "oss@codearte.io"
   - git config user.name "Codearte Continuous Delivery Bot"
   # Chandler for release notes synchronization
   - ruby --version
