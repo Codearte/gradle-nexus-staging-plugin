@@ -21,7 +21,7 @@ before_install:
   - ruby --version
   - rvm install 2.4.1
   - ruby --version
-  - gem install chandler
+  - gem install --no-ri --no-rdoc chandler
 
 install:
   - ./gradlew assemble -s
