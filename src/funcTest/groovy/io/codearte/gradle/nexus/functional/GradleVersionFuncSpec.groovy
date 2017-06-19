@@ -54,6 +54,6 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
     } as Predicate<URL>
 
     private List<String> resolveRequestedGradleVersions() {
-        return ["2.0", "3.5"]
+        return ["2.0", "3.5.1", "4.0"]
     }
 }
