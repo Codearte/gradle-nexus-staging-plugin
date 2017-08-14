@@ -17,6 +17,7 @@ class NexusStagingExtension {
     String stagingProfileId //since 0.4.1
     @Incubating Integer numberOfRetries
     @Incubating Integer delayBetweenRetriesInMillis
+    @Incubating String  repositoryDescription
 
     //Deprecated since 0.4.1.
     void setNexusUrl(String nexusUrl) {

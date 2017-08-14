@@ -110,6 +110,7 @@ class NexusStagingPlugin implements Plugin<Project> {
             stagingProfileId = { extension.stagingProfileId }
             numberOfRetries = { extension.numberOfRetries }
             delayBetweenRetriesInMillis = { extension.delayBetweenRetriesInMillis }
+            repositoryDescription = { extension.repositoryDescription}
         }
     }
 

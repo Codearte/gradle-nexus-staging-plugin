@@ -17,7 +17,7 @@ class RepositoryCloser extends AbstractRepositoryTransitioner {
     @Override
     void performWithRepositoryIdAndStagingProfileId(String repositoryId, String stagingProfileId) {
         log.info("Closing repository '$repositoryId' with staging profile '$stagingProfileId'")
-        Map<String, Map> postContent = prepareStagingPostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId)
+        Map<String, Map> postContent = prepareStagingPostContentWithGivenRepositoryIdAndStagingId(repositoryId, stagingProfileId, repositoryDescription)
         client.post(pathForGivenBulkOperation("close"), postContent)
         log.info("Repository '$repositoryId' with staging profile '$stagingProfileId' has been accepted by server to be closed")
     }

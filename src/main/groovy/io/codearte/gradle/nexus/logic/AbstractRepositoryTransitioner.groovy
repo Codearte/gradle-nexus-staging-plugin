@@ -7,10 +7,10 @@ import groovy.transform.InheritConstructors
 @CompileStatic
 abstract class AbstractRepositoryTransitioner extends BaseOperationExecutor implements RepositoryTransition {
 
-    protected Map<String, Map> prepareStagingPostContentWithGivenRepositoryIdAndStagingId(String repositoryId, String stagingProfileId) {
+    protected Map<String, Map> prepareStagingPostContentWithGivenRepositoryIdAndStagingId(String repositoryId, String stagingProfileId, String description) {
         return [data: [
                         stagedRepositoryIds: [repositoryId],
-                        description: 'Automatically released/promoted with gradle-nexus-staging-plugin!',
+                        description: description,
                         autoDropAfterRelease: true
 //                        stagingProfileGroup: stagingProfileId,    //Cannot be set as it triggers "promote" command not "release"
 

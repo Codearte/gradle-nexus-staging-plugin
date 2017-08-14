@@ -9,10 +9,12 @@ abstract class BaseOperationExecutor {
 
     protected final SimplifiedHttpJsonRestClient client
     protected final String nexusUrl
+    protected final String repositoryDescription
 
-    BaseOperationExecutor(SimplifiedHttpJsonRestClient client, String nexusUrl) {
+    BaseOperationExecutor(SimplifiedHttpJsonRestClient client, String nexusUrl, String repositoryDescription = 'Automatically released/promoted with gradle-nexus-staging-plugin!') {
         this.client = client
         this.nexusUrl = removeTrailingSlashIfAvailable(nexusUrl)
+        this.repositoryDescription = repositoryDescription
     }
 
     private String removeTrailingSlashIfAvailable(String nexusUrl) {
