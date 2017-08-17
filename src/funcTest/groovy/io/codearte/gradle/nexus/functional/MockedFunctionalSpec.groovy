@@ -133,7 +133,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             buildFile << """
                 ${getApplyPluginBlock()}
                 ${getDefaultConfigurationClosure()}
-                task getValue << {
+                task("getValue").doLast {
                     assert getStagingProfile.stagingProfileId == "$stagingProfileId"
                 }
             """.stripIndent()
