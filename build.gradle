@@ -196,7 +196,10 @@ if (hasProperty('changelogSync')) {
 
     syncChangelog {
         onlyIf { ciBuild.isInReleaseMode }
-        mustRunAfter releaseRepository, publishPlugins
+        mustRunAfter releaseRepository
+        if (project.tasks.findByName("publishPlugins")) {
+            mustRunAfter publishPlugins
+        }
     }
     ciBuild.dependsOn syncChangelog
 }
