@@ -90,6 +90,7 @@ if packageGroup in Nexus was requested for a few packages in the same domain)
 one additional request is send to the Nexus server to determine the value using `packageGroup`
  - `numberOfRetries` (optional) - the number of retries when waiting for a repository state transition to finish - by default `20`
  - `delayBetweenRetriesInMillis` (optional) - the delay between retries - by default `2000` milliseconds
+ - `repositoryDescription` (optional) - staging repository description in close/release operations (see [#63](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/63) for more information)
 
 For the sensible configuration example see the plugin's own release configuration in [build.gradle](build.gradle).
 
