@@ -10,7 +10,7 @@ class RepositoryCloserSpec extends BaseOperationExecutorSpec {
     def "should close open repository"() {
         given:
             SimplifiedHttpJsonRestClient client = Mock()
-            RepositoryCloser closer = new RepositoryCloser(client, MOCK_SERVER_HOST)
+            RepositoryCloser closer = new RepositoryCloser(client, MOCK_SERVER_HOST, TEST_REPOSITORY_DESCRIPTION)
         when:
             closer.performWithRepositoryIdAndStagingProfileId(TEST_REPOSITORY_ID, TEST_STAGING_PROFILE_ID)
         then:

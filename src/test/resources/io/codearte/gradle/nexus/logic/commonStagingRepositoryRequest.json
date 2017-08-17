@@ -1,7 +1,7 @@
 {
   "data": {
     "stagedRepositoryIds": ["iocodearte-1011"],
-    "description": "Automatically released/promoted with gradle-nexus-staging-plugin!",
+    "description": "Test repository description",
     "autoDropAfterRelease": true
   }
 }

@@ -10,7 +10,7 @@ class RepositoryDropperSpec extends BaseOperationExecutorSpec {
     def "should drop repository"() {
         given:
             SimplifiedHttpJsonRestClient client = Mock()
-            RepositoryDropper dropper = new RepositoryDropper(client, MOCK_SERVER_HOST)
+            RepositoryDropper dropper = new RepositoryDropper(client, MOCK_SERVER_HOST, TEST_REPOSITORY_DESCRIPTION)
         when:
             dropper.performWithRepositoryIdAndStagingProfileId(TEST_REPOSITORY_ID, TEST_STAGING_PROFILE_ID)
         then:

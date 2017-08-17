@@ -44,7 +44,6 @@ abstract class BaseStagingTask extends DefaultTask {
     Integer delayBetweenRetriesInMillis
 
     @Input
-    @Optional
     String repositoryDescription
 
     @PackageScope

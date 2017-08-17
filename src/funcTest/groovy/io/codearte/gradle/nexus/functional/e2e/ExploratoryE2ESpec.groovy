@@ -79,7 +79,7 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
         given:
             assert resolvedStagingRepositoryId
         and:
-            RepositoryCloser closer = new RepositoryCloser(client, E2E_SERVER_BASE_PATH)
+            RepositoryCloser closer = new RepositoryCloser(client, E2E_SERVER_BASE_PATH, E2E_REPOSITORY_DESCRIPTION)
             RetryingRepositoryTransitioner retryingCloser = new RetryingRepositoryTransitioner(closer, repoStateFetcher, retrier)
         when:
             retryingCloser.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
@@ -96,7 +96,7 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
         given:
             assert resolvedStagingRepositoryId
         and:
-            RepositoryDropper dropper = new RepositoryDropper(client, E2E_SERVER_BASE_PATH)
+            RepositoryDropper dropper = new RepositoryDropper(client, E2E_SERVER_BASE_PATH, E2E_REPOSITORY_DESCRIPTION)
             RetryingRepositoryTransitioner retryingDropper = new RetryingRepositoryTransitioner(dropper, repoStateFetcher, retrier)
         when:
             retryingDropper.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)
@@ -112,7 +112,7 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
         given:
             assert resolvedStagingRepositoryId
         and:
-            RepositoryReleaser releaser = new RepositoryReleaser(client, E2E_SERVER_BASE_PATH)
+            RepositoryReleaser releaser = new RepositoryReleaser(client, E2E_SERVER_BASE_PATH, E2E_REPOSITORY_DESCRIPTION)
             RetryingRepositoryTransitioner retryingReleaser = new RetryingRepositoryTransitioner(releaser, repoStateFetcher, retrier)
         when:
             retryingReleaser.performWithRepositoryIdAndStagingProfileId(resolvedStagingRepositoryId, E2E_STAGING_PROFILE_ID)

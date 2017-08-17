@@ -1,5 +1,9 @@
 # gradle-nexus-staging-plugin changelog
 
+## 0.10.0 - 2017-08-18
+
+ - Configurable repository description in close/release operiotion - [#63](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/63) - contribution by [akomakom](https://github.com/akomakom)
+
 ## 0.9.0 - 2017-06-05
 
 This release provides no new features or bugfixes. It is focused on acceptance E2E testing and Continuous Delivery
