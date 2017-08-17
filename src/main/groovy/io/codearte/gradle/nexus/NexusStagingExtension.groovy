@@ -14,14 +14,8 @@ class NexusStagingExtension {
     String username
     String password
     String packageGroup
-    String stagingProfileId //since 0.4.1
+    String stagingProfileId
     @Incubating Integer numberOfRetries
     @Incubating Integer delayBetweenRetriesInMillis
-    @Incubating String repositoryDescription
-
-    //Deprecated since 0.4.1.
-    void setNexusUrl(String nexusUrl) {
-        log.warn("DEPRECATION WARNING. nexusUrl property has been deprecated and will be removed in the future versions.")
-        serverUrl = nexusUrl
-    }
+    @Incubating String repositoryDescription    //since 0.10.0
 }
