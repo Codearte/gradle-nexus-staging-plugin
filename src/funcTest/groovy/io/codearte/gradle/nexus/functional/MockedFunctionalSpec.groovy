@@ -8,6 +8,7 @@ import io.codearte.gradle.nexus.logic.RepositoryState
 import nebula.test.functional.ExecutionResult
 import org.gradle.api.logging.LogLevel
 import org.junit.Rule
+import spock.lang.Issue
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import static com.github.tomakehurst.wiremock.client.WireMock.containing
@@ -15,6 +16,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import static com.github.tomakehurst.wiremock.client.WireMock.get
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import static com.github.tomakehurst.wiremock.client.WireMock.post
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import static com.github.tomakehurst.wiremock.client.WireMock.verify
@@ -255,6 +257,36 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
             operationName | repoStates                                         | stubbingOperation
             "close"       | [RepositoryState.OPEN, RepositoryState.CLOSED]     | { stubSuccessfulCloseRepositoryWithProfileId() }
             "release"     | [RepositoryState.CLOSED, RepositoryState.RELEASED] | { stubSuccessfulReleaseRepositoryWithProfileId() } //TODO: NOT_FOUND
+    }
+
+    @Issue("https://github.com/Codearte/gradle-nexus-staging-plugin/pull/63")
+    def "should override repository description if configured"() {
+        given:
+            stubGetStagingProfilesWithJson(this.getClass().getResource("/io/codearte/gradle/nexus/logic/2stagingProfilesShrunkResponse.json").text)
+        and:
+            stubGetOneRepositoryWithProfileIdAndContent(stagingProfileId,
+                createResponseMapWithGivenRepos([aRepoInStateAndId(REPO_ID_1, RepositoryState.OPEN)]))
+        and:
+            stubGetRepositoryStateByIdForConsecutiveStates(REPO_ID_1, [RepositoryState.OPEN, RepositoryState.CLOSED], [true, false])
+        and:
+            stubSuccessfulCloseRepositoryWithProfileId()
+        and:
+            buildFile << """
+                ${getApplyPluginBlock()}
+                ${getDefaultConfigurationClosure()}
+                ${descriptionConfigurationClosure}
+            """.stripIndent()
+        when:
+            runTasksSuccessfully("closeRepository")
+        then:
+            verify(1, postRequestedFor(urlEqualTo("/staging/bulk/close")).withRequestBody(containing(expectedDescriptionInRequest)))
+            //TODO: Enhance with matchingJsonPath (currently fails for unknown reasons)
+            // .withRequestBody(matchingJsonPath('$.data[?(@.description == "Automatically released/promoted with gradle-nexus-staging-plugin!")]'))
+            // .withRequestBody(matchingJsonPath('$.data[?(@.description =~ /Automatically.*/i)]'))
+        where:
+            descriptionConfigurationClosure                                         || expectedDescriptionInRequest
+            "//no 'repositoryDescription' property configured"                      || "Automatically released/promoted with gradle-nexus-staging-plugin!"
+            """nexusStaging { repositoryDescription = "Overridden description" }""" || "Overridden description"
     }
 
     @Override

@@ -1,13 +1,16 @@
 package io.codearte.gradle.nexus.logic
 
 import groovy.transform.CompileStatic
-import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
+import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 
 @CompileStatic
-@InheritConstructors
 @Slf4j
 class RepositoryCloser extends AbstractRepositoryTransitioner {
+
+    RepositoryCloser(SimplifiedHttpJsonRestClient client, String nexusUrl, String repositoryDescription) {
+        super(client, nexusUrl, repositoryDescription)
+    }
 
     @Deprecated
     void closeRepositoryWithIdAndStagingProfileId(String repositoryId, String stagingProfileId) {

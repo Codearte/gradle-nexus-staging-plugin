@@ -11,7 +11,7 @@ class RepositoryReleaserSpec extends BaseOperationExecutorSpec {
     def "should release repository"() {
         given:
             SimplifiedHttpJsonRestClient client = Mock()
-            RepositoryReleaser releaser = new RepositoryReleaser(client, MOCK_SERVER_HOST)
+            RepositoryReleaser releaser = new RepositoryReleaser(client, MOCK_SERVER_HOST, TEST_REPOSITORY_DESCRIPTION)
         when:
             releaser.performWithRepositoryIdAndStagingProfileId(TEST_REPOSITORY_ID, TEST_STAGING_PROFILE_ID)
         then:

@@ -1,14 +1,16 @@
 package io.codearte.gradle.nexus.logic
 
 import groovy.transform.CompileStatic
-import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
+import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 
 @CompileStatic
-@InheritConstructors
 @Slf4j
 class RepositoryReleaser extends AbstractRepositoryTransitioner {
 
+    RepositoryReleaser(SimplifiedHttpJsonRestClient client, String nexusUrl, String repositoryDescription) {
+        super(client, nexusUrl, repositoryDescription)
+    }
     private static final String RELEASE_OPERATION_NAME_IN_NEXUS = "promote"    //promote and release use the same operation, used parameters matter
 
     @Override

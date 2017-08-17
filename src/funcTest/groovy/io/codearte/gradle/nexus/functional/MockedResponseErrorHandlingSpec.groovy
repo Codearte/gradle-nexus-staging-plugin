@@ -23,6 +23,7 @@ class MockedResponseErrorHandlingSpec extends Specification {
     private static final String TEST_MOCKED_PASSWORD = ''
     private static final String TEST_MOCKED_STAGING_PROFILE_ID = "5027d084a01a3a"
     private static final String TEST_MOCKED_NOT_EXISTING_REPOSITORY_ID = "xxx"
+    private static final String TEST_MOCKED_REPOSITORY_DESCRIPTION = "Mocked repository description"
     private static final String TEST_MOCKED_SERVER_ERROR_JSON_RESPONSE = """
                         {
                             "errors": [
@@ -43,7 +44,7 @@ class MockedResponseErrorHandlingSpec extends Specification {
     def "should present response body on 500 server error"() {
         given:
             SimplifiedHttpJsonRestClient client = new SimplifiedHttpJsonRestClient(new RESTClient(), TEST_MOCKED_USERNAME, TEST_MOCKED_PASSWORD)
-            RepositoryCloser closer = new RepositoryCloser(client, mockedUrl)
+            RepositoryCloser closer = new RepositoryCloser(client, mockedUrl, TEST_MOCKED_REPOSITORY_DESCRIPTION)
         and:
             stubFor(post(urlEqualTo("/staging/bulk/close"))
                     .withHeader("Content-Type", equalTo("application/json"))

@@ -43,6 +43,9 @@ abstract class BaseStagingTask extends DefaultTask {
     @Optional
     Integer delayBetweenRetriesInMillis
 
+    @Input
+    String repositoryDescription
+
     @PackageScope
     SimplifiedHttpJsonRestClient createClient() {
         new SimplifiedHttpJsonRestClient(new RESTClient(), getUsername(), getPassword())
@@ -61,11 +64,11 @@ abstract class BaseStagingTask extends DefaultTask {
     }
 
     protected RepositoryCloser createRepositoryCloserWithGivenClient(SimplifiedHttpJsonRestClient client) {
-        return new RepositoryCloser(client, getServerUrl())
+        return new RepositoryCloser(client, getServerUrl(), getRepositoryDescription())
     }
 
     protected RepositoryReleaser createRepositoryReleaserWithGivenClient(SimplifiedHttpJsonRestClient client) {
-        return new RepositoryReleaser(client, getServerUrl())
+        return new RepositoryReleaser(client, getServerUrl(), getRepositoryDescription())
     }
 
     protected <T> OperationRetrier<T> createOperationRetrier() {

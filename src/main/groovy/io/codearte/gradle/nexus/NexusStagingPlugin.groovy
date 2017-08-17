@@ -27,6 +27,8 @@ class NexusStagingPlugin implements Plugin<Project> {
     private static final String NEXUS_USERNAME_PROPERTY = 'nexusUsername'
     private static final String NEXUS_PASSWORD_PROPERTY = 'nexusPassword'
 
+    private static final String DEFAULT_REPOSITORY_DESCRIPTION = 'Automatically released/promoted with gradle-nexus-staging-plugin!'
+
     private Project project
     private NexusStagingExtension extension
 
@@ -53,11 +55,12 @@ class NexusStagingPlugin implements Plugin<Project> {
     }
 
     private NexusStagingExtension createAndConfigureExtension(Project project) {
-        def extension = project.extensions.create("nexusStaging", NexusStagingExtension)
+        NexusStagingExtension extension = project.extensions.create("nexusStaging", NexusStagingExtension)
         extension.with {
             serverUrl = "https://oss.sonatype.org/service/local/"
             numberOfRetries = OperationRetrier.DEFAULT_NUMBER_OF_RETRIES
             delayBetweenRetriesInMillis = OperationRetrier.DEFAULT_DELAY_BETWEEN_RETRIES_IN_MILLIS
+            repositoryDescription = DEFAULT_REPOSITORY_DESCRIPTION
         }
         return extension
     }
@@ -110,6 +113,7 @@ class NexusStagingPlugin implements Plugin<Project> {
             stagingProfileId = { extension.stagingProfileId }
             numberOfRetries = { extension.numberOfRetries }
             delayBetweenRetriesInMillis = { extension.delayBetweenRetriesInMillis }
+            repositoryDescription = { extension.repositoryDescription }
         }
     }
 
