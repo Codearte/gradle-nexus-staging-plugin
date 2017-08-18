@@ -1,6 +1,6 @@
 # gradle-nexus-staging-plugin changelog
 
-## 0.11.0 - 2017-08-18
+## 0.11.0 - Unreleased
 
  - Fail when applied on non-root project - [#47](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/47)
  - Less confusing log output without "info" logging enabled - [#60](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/60) 

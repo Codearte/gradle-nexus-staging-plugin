@@ -29,10 +29,12 @@ cDeliveryBoy {
 
 scmVersion {
     hooks {
-        pre 'fileUpdate', [file       : 'README.md', pattern: { v, p -> /"io\.codearte\.gradle\.nexus:gradle-nexus-staging-plugin:.*"/ },
-                           replacement: { v, p -> "\"io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$v\"" }]
-        pre 'fileUpdate', [file       : 'README.md', pattern: { v, p -> /id\ 'io\.codearte\.nexus-staging'\ version\ '.*'/ },
-                           replacement: { v, p -> "id 'io.codearte.nexus-staging' version '$v'" }]
+        pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /"io\.codearte\.gradle\.nexus:gradle-nexus-staging-plugin:$previousVersion"/ },
+                           replacement: { currentVersion, context -> "\"io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$currentVersion\"" }]
+        pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /id\ 'io\.codearte\.nexus-staging'\ version\ '$previousVersion'/ },
+                           replacement: { currentVersion, context -> "id 'io.codearte.nexus-staging' version '$currentVersion'" }]
+        pre 'fileUpdate', [file       : 'CHANGELOG.md', pattern: { previousVersion, context -> /^##\ ${context.currentVersion}\ -\ Unreleased$/ },
+                           replacement: { currentVersion, context -> "## $currentVersion - ${new Date().format( 'yyyy-MM-dd' )}" }]
     }
 }
 
