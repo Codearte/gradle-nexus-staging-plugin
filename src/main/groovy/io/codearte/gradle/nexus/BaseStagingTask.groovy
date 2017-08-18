@@ -36,11 +36,9 @@ abstract class BaseStagingTask extends DefaultTask {
     String stagingProfileId
 
     @Input
-    @Optional
     Integer numberOfRetries
 
     @Input
-    @Optional
     Integer delayBetweenRetriesInMillis
 
     @Input
