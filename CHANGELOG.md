@@ -3,7 +3,10 @@
 ## 0.11.0 - 2017-08-18
 
  - Fail when applied on non-root project - [#47](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/47)
-
+ - Less confusing log output without "info" logging enabled - [#60](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/60) 
+ - Upgrade project dependencies
+ - Upgrade Gradle to 4.1 (compatibility with Gradle 2.0+ should be still maintained)
+ 
 ## 0.10.0 - 2017-08-18
 
  - Configurable repository description in close/release operation - [#63](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/63) - contribution by [akomakom](https://github.com/akomakom)
