@@ -1,15 +1,20 @@
 language: groovy
 
 before_install:
-  # Encrypted key is not available in PR
+  # Secrets (including enncrypted PGP key) are not available in PR - skip release configuration to do not fail build
   - |
     if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then 
       openssl aes-256-cbc -K $encrypted_21cd6bba12a0_key -iv $encrypted_21cd6bba12a0_iv -in gradle/gpg-key.asc.enc -d | gpg --fast-import
+      # Environment variables cannot have "." and it's problematic to pass them with "ORG_GRADLE_PROJECT_"
+      # In addition GRADLE_OPTS doesn't seem to be passed to Gradle started with Nebula (for AT/E2E tests)
       mkdir -p ~/.gradle
       echo "signing.keyIdAT=0694F057" >> ~/.gradle/gradle.properties
       echo "signing.secretKeyRingFileAT=$HOME/.gnupg/secring.gpg" >> ~/.gradle/gradle.properties
       echo "signing.passwordAT=" >> ~/.gradle/gradle.properties
+      # Enable E2E tests if desired in given build variant and not in PR - #56
+      # Setting environment variables in "env" seems to be too primite to support it inline
       if [ "$NEXUS_AT_ENABLE_E2E_TESTS_IN_VARIANT" == "true" ]; then export NEXUS_AT_ENABLE_E2E_TESTS=true; fi;
+      # regular releasing (not AT/E2E)
       export GRADLE_OPTS='-Dorg.gradle.project.signing.keyId=0694F057 -Dorg.gradle.project.signing.secretKeyRingFile=$HOME/.gnupg/secring.gpg -Dorg.gradle.project.signing.password= -Dorg.gradle.project.gradle.publish.key=$PLUGIN_PORTAL_API_KEY -Dorg.gradle.project.gradle.publish.secret=$PLUGIN_PORTAL_API_SECRET'
     fi;
   - "export TRAVIS_COMMIT_MSG=$(git log --format=%B -n 1 $TRAVIS_COMMIT)"
