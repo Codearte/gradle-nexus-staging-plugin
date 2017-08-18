@@ -1,5 +1,9 @@
 # gradle-nexus-staging-plugin changelog
 
+## 0.11.0 - 2017-08-18
+
+ - Fail when applied on non-root project - [#47](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/47)
+
 ## 0.10.0 - 2017-08-18
 
  - Configurable repository description in close/release operation - [#63](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/63) - contribution by [akomakom](https://github.com/akomakom)

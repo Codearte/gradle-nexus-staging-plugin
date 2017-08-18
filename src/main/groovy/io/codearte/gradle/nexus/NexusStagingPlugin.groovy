@@ -2,6 +2,7 @@ package io.codearte.gradle.nexus
 
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -36,7 +37,7 @@ class NexusStagingPlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
         this.extension = createAndConfigureExtension(project)
-        emitWarningIfAppliedNotToRootProject(project)
+        failBuildWithMeaningfulErrorIfAppliedNotOnRootProject(project)
         createAndConfigureGetStagingProfileTask(project)
         def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)
         def releaseRepositoryTask = createAndConfigureReleaseRepositoryTask(project)
@@ -48,9 +49,11 @@ class NexusStagingPlugin implements Plugin<Project> {
         new LegacyTasksCreator().createAndConfigureLegacyTasks(project)
     }
 
-    private void emitWarningIfAppliedNotToRootProject(Project project) {
+    private void failBuildWithMeaningfulErrorIfAppliedNotOnRootProject(Project project) {
         if (project != project.rootProject) {
-            project.logger.warn("WARNING. Nexus staging plugin should only be applied to the root project in build.")
+            throw new GradleException("Nexus staging plugin should ONLY be applied on the ROOT project in a build. " +
+                "See https://github.com/Codearte/gradle-nexus-staging-plugin/issues/47 for explanation. Feel free to comment there if you really" +
+                "need to have it applied on subproject.")
         }
     }
 
