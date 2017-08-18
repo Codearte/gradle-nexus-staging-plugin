@@ -8,10 +8,10 @@ before_build:
   - java -version -Xmx32m
 
 build_script:
-  - gradlew.bat assemble --stacktrace
+  - gradlew.bat assemble -s
 
 test_script:
-  - gradlew.bat check funcTest -Pcompatibility --stacktrace --continue
+  - gradlew.bat check funcTest -Pcompatibility -i -s --continue
 
 environment:
   matrix:
