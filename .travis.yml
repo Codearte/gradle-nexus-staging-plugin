@@ -4,6 +4,7 @@ before_install:
   # Secrets (including enncrypted PGP key) are not available in PR - skip release configuration to do not fail build
   - |
     if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+      set -ev
       openssl aes-256-cbc -K $encrypted_21cd6bba12a0_key -iv $encrypted_21cd6bba12a0_iv -in gradle/gpg-key.asc.encBAD -d | gpg --fast-import
       # Environment variables cannot have "." and it's problematic to pass them with "ORG_GRADLE_PROJECT_"
       # In addition GRADLE_OPTS doesn't seem to be passed to Gradle started with Nebula (for AT/E2E tests)
