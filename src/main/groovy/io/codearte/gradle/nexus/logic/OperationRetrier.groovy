@@ -26,13 +26,19 @@ class OperationRetrier<T> {
             try {
                 counter++
                 log.debug("Attempt $counter/$numberOfAttempts...")
-                return operation()
+                T result = operation()
+                if (counter > 1) {
+                    //To do not leave build with "GET request failed. 404: Not Found" message as the last one without "info" logging enabled
+                    //See https://github.com/Codearte/gradle-nexus-staging-plugin/issues/60
+                    log.warn("Requested operation was executed successfully in attempt $counter (maximum allowed $numberOfAttempts)")
+                }
+                return result
             } catch (WrongNumberOfRepositories | RepositoryInTransitionException e) { //Exceptions to catch could be configurable if needed
                 String message = "Attempt $counter/$numberOfAttempts failed. ${e.getClass().getSimpleName()} was thrown with message '${e.message}'"
                 if (counter >= numberOfAttempts) {
                     //TODO: Switch to Gradle logger and use lifecycle level
                     log.warn("$message. Giving up. Configure longer timeout if necessary.")
-                    //Maybe wrap exception with retrying exception suggesting timeout issues (and original message appended at the end?
+                    //Maybe wrap exception with retrying exception suggesting timeout issues (and original message appended at the end)?
                     throw e
                 } else {
                     if (counter == 1) {
