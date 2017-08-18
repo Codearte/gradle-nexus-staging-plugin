@@ -84,7 +84,7 @@ task funcTest(type: Test) {
     description = 'Run the functional tests.'
     group = 'Verification'
 
-    testClassesDir = sourceSets.funcTest.output.classesDir
+    testClassesDirs = sourceSets.funcTest.output.classesDirs
     classpath = sourceSets.funcTest.runtimeClasspath
 
     if (!project.hasProperty('enableE2ETests') && System.getenv().NEXUS_AT_ENABLE_E2E_TESTS == null) {
