@@ -1,7 +1,7 @@
 language: groovy
 
 before_install:
-  # Secrets (including enncrypted PGP key) are not available in PR - skip release configuration to do not fail build
+  # Secrets (including encrypted PGP key) are not available in PR builds - skip release configuration to do not fail build
   - |
     if [ "$TRAVIS_SECURE_ENV_VARS" == "true" ]; then
       # There is problem with aborting build on command in if failure - http://steven.casagrande.io/articles/travis-ci-and-if-statements/
