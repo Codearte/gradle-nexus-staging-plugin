@@ -60,5 +60,5 @@ matrix:
   include:
     - jdk: oraclejdk8
       env: NEXUS_AT_ENABLE_E2E_TESTS_IN_VARIANT=true
-#    - jdk: oraclejdk9
-#      env: SKIP_RELEASE=true
+    - jdk: oraclejdk9
+      env: SKIP_RELEASE=true
