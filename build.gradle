@@ -1,3 +1,8 @@
+apply plugin: 'groovy'
+apply from: "$rootDir/gradle/cdeliveryboy-release.gradle"
+apply plugin: 'ru.vyarus.animalsniffer'
+apply plugin: 'com.toomuchcoding.uptodate'
+
 buildscript {
     repositories {
         mavenCentral()
@@ -12,34 +17,6 @@ buildscript {
         classpath 'com.toomuchcoding:uptodate-gradle-plugin:1.0.1'
     }
 }
-
-apply plugin: 'groovy'
-apply plugin: 'info.solidsoft.cdeliveryboy'
-apply plugin: 'ru.vyarus.animalsniffer'
-apply plugin: 'com.toomuchcoding.uptodate'
-
-cDeliveryBoy {
-    tasks {
-        promoteRepositoryTask = "releaseRepository"
-    }
-    nexus {
-        autoPromote = true
-    }
-}
-
-scmVersion {
-    versionIncrementer 'incrementPatch'
-    hooks {
-        pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /"io\.codearte\.gradle\.nexus:gradle-nexus-staging-plugin:$previousVersion"/ },
-                           replacement: { currentVersion, context -> "\"io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$currentVersion\"" }]
-        pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /id\ 'io\.codearte\.nexus-staging'\ version\ '$previousVersion'/ },
-                           replacement: { currentVersion, context -> "id 'io.codearte.nexus-staging' version '$currentVersion'" }]
-        pre 'fileUpdate', [file       : 'CHANGELOG.md', pattern: { previousVersion, context -> /^##\ ${context.currentVersion}\ -\ Unreleased$/ },
-                           replacement: { currentVersion, context -> "## $currentVersion - ${new Date().format( 'yyyy-MM-dd' )}" }]
-    }
-}
-
-project.version = scmVersion.version
 
 sourceCompatibility = 1.7
 
@@ -117,91 +94,4 @@ tasks.withType(ru.vyarus.gradle.plugin.animalsniffer.AnimalSniffer) {
 animalsniffer {
     sourceSets = [project.sourceSets.main]  //just for production classes - Animal Sniffer fails with: 'Undefined reference: void for Spock tests'
                                             //https://github.com/mojohaus/animal-sniffer/issues/27
-}
-
-nexusStaging {
-    packageGroup = "io.codearte"
-    stagingProfileId = "93c08fdebde1ff"
-}
-
-modifyPom {
-    project {
-        name 'Gradle Nexus staging plugin'
-        description 'Gradle Nexus staging plugin'
-        url 'https://github.com/Codearte/gradle-nexus-staging-plugin'
-        inceptionYear '2015'
-
-        scm {
-            url 'https://github.com/Codearte/gradle-nexus-staging-plugin'
-            connection 'scm:https://github.com/Codearte/gradle-nexus-staging-plugin.git'
-            developerConnection 'scm:git://github.com/Codearte/gradle-nexus-staging-plugin.git'
-        }
-
-        licenses {
-            license {
-                name 'The Apache Software License, Version 2.0'
-                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                distribution 'repo'
-            }
-        }
-
-        developers {
-            developer {
-                id 'szpak'
-                name 'Marcin Zajączkowski'
-                email 'mszpak ATT wp DOTT pl'
-                roles {
-                    role 'developer'
-                    role 'despot'
-                }
-            }
-        }
-    }
-}
-
-if (hasProperty('pluginPortal')) {
-
-    apply plugin: 'com.gradle.plugin-publish'
-
-    pluginBundle {
-        website = 'https://github.com/Codearte/gradle-nexus-staging-plugin/'
-        vcsUrl = 'https://github.com/Codearte/gradle-nexus-staging-plugin/'
-
-        plugins {
-            plugin {
-                id = 'io.codearte.nexus-staging'
-                displayName = 'gradle-nexus-staging-plugin'
-                description = 'Releasing to Maven Central from Gradle without dealing with Nexus UI'
-                tags = ['maven-central', 'nexus', 'release', 'binary', 'repository', 'staging', 'codearte']
-            }
-        }
-
-        mavenCoordinates {
-            groupId = project.group
-            artifactId = project.name
-        }
-    }
-
-    publishPlugins {
-        onlyIf { ciBuild.inReleaseMode }
-        mustRunAfter releaseRepository
-    }
-    ciBuild.dependsOn publishPlugins
-}
-
-if (hasProperty('changelogSync')) {
-
-    task syncChangelog(type: Exec) {
-        doFirst { logger.info("Synchronizing changelog with GitHub for version ${project.version}") }
-        commandLine 'chandler', 'push', "release/${project.version}", '--tag-prefix=release/'
-    }
-
-    syncChangelog {
-        onlyIf { ciBuild.inReleaseMode }
-        mustRunAfter releaseRepository
-        if (project.tasks.findByName("publishPlugins")) {
-            mustRunAfter publishPlugins
-        }
-    }
-    ciBuild.dependsOn syncChangelog
 }
