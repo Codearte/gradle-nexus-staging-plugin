@@ -2,8 +2,10 @@
 
 ## 0.12.0 - Unreleased
 
- - Upgrade Gradle to 4.10.2 (for Java 11 compatibility)
+ - Java 11 compatibility
  - Drop Gradle 2.x support (not supported by used plugins) 
+ - Upgrade project dependencies
+ - Upgrade Gradle to 4.10.2 (for Java 11 compatibility)
 
 ## 0.11.0 - 2017-08-18
 
