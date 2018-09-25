@@ -73,7 +73,7 @@ dependencies {
     funcTestCompile sourceSets.test.output  //to depends on common unit and integration helper classes
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:6.1.2') {
+    funcTestCompile('com.netflix.nebula:nebula-test:7.1.0') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     funcTestCompile 'com.github.tomakehurst:wiremock:1.50' //1.54+ makes GroovyBuilder to fail with parsing empty response on POST

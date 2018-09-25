@@ -18,7 +18,7 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
     //https://github.com/gradle/gradle/issues/2992#issuecomment-332869508
     private static final GradleVersion MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.2.1")
 
-    def "should not fail on plugin logic not initialization issue with Gradle #requestedGradleVersion"() {
+    def "should not fail on plugin logic initialization issue with Gradle #requestedGradleVersion"() {
         given:
             gradleVersion = requestedGradleVersion
             classpathFilter = Predicates.and(GradleRunner.CLASSPATH_DEFAULT, FILTER_SPOCK_JAR)
@@ -59,7 +59,7 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
     } as Predicate<URL>
 
     private List<String> resolveRequestedGradleVersions() {
-        return ["2.0", "3.5.1", "4.5.1"]
+        return ["2.0", "3.5.1", "4.10.2"]
     }
 
     //Java 9 testing mechanism taken after pitest-gradle-plugin - https://github.com/szpak/gradle-pitest-plugin
