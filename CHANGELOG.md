@@ -1,5 +1,10 @@
 # gradle-nexus-staging-plugin changelog
 
+## 0.12.0 - Unreleased
+
+ - Upgrade Gradle to 4.10.2 (for Java 11 compatibility)
+ - Drop Gradle 2.x support (not supported by used plugins) 
+
 ## 0.11.0 - 2017-08-18
 
  - Fail when applied on non-root project - [#47](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/47)
