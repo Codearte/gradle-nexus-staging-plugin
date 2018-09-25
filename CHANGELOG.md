@@ -2,7 +2,7 @@
 
 ## 0.12.0 - Unreleased
 
- - Java 11 compatibility (basic path verified by e2e tests)
+ - Java 11 compatibility (basic path verified by e2e tests) - [#73](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/73)
  - Drop support for Java 7
  - Drop Gradle 2.x support (not supported by used plugins) 
  - Upgrade project dependencies
