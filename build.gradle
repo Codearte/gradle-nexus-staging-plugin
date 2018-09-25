@@ -6,7 +6,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'info.solidsoft.gradle:cdeliveryboy:0.6.0'
+        classpath 'info.solidsoft.gradle:cdeliveryboy:0.8.0'
         classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.4.6'
         classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
         classpath 'com.toomuchcoding:uptodate-gradle-plugin:1.0.1'
@@ -28,6 +28,7 @@ cDeliveryBoy {
 }
 
 scmVersion {
+    versionIncrementer 'incrementPatch'
     hooks {
         pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /"io\.codearte\.gradle\.nexus:gradle-nexus-staging-plugin:$previousVersion"/ },
                            replacement: { currentVersion, context -> "\"io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$currentVersion\"" }]
@@ -182,7 +183,7 @@ if (hasProperty('pluginPortal')) {
     }
 
     publishPlugins {
-        onlyIf { ciBuild.isInReleaseMode }
+        onlyIf { ciBuild.inReleaseMode }
         mustRunAfter releaseRepository
     }
     ciBuild.dependsOn publishPlugins
@@ -196,7 +197,7 @@ if (hasProperty('changelogSync')) {
     }
 
     syncChangelog {
-        onlyIf { ciBuild.isInReleaseMode }
+        onlyIf { ciBuild.inReleaseMode }
         mustRunAfter releaseRepository
         if (project.tasks.findByName("publishPlugins")) {
             mustRunAfter publishPlugins
