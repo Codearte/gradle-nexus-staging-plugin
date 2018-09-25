@@ -99,7 +99,7 @@ For the sensible configuration example see the plugin's own release configuratio
 Production Nexus instances usually require an user to authenticate before perform staging operations. In the nexus-staging plugin there are few
 ways to provide credentials:
  - manually set an username and a password in the `nexusStaging` configuration closure (probably reading them from Gradle or system properties)
- - provide the authentication section in `MavenDeloyer` (from the Gradle `maven` plugin) - it will be reused by the nexus-staging plugin
+ - provide the authentication section in `MavenDeployer` (from the Gradle `maven` plugin) - it will be reused by the nexus-staging plugin
  - set the Gradle properties `nexusUsername` abd `nexusPassword` (via a command line or `~/.gradle/gradle.properties`) - properties with these
 names are also used by [gradle-nexus-plugin](https://github.com/bmuschko/gradle-nexus-plugin/).
 
