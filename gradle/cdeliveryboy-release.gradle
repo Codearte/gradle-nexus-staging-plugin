@@ -32,17 +32,18 @@ group = 'io.codearte.gradle.nexus'
 //Beware: All release/version related changes should be put before that line which triggers (lazy) version evaluation
 project.version = scmVersion.version
 
+String repoSlug = "Codearte/gradle-nexus-staging-plugin"
 modifyPom {
     project {
         name 'Gradle Nexus staging plugin'
         description 'Gradle Nexus staging plugin'
-        url 'https://github.com/Codearte/gradle-nexus-staging-plugin'
+        url "https://github.com/${repoSlug}"
         inceptionYear '2015'
 
         scm {
-            url 'https://github.com/Codearte/gradle-nexus-staging-plugin'
-            connection 'scm:https://github.com/Codearte/gradle-nexus-staging-plugin.git'
-            developerConnection 'scm:git://github.com/Codearte/gradle-nexus-staging-plugin.git'
+            url "https://github.com/${repoSlug}"
+            connection "scm:https://github.com/${repoSlug}.git"
+            developerConnection "scm:git://github.com/${repoSlug}.git"
         }
 
         licenses {
@@ -72,8 +73,8 @@ if (hasProperty('pluginPortal')) {
     apply plugin: 'com.gradle.plugin-publish'
 
     pluginBundle {
-        website = 'https://github.com/Codearte/gradle-nexus-staging-plugin/'
-        vcsUrl = 'https://github.com/Codearte/gradle-nexus-staging-plugin/'
+        website = "https://github.com/${repoSlug}/"
+        vcsUrl = "https://github.com/${repoSlug}/"
 
         plugins {
             plugin {
