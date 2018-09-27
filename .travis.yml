@@ -58,11 +58,19 @@ env:
   - secure: WbKPmXCd0N3wiwFspIYJhqRp3jagVt0w7lFSUIlnzhN3crt1IubtydgqhhcFYsLb2/iNwibU7mO8cwOYuoi1+SKuEdogAP05ndV81qq93HV8P3zESV75BnG7U1AVBaZjFdi+kYNhSALdWUmbZjcdogINgJMmezbqdL+tPOXEKaA=
 matrix:
   include:
-    - jdk: oraclejdk8
+    - os: linux
+      jdk: oraclejdk8
       env: NEXUS_AT_ENABLE_E2E_TESTS_IN_VARIANT=true
-    - jdk: oraclejdk9
+    - os: linux
+      jdk: oraclejdk9
       env: SKIP_RELEASE=true
-    - jdk: oraclejdk10
+    - os: linux
+      jdk: oraclejdk10
       env: SKIP_RELEASE=true
-    - jdk: openjdk11
+    - os: linux
+      jdk: openjdk11
+      #TODO: Enable e2e tests also for Java 11 - https://github.com/Codearte/gradle-nexus-staging-plugin/issues/74
+      env: SKIP_RELEASE=true
+    - os: osx
+      jdk: openjdk11
       env: SKIP_RELEASE=true
