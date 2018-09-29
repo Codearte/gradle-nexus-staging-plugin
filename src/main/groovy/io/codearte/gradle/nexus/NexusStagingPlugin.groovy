@@ -141,27 +141,30 @@ class NexusStagingPlugin implements Plugin<Project> {
 
     private boolean isAnyOfStagingTasksInTaskGraph(TaskExecutionGraph taskGraph) {
         return taskGraph.allTasks.find { Task task ->
-            STAGING_TASK_CLASSES.find { Class stagingTaskClass ->
+            return STAGING_TASK_CLASSES.find { Class stagingTaskClass ->
                 //GetStagingProfileTask_Decorated is not assignable from GetStagingProfileTask, but its superclass is GetStagingProfileTask...
-                task.getClass().superclass.isAssignableFrom(stagingTaskClass)
+                return stagingTaskClass.isAssignableFrom(task.getClass().superclass)
             }
         }
     }
 
+    @SuppressWarnings("GroovyUnnecessaryReturn")
     private void tryToGetCredentialsFromUploadArchivesTask(Project project, NexusStagingExtension extension) {
         if (extension.username != null && extension.password != null) {
             return  //username and password already set
         }
 
-        Upload uploadTask = (Upload) project.tasks.findByPath("uploadArchives")
-        uploadTask?.repositories?.withType(MavenDeployer)?.each { MavenDeployer deployer ->
-            project.logger.debug("Trying to read credentials from repository '${deployer.name}'")
-            def authentication = deployer.repository?.authentication //Not to use class names as maven-ant-task is not on classpath when plugin is executed
-            if (authentication?.userName != null) {
-                extension.username = authentication.userName
-                extension.password = authentication.password
-                project.logger.info("Using username '${extension.username}' and password from repository '${deployer.name}'")
-                return  //from each
+        Task uploadTask = project.tasks.findByPath("uploadArchives")
+        if (uploadTask instanceof Upload) {
+            uploadTask?.repositories?.withType(MavenDeployer)?.each { MavenDeployer deployer ->
+                project.logger.debug("Trying to read credentials from repository '${deployer.name}'")
+                def authentication = deployer.repository?.authentication //Not to use class names as maven-ant-task is not on classpath when plugin is executed
+                if (authentication?.userName != null) {
+                    extension.username = authentication.userName
+                    extension.password = authentication.password
+                    project.logger.info("Using username '${extension.username}' and password from repository '${deployer.name}'")
+                    return  //from each
+                }
             }
         }
     }

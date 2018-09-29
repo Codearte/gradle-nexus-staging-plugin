@@ -31,3 +31,8 @@ uploadArchives {
         }
     }
 }
+
+nexusStaging {
+    serverUrl = 'http://localhost:8089/nexus/'
+    packageGroup = "io.codearte"
+}
