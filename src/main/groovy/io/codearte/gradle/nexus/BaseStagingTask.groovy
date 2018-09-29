@@ -46,7 +46,7 @@ abstract class BaseStagingTask extends DefaultTask {
 
     @PackageScope
     SimplifiedHttpJsonRestClient createClient() {
-        new SimplifiedHttpJsonRestClient(new RESTClient(), getUsername(), getPassword())
+        return new SimplifiedHttpJsonRestClient(new RESTClient(), getUsername(), getPassword())
     }
 
     protected StagingProfileFetcher createFetcherWithGivenClient(SimplifiedHttpJsonRestClient client) {
