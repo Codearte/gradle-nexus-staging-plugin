@@ -1,6 +1,6 @@
 # gradle-nexus-staging-plugin changelog
 
-## 0.12.0 - Unreleased
+## 0.12.0 - 2018-09-29
 
  - Java 11 compatibility (basic path verified by e2e tests) - [#73](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/73)
  - Fix crash on non-upload task named 'uploadArchives' - [#67](https://github.com/szpak/CDeliveryBoy/issues/#67)
