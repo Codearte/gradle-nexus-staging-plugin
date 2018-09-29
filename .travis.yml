@@ -4,7 +4,7 @@ before_install:
   # Secrets (including encrypted PGP key) are not available in PR builds - skip release configuration to do not fail build
   # Also skip on MacOS as there is problem with gpg1 and secring.gpg
   - |
-    if [] "$TRAVIS_SECURE_ENV_VARS" == "true" && "$TRAVIS_OS_NAME" == "linux" ]]; then
+    if [[ "$TRAVIS_SECURE_ENV_VARS" == "true" && "$TRAVIS_OS_NAME" == "linux" ]]; then
       # There is problem with aborting build on command in if failure - http://steven.casagrande.io/articles/travis-ci-and-if-statements/
       openssl aes-256-cbc -K $encrypted_21cd6bba12a0_key -iv $encrypted_21cd6bba12a0_iv -in gradle/gpg-key.asc.enc -d | gpg --fast-import || travis_terminate 1
       # Environment variables cannot have "." and it's problematic to pass them with "ORG_GRADLE_PROJECT_"
