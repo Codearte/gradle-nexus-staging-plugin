@@ -3,6 +3,7 @@ package io.codearte.gradle.nexus.functional
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import groovy.json.JsonOutput
+import groovy.transform.PackageScope
 import io.codearte.gradle.nexus.logic.FetcherResponseTrait
 import io.codearte.gradle.nexus.logic.RepositoryState
 import nebula.test.functional.ExecutionResult
@@ -24,8 +25,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify
 //TODO: Split into two files: basic and transition related
 class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements FetcherResponseTrait, FunctionalSpecHelperTrait {
 
+    @PackageScope
+    static final int WIREMOCK_RANDOM_PORT = 0   //Could be moved to some common class for "mocked functional tests"
+
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(8089)
+    public WireMockRule wireMockRule = new WireMockRule(WIREMOCK_RANDOM_PORT)
 
     private static final String stagingProfileId = "5027d084a01a3a"
     private static final String REPO_ID_1 = "testRepo1"
@@ -296,7 +300,7 @@ class MockedFunctionalSpec extends BaseNexusStagingFunctionalSpec implements Fet
                     stagingProfileId = "$stagingProfileId"
                     username = "codearte"
                     packageGroup = "io.codearte"
-                    serverUrl = "http://localhost:8089/"
+                    serverUrl = "http://localhost:${wireMockRule.port()}/"
                     //To do not wait too long in case of failure
                     delayBetweenRetriesInMillis = 50
                     numberOfRetries = 2

@@ -36,15 +36,12 @@ class MockedResponseErrorHandlingSpec extends Specification {
                         """.stripIndent()
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(8089)
-
-    //Using private Options as server is not started yet
-    private String mockedUrl = "http://localhost:${wireMockRule.options.portNumber()}/"
+    public WireMockRule wireMockRule = new WireMockRule(MockedFunctionalSpec.WIREMOCK_RANDOM_PORT)
 
     def "should present response body on 500 server error"() {
         given:
             SimplifiedHttpJsonRestClient client = new SimplifiedHttpJsonRestClient(new RESTClient(), TEST_MOCKED_USERNAME, TEST_MOCKED_PASSWORD)
-            RepositoryCloser closer = new RepositoryCloser(client, mockedUrl, TEST_MOCKED_REPOSITORY_DESCRIPTION)
+            RepositoryCloser closer = new RepositoryCloser(client, getMockedUrl(), TEST_MOCKED_REPOSITORY_DESCRIPTION)
         and:
             stubFor(post(urlEqualTo("/staging/bulk/close"))
                     .withHeader("Content-Type", equalTo("application/json"))
@@ -60,6 +57,10 @@ class MockedResponseErrorHandlingSpec extends Specification {
             e.statusCode == 500
             e.message.contains("Missing staging repository: $TEST_MOCKED_NOT_EXISTING_REPOSITORY_ID")
             e.cause instanceof HttpResponseException
+    }
+
+    private String getMockedUrl() {
+        return "http://localhost:${wireMockRule.port()}/"
     }
 
     @NotYetImplemented
