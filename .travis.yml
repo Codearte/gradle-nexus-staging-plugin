@@ -69,10 +69,10 @@ matrix:
       jdk: oraclejdk8
       env: NEXUS_AT_ENABLE_E2E_TESTS_IN_VARIANT=true
     - os: linux
-      jdk: oraclejdk9
+      jdk: openjdk9
       env: SKIP_RELEASE=true
     - os: linux
-      jdk: oraclejdk10
+      jdk: openjdk10
       env: SKIP_RELEASE=true
     - os: linux
       jdk: openjdk11
