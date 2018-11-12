@@ -6,6 +6,7 @@ import io.codearte.gradle.nexus.functional.BaseNexusStagingFunctionalSpec
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
+import io.codearte.gradle.nexus.logic.RepositoryCreator
 import io.codearte.gradle.nexus.logic.RepositoryDropper
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
 import io.codearte.gradle.nexus.logic.RepositoryReleaser
@@ -36,6 +37,7 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
     @NotYetImplemented
     def "remove all staging repositories if exist as clean up"() {}
 
+    //TODO: Remove "should" prefix, it's default by convention
     def "should get staging profile id from server e2e"() {
         given:
             StagingProfileFetcher fetcher = new StagingProfileFetcher(client, E2E_SERVER_BASE_PATH)
@@ -45,15 +47,31 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
             stagingProfileId == E2E_STAGING_PROFILE_ID
     }
 
-    def "should upload artifacts to server"() {
+    def "should create staging repository explicitly e2e"() {
         given:
+            RepositoryCreator creator = new RepositoryCreator(client, E2E_SERVER_BASE_PATH)
+        when:
+            String stagingRepositoryId = creator.createStagingRepositoryAndReturnId(E2E_STAGING_PROFILE_ID)
+        then:
+            println stagingRepositoryId
+            stagingRepositoryId.startsWith("iogitlabnexus-at")
+        and:
+            propagateStagingRepositoryIdToAnotherTest(stagingRepositoryId)
+    }
+
+    def "should upload artifacts to server e2e"() {
+        given:
+            assert resolvedStagingRepositoryId
+        and:
             copyResources("sampleProjects//nexus-at-minimal", "")
         when:
-            ExecutionResult result = runTasksSuccessfully('uploadArchives')
+            ExecutionResult result = runTasksSuccessfully('uploadArchives',
+                "-Pe2eRepositoryUrl=${E2E_SERVER_BASE_PATH}staging/deployByRepositoryId/${resolvedStagingRepositoryId}")
         then:
             result.standardOutput.contains('Uploading: io/gitlab/nexus-at/minimal/nexus-at-minimal/')
     }
 
+    //TODO: Adjust to (optionally) just get repository ID in getNonTransitioningRepositoryStateById()
     def "should get open repository id from server e2e"() {
         given:
             RepositoryFetcher fetcher = new RepositoryFetcher(client, E2E_SERVER_BASE_PATH)
@@ -61,9 +79,7 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
             String stagingRepositoryId = fetcher.getOpenRepositoryIdForStagingProfileId(E2E_STAGING_PROFILE_ID)
         then:
             println stagingRepositoryId
-            stagingRepositoryId.startsWith("iogitlabnexus-at")
-        and:
-            propagateStagingRepositoryIdToAnotherTest(stagingRepositoryId)
+            stagingRepositoryId == resolvedStagingRepositoryId
     }
 
     def "should get not in transition open repository state by repository id from server e2e"() {
