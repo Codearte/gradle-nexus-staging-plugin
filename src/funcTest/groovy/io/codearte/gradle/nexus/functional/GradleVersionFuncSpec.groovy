@@ -58,12 +58,12 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
     } as Predicate<URL>
 
     private List<String> resolveRequestedGradleVersions() {
-        return ["4.7", "5.1"]
+        return ["4.8", "5.1"]
     }
 
     //Java 9 testing mechanism taken after pitest-gradle-plugin - https://github.com/szpak/gradle-pitest-plugin
 
-    //Jvm class from Spock doesn't work with Java 9 stable releases - otherwise @IgnoreIf could be used
+    //Jvm class from Spock doesn't work with Java 9 stable releases - otherwise @IgnoreIf could be used - TODO: check with Spock 1.2
     private List<String> applyJavaCompatibilityAdjustment(List<String> requestedGradleVersions) {
         if (!Jvm.current().javaVersion.isJava9Compatible()) {
             //All supported versions should be Java 8 compatible

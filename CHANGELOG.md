@@ -1,5 +1,20 @@
 # gradle-nexus-staging-plugin changelog
 
+## 0.20.0 - Unreleased
+
+ - Reuse explicitly created staging repository ID if provided by external plugin - TODO
+ - Raise minimal required Gradle version to 4.8 due to internals modernisation
+
+**Deprecation note**. Support for implicitly created staging repositories is deprecated. It has been always problematic, slow and error prone
+to find a proper staging repository and the recent [changes](https://github.com/travis-ci/travis-ci/issues/9555) in Travis just emphasised that.
+Thanks to the new [nexus-publish-plugin](https://github.com/marcphilipp/nexus-publish-plugin/) plugin by
+[Marc Philipp](https://github.com/marcphilipp) which seamlessly integrates with the `gradle-nexus-staging` plugin it should straightforward to use
+explicitly created staging repositories in Nexus. At least in a case of using `maven-publish` (`publish...` tasks). If you still use the old `maven`
+plugin (the `uploadArchives` task) please refer to [that issue](https://github.com/marcphilipp/nexus-publish-plugin/issues/8).
+
+The original code has not been removed and *should* still work for the time being (if you don't use Travis), but it is no longer officially
+supported (e.g. the E2E test has been switched to the new approach).   
+
 ## 0.12.0 - 2018-09-29
 
  - Java 11 compatibility (basic path verified by e2e tests) - [#73](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/73)

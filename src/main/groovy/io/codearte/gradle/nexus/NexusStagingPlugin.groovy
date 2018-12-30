@@ -1,7 +1,6 @@
 package io.codearte.gradle.nexus
 
 import io.codearte.gradle.nexus.logic.OperationRetrier
-import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -20,15 +19,18 @@ class NexusStagingPlugin implements Plugin<Project> {
     private final static Logger log =  Logging.getLogger(MethodHandles.lookup().lookupClass())
 
     private static final String GET_STAGING_PROFILE_TASK_NAME = "getStagingProfile"
+    private static final String CREATE_REPOSITORY_TASK_NAME = "createRepository"
     private static final String CLOSE_REPOSITORY_TASK_NAME = "closeRepository"
     private static final String RELEASE_REPOSITORY_TASK_NAME = "releaseRepository"
     private static final String CLOSE_AND_RELEASE_REPOSITORY_TASK_NAME = "closeAndReleaseRepository"
 
-    private static final Set<Class> STAGING_TASK_CLASSES = [GetStagingProfileTask, CloseRepositoryTask, ReleaseRepositoryTask]
+    private static final Set<Class> STAGING_TASK_CLASSES = [GetStagingProfileTask, CreateRepositoryTask, CloseRepositoryTask,
+                                                            ReleaseRepositoryTask]
 
     private static final String NEXUS_USERNAME_PROPERTY = 'nexusUsername'
     private static final String NEXUS_PASSWORD_PROPERTY = 'nexusPassword'
 
+    private static final String DEFAULT_BASE_NEXUS_SERVER_URL = 'https://oss.sonatype.org/service/local/'
     private static final String DEFAULT_REPOSITORY_DESCRIPTION = 'Automatically released/promoted with gradle-nexus-staging-plugin!'
 
     private Project project
@@ -40,6 +42,7 @@ class NexusStagingPlugin implements Plugin<Project> {
         this.extension = createAndConfigureExtension(project)
         failBuildWithMeaningfulErrorIfAppliedNotOnRootProject(project)
         createAndConfigureGetStagingProfileTask(project)
+        createAndConfigureCreateRepositoryTask(project)
         def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)
         def releaseRepositoryTask = createAndConfigureReleaseRepositoryTask(project)
         releaseRepositoryTask.mustRunAfter(closeRepositoryTask)
@@ -61,7 +64,7 @@ class NexusStagingPlugin implements Plugin<Project> {
     private NexusStagingExtension createAndConfigureExtension(Project project) {
         NexusStagingExtension extension = project.extensions.create("nexusStaging", NexusStagingExtension, project)
         extension.with {
-            serverUrl = "https://oss.sonatype.org/service/local/"
+            serverUrl = DEFAULT_BASE_NEXUS_SERVER_URL
             numberOfRetries = OperationRetrier.DEFAULT_NUMBER_OF_RETRIES
             delayBetweenRetriesInMillis = OperationRetrier.DEFAULT_DELAY_BETWEEN_RETRIES_IN_MILLIS
             repositoryDescription = DEFAULT_REPOSITORY_DESCRIPTION
@@ -72,6 +75,12 @@ class NexusStagingPlugin implements Plugin<Project> {
     private void createAndConfigureGetStagingProfileTask(Project project) {
         GetStagingProfileTask task = project.tasks.create(GET_STAGING_PROFILE_TASK_NAME, GetStagingProfileTask, project, extension)
         setTaskDescriptionAndGroup(task, "Gets a staging profile id in Nexus - a diagnostic task")
+        setTaskDefaultsAndDescription(task)
+    }
+
+    private void createAndConfigureCreateRepositoryTask(Project project) {
+        CreateRepositoryTask task = project.tasks.create(CREATE_REPOSITORY_TASK_NAME, CreateRepositoryTask, project, extension)
+        setTaskDescriptionAndGroup(task, "Internal task. Should not be used directly. Explicitly creates a staging repository in Nexus")
         setTaskDefaultsAndDescription(task)
     }
 
@@ -90,7 +99,7 @@ class NexusStagingPlugin implements Plugin<Project> {
     }
 
     private Task createAndConfigureCloseAndReleaseRepositoryTask(Project project) {
-        Task task = project.tasks.create(CLOSE_AND_RELEASE_REPOSITORY_TASK_NAME, DefaultTask)   //TODO: DefaultTask is redundant?
+        Task task = project.tasks.create(CLOSE_AND_RELEASE_REPOSITORY_TASK_NAME)
         setTaskDescriptionAndGroup(task, "Closes and releases an artifacts repository in Nexus")
         return task
     }
@@ -157,6 +166,7 @@ class NexusStagingPlugin implements Plugin<Project> {
 
         Task uploadTask = project.tasks.findByPath("uploadArchives")
         if (uploadTask instanceof Upload) {
+
             uploadTask?.repositories?.withType(MavenDeployer)?.each { MavenDeployer deployer ->
                 project.logger.debug("Trying to read credentials from repository '${deployer.name}'")
                 def authentication = deployer.repository?.authentication //Not to use class names as maven-ant-task is not on classpath when plugin is executed

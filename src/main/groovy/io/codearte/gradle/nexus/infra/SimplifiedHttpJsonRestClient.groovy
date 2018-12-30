@@ -29,7 +29,8 @@ class SimplifiedHttpJsonRestClient {
         this.username = username
         this.password = password
 //        params.requestContentType = ContentType.JSON  //Does not set Content-Type header as required by WireMock
-        restClient.headers["Content-Type"] = "application/json"
+        restClient.headers["Content-Type"] = "application/json"   //reported as error in Idea (effectively works fine)
+//        restClient.headers.put("Content-Type", "application/json")
     }
 
     Map get(String uri) {

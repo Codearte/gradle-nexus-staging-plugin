@@ -2,11 +2,9 @@ package io.codearte.gradle.nexus.functional.e2e
 
 import io.codearte.gradle.nexus.functional.BaseNexusStagingFunctionalSpec
 import nebula.test.functional.ExecutionResult
-import spock.lang.Ignore
 import spock.lang.Stepwise
 
 @Stepwise
-@Ignore("Temporary to verify staging repository uplaod from travis in exploratory e2e tests")
 class BasicSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESpecHelperTrait {
 
     def "should get staging profile"() {
@@ -21,27 +19,27 @@ class BasicSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESpe
             result.standardOutput.contains("Received staging profile id: $E2E_STAGING_PROFILE_ID")
     }
 
-    def "should upload artifacts to server"() {
+    def "should upload artifacts to server and reuse explicitly created staging repository id in both close and release "() {
         given:
             copyResources("sampleProjects//nexus-at-minimal", "")
         when:
-            ExecutionResult result = runTasksSuccessfully('clean', 'uploadArchives')
+            ExecutionResult result = runTasksSuccessfully('clean', 'uploadArchivesStaging', 'closeAndReleaseRepository')
         then:
-            result.standardOutput.contains('Uploading: io/gitlab/nexus-at/minimal/nexus-at-minimal/')
-    }
-
-    def "should close and release repository"() {
-        given:
-            copyResources("sampleProjects//nexus-at-minimal", "")
-        when:
-            ExecutionResult result = runTasksSuccessfully('closeAndReleaseRepository')
-        then:
-            result.wasExecuted("closeRepository")
-            result.wasExecuted("releaseRepository")
-            result.wasExecuted("closeAndReleaseRepository")
-        and:
-            result.standardOutput.contains('has been effectively released')
-        and:
-            result.standardOutput.contains("Reusing staging repository id: iogitlabnexus-at")   //at least in release
+            with(result) {
+                verifyAll {
+                    wasExecuted("createRepository")
+                    wasExecuted("uploadArchives")
+                    wasExecuted("uploadArchivesStaging")
+                    //and
+                    standardOutput.contains('Uploading: io/gitlab/nexus-at/minimal/nexus-at-minimal/')
+                    //and
+                    wasExecuted("closeRepository")
+                    wasExecuted("releaseRepository")
+                    wasExecuted("closeAndReleaseRepository")
+                    //and
+                    standardOutput.contains("Reusing staging repository id: iogitlabnexus-at")
+                    !standardOutput.contains("DEPRECATION WARNING. The staging repository ID is not provided.")
+                }
+            }
     }
 }

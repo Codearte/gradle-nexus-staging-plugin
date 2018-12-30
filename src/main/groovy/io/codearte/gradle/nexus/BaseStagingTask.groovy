@@ -57,11 +57,8 @@ abstract class BaseStagingTask extends DefaultTask {
     @Incubating
     final Property<String> stagingRepositoryId
 
-    final private NexusStagingExtension extension
-
     @Inject
     BaseStagingTask(Project project, NexusStagingExtension extension) {
-        this.extension = extension
         ObjectFactory objectFactory = project.getObjects();
         stagingRepositoryId = objectFactory.property(String)
         stagingRepositoryId.set(extension.getStagingRepositoryId())
@@ -137,7 +134,9 @@ abstract class BaseStagingTask extends DefaultTask {
         return retrier.doWithRetry { repositoryFetcher.getRepositoryIdWithGivenStateForStagingProfileId(stagingProfileId, repositoryState) }
     }
 
-    private void savePassedRepositoryIdForReusingInInOtherTasks(String repositoryId) {
+    protected void savePassedRepositoryIdForReusingInInOtherTasks(String repositoryId) {
+        logger.info("Saving repository ID $repositoryId for reusing in other tasks")
+        NexusStagingExtension extension = getProject().getExtensions().getByType(NexusStagingExtension)
         extension.stagingRepositoryId.set(repositoryId)
     }
 }
