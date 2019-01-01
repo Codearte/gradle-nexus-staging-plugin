@@ -11,11 +11,11 @@ import io.codearte.gradle.nexus.infra.WrongNumberOfRepositories
 class RepositoryFetcher extends BaseOperationExecutor {
 
     String getOpenRepositoryIdForStagingProfileId(String stagingProfileId) {
-        return getRepositoryIdWithGivenStateForStagingProfileId("open", stagingProfileId)
+        return getRepositoryIdWithGivenStateForStagingProfileId(RepositoryState.OPEN.toString(), stagingProfileId)
     }
 
     String getClosedRepositoryIdForStagingProfileId(String stagingProfileId) {
-        return getRepositoryIdWithGivenStateForStagingProfileId("closed", stagingProfileId)
+        return getRepositoryIdWithGivenStateForStagingProfileId(RepositoryState.CLOSED.toString(), stagingProfileId)
     }
 
     private String getRepositoryIdWithGivenStateForStagingProfileId(String state, String stagingProfileId) {
