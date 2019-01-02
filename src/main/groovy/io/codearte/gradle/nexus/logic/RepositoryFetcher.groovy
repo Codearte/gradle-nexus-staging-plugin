@@ -10,18 +10,10 @@ import io.codearte.gradle.nexus.infra.WrongNumberOfRepositories
 @Slf4j
 class RepositoryFetcher extends BaseOperationExecutor {
 
-    String getOpenRepositoryIdForStagingProfileId(String stagingProfileId) {
-        return getRepositoryIdWithGivenStateForStagingProfileId(RepositoryState.OPEN.toString(), stagingProfileId)
-    }
-
-    String getClosedRepositoryIdForStagingProfileId(String stagingProfileId) {
-        return getRepositoryIdWithGivenStateForStagingProfileId(RepositoryState.CLOSED.toString(), stagingProfileId)
-    }
-
-    private String getRepositoryIdWithGivenStateForStagingProfileId(String state, String stagingProfileId) {
+    String getRepositoryIdWithGivenStateForStagingProfileId(String stagingProfileId, RepositoryState state) {
         log.info("Getting '$state' repository for staging profile '$stagingProfileId'")
         Map<String, List> allStagingRepositoriesResponseAsMap = client.get(nexusUrl + "/staging/profile_repositories/$stagingProfileId")    //TODO: Constant
-        return parseResponseAndGetRepositoryIdInGivenState(allStagingRepositoriesResponseAsMap, state)
+        return parseResponseAndGetRepositoryIdInGivenState(allStagingRepositoriesResponseAsMap, state.toString())
     }
 
     private String parseResponseAndGetRepositoryIdInGivenState(Map<String, List> allStagingRepositoriesResponseAsMap, String repositoryState) {

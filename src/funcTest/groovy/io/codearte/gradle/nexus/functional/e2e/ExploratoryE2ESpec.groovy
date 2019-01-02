@@ -76,7 +76,7 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
         given:
             RepositoryFetcher fetcher = new RepositoryFetcher(client, E2E_SERVER_BASE_PATH)
         when:
-            String stagingRepositoryId = fetcher.getOpenRepositoryIdForStagingProfileId(E2E_STAGING_PROFILE_ID)
+            String stagingRepositoryId = fetcher.getRepositoryIdWithGivenStateForStagingProfileId(E2E_STAGING_PROFILE_ID, RepositoryState.OPEN)
         then:
             println stagingRepositoryId
             stagingRepositoryId == resolvedStagingRepositoryId

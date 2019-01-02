@@ -8,13 +8,21 @@ import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
 import io.codearte.gradle.nexus.logic.RepositoryFetcher
 import io.codearte.gradle.nexus.logic.RepositoryReleaser
+import io.codearte.gradle.nexus.logic.RepositoryState
 import io.codearte.gradle.nexus.logic.RepositoryStateFetcher
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
 import org.gradle.api.DefaultTask
+import org.gradle.api.Incubating
+import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 
+import javax.inject.Inject
+
 @CompileStatic
+@SuppressWarnings("UnstableApiUsage")
 abstract class BaseStagingTask extends DefaultTask {
 
     @Input
@@ -44,12 +52,27 @@ abstract class BaseStagingTask extends DefaultTask {
     @Input
     String repositoryDescription
 
+    @Input
+    @Optional
+    @Incubating
+    final Property<String> stagingRepositoryId
+
+    final private NexusStagingExtension extension
+
+    @Inject
+    BaseStagingTask(Project project, NexusStagingExtension extension) {
+        this.extension = extension
+        ObjectFactory objectFactory = project.getObjects();
+        stagingRepositoryId = objectFactory.property(String)
+        stagingRepositoryId.set(extension.getStagingRepositoryId())
+    }
+
     @PackageScope
     SimplifiedHttpJsonRestClient createClient() {
         return new SimplifiedHttpJsonRestClient(new RESTClient(), getUsername(), getPassword())
     }
 
-    protected StagingProfileFetcher createFetcherWithGivenClient(SimplifiedHttpJsonRestClient client) {
+    protected StagingProfileFetcher createProfileFetcherWithGivenClient(SimplifiedHttpJsonRestClient client) {
         return new StagingProfileFetcher(client, getServerUrl())
     }
 
@@ -73,15 +96,48 @@ abstract class BaseStagingTask extends DefaultTask {
         return new OperationRetrier<T>(getNumberOfRetries(), getDelayBetweenRetriesInMillis())
     }
 
-    protected String fetchAndCacheStagingProfileId(StagingProfileFetcher stagingProfileFetcher) {
+    protected String getConfiguredStagingProfileIdOrFindAndCacheOne(StagingProfileFetcher stagingProfileFetcher) {
         String configuredStagingProfileId = getStagingProfileId()
         if (configuredStagingProfileId != null) {
             logger.info("Using configured staging profile id: $configuredStagingProfileId")
             return configuredStagingProfileId
         } else {
             String receivedStagingProfileId = stagingProfileFetcher.getStagingProfileIdForPackageGroup(getPackageGroup())
+            //TODO: Get from and set in plugin extension instead of in task directly
             setStagingProfileId(receivedStagingProfileId)
             return receivedStagingProfileId
         }
+    }
+
+    protected void savePassedRepositoryIdForReusingInInOtherTasks(String repositoryId) {
+        extension.stagingRepositoryId.set(repositoryId)
+    }
+
+    protected String getConfiguredRepositoryIdForStagingProfileOrFindAndCacheOneInGivenState(String stagingProfileId, RepositoryState repositoryState) {
+        return tryToGetConfiguredRepositoryId().orElseGet {
+            String repositoryId = findOneRepositoryIdInGivenStateForStagingProfileIdWithRetrying(repositoryState, stagingProfileId,
+                createRepositoryFetcherWithGivenClient(createClient()))
+            savePassedRepositoryIdForReusingInInOtherTasks(repositoryId)
+            return repositoryId
+        }
+    }
+
+    private java.util.Optional<String> tryToGetConfiguredRepositoryId() {
+        //Provider doesn't not provide orElseGet()
+        if (getStagingRepositoryId().isPresent()) {
+            String reusedStagingRepositoryId = getStagingRepositoryId().get()
+            logger.info("Reusing staging repository id: $reusedStagingRepositoryId")
+            return java.util.Optional.of(reusedStagingRepositoryId)
+        } else {
+            return java.util.Optional.empty()
+        }
+    }
+
+    private String findOneRepositoryIdInGivenStateForStagingProfileIdWithRetrying(RepositoryState repositoryState, String stagingProfileId,
+                                                                                  RepositoryFetcher repositoryFetcher) {
+        logger.warn("DEPRECATION WARNING. The staging repository ID is not provided. The fallback mode may impact release reliability and is deprecated. " +
+            "Please consult the project FAQ how it can be fixed.")
+        OperationRetrier<String> retrier = createOperationRetrier()
+        return retrier.doWithRetry { repositoryFetcher.getRepositoryIdWithGivenStateForStagingProfileId(stagingProfileId, repositoryState) }
     }
 }

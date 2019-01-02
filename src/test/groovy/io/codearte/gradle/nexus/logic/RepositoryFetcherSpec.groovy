@@ -20,7 +20,7 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
         given:
             client.get(GET_REPOSITORY_ID_FULL_URL) >> { createResponseMapWithGivenRepos([anOpenRepo()]) }
         when:
-            String repositoryId = fetcher.getOpenRepositoryIdForStagingProfileId(TEST_STAGING_PROFILE_ID)
+            String repositoryId = fetcher.getRepositoryIdWithGivenStateForStagingProfileId(TEST_STAGING_PROFILE_ID, RepositoryState.OPEN)
         then:
             repositoryId == TEST_REPOSITORY_ID
     }
@@ -29,7 +29,7 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
         given:
             client.get(GET_REPOSITORY_ID_FULL_URL) >> { createResponseMapWithGivenRepos([aClosedRepo()]) }
         when:
-            String repositoryId = fetcher.getClosedRepositoryIdForStagingProfileId(TEST_STAGING_PROFILE_ID)
+            String repositoryId = fetcher.getRepositoryIdWithGivenStateForStagingProfileId(TEST_STAGING_PROFILE_ID, RepositoryState.CLOSED)
         then:
             repositoryId == TEST_REPOSITORY_ID
     }
@@ -38,14 +38,14 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
         given:
             client.get(GET_REPOSITORY_ID_FULL_URL) >> { createResponseMapWithGivenRepos([]) }
         when:
-            fetcher."get${state.capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
+            fetcher.getRepositoryIdWithGivenStateForStagingProfileId(TEST_STAGING_PROFILE_ID, state)
         then:
             WrongNumberOfRepositories e = thrown()
             e.message == "Wrong number of received repositories in state '$state'. Expected 1, received 0".toString()
             e.numberOfRepositories == 0
-            e.state == state
+            e.state == state.toString()
         where:
-            state << ["open", "closed"]
+            state << [RepositoryState.OPEN, RepositoryState.CLOSED]
     }
 
     def "should fail with meaningful exception on too many repositories in given state #state"() {
@@ -55,7 +55,7 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
                                                  aRepoInStateAndId(TEST_REPOSITORY_ID + "2", state)])
             }
         when:
-            fetcher."get${state.name().toLowerCase().capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
+            fetcher.getRepositoryIdWithGivenStateForStagingProfileId(TEST_STAGING_PROFILE_ID, state)
         then:
             WrongNumberOfRepositories e = thrown()
             e.message == "Wrong number of received repositories in state '$state'. Expected 1, received 2".toString()
@@ -69,14 +69,14 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
         given:
             client.get(GET_REPOSITORY_ID_FULL_URL) >> { createResponseMapWithGivenRepos([aRepoInState(receivedState)]) }
         when:
-            fetcher."get${expectedState.capitalize()}RepositoryIdForStagingProfileId"(TEST_STAGING_PROFILE_ID)
+            fetcher.getRepositoryIdWithGivenStateForStagingProfileId(TEST_STAGING_PROFILE_ID, expectedState)
         then:
             WrongNumberOfRepositories e = thrown()
             e.message == "Wrong number of received repositories in state '$expectedState'. Expected 1, received 0".toString()
         where:
-            expectedState | receivedState
-            "open"        | "closed"
-            "closed"      | "open"
+            expectedState          | receivedState
+            RepositoryState.OPEN   | RepositoryState.CLOSED
+            RepositoryState.CLOSED | RepositoryState.OPEN
     }
 
     private Map anOpenRepo() {
@@ -87,7 +87,7 @@ class RepositoryFetcherSpec extends BaseOperationExecutorSpec implements Fetcher
         return aRepoInStateAndId(TEST_REPOSITORY_ID, RepositoryState.CLOSED)
     }
 
-    private Map aRepoInState(String state) {
-        return aRepoInStateAndId(TEST_REPOSITORY_ID, RepositoryState.parseString(state))
+    private Map aRepoInState(RepositoryState state) {
+        return aRepoInStateAndId(TEST_REPOSITORY_ID, state)
     }
 }

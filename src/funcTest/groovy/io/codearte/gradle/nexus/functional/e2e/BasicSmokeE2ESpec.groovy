@@ -41,5 +41,7 @@ class BasicSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESpe
             result.wasExecuted("closeAndReleaseRepository")
         and:
             result.standardOutput.contains('has been effectively released')
+        and:
+            result.standardOutput.contains("Reusing staging repository id: iogitlabnexus-at")   //at least in release
     }
 }

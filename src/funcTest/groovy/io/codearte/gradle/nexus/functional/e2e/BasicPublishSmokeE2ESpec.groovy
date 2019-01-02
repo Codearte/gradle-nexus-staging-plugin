@@ -4,7 +4,7 @@ import io.codearte.gradle.nexus.functional.BaseNexusStagingFunctionalSpec
 import nebula.test.functional.ExecutionResult
 import spock.lang.Stepwise
 
-//TODO: Temporary. Remove duplication with tests for 'maven'
+//TODO: Remove duplication with tests for 'maven' - @Stepwise works with abstract tests in super class?
 @Stepwise
 class BasicPublishSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESpecHelperTrait {
 
@@ -31,8 +31,6 @@ class BasicPublishSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements
             result.wasExecuted("publishToNexus")
         and:
             result.standardOutput.contains('to repository remote at https://oss.sonatype.org/service/local/staging/deployByRepositoryId/iogitlabnexus-at-')
-        and:
-            println result.standardOutput
     }
 
     def "should close and release repository"() {
@@ -46,6 +44,10 @@ class BasicPublishSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements
             result.wasExecuted("closeAndReleaseRepository")
         and:
             result.standardOutput.contains('has been effectively released')
-            println result.standardOutput
+
+        and: "reuse provided staging profile in both close and release"
+            result.standardOutput.contains("Reusing staging repository id: iogitlabnexus-at")
+//            //Uncomment once bumped nexus-publish-plugin dependency to version implementing https://github.com/marcphilipp/nexus-publish-plugin/issues/11
+//            !result.standardOutput.contains("DEPRECATION WARNING. The staging repository ID is not provided.")
     }
 }
