@@ -109,10 +109,6 @@ abstract class BaseStagingTask extends DefaultTask {
         }
     }
 
-    protected void savePassedRepositoryIdForReusingInInOtherTasks(String repositoryId) {
-        extension.stagingRepositoryId.set(repositoryId)
-    }
-
     protected String getConfiguredRepositoryIdForStagingProfileOrFindAndCacheOneInGivenState(String stagingProfileId, RepositoryState repositoryState) {
         return tryToGetConfiguredRepositoryId().orElseGet {
             String repositoryId = findOneRepositoryIdInGivenStateForStagingProfileIdWithRetrying(repositoryState, stagingProfileId,
@@ -139,5 +135,9 @@ abstract class BaseStagingTask extends DefaultTask {
             "Please consult the project FAQ how it can be fixed.")
         OperationRetrier<String> retrier = createOperationRetrier()
         return retrier.doWithRetry { repositoryFetcher.getRepositoryIdWithGivenStateForStagingProfileId(stagingProfileId, repositoryState) }
+    }
+
+    private void savePassedRepositoryIdForReusingInInOtherTasks(String repositoryId) {
+        extension.stagingRepositoryId.set(repositoryId)
     }
 }
