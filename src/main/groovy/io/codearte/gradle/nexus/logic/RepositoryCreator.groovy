@@ -4,13 +4,9 @@ import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 
-//@InheritConstructors  //TODO: Why broken???
+@InheritConstructors
 @Slf4j
 class RepositoryCreator extends BaseOperationExecutor {
-
-    RepositoryCreator(SimplifiedHttpJsonRestClient client, String nexusUrl) {
-        super(client, nexusUrl)
-    }
 
     String createStagingRepositoryAndReturnId(String stagingProfileId) {
         log.info("Creating staging repository for staging profile '$stagingProfileId'")
