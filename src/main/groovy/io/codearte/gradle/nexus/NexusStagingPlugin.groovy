@@ -14,6 +14,7 @@ import org.gradle.api.tasks.Upload
 
 import java.lang.invoke.MethodHandles
 
+@SuppressWarnings("UnstableApiUsage")
 class NexusStagingPlugin implements Plugin<Project> {
 
     private final static Logger log =  Logging.getLogger(MethodHandles.lookup().lookupClass())
@@ -58,7 +59,7 @@ class NexusStagingPlugin implements Plugin<Project> {
     }
 
     private NexusStagingExtension createAndConfigureExtension(Project project) {
-        NexusStagingExtension extension = project.extensions.create("nexusStaging", NexusStagingExtension)
+        NexusStagingExtension extension = project.extensions.create("nexusStaging", NexusStagingExtension, project)
         extension.with {
             serverUrl = "https://oss.sonatype.org/service/local/"
             numberOfRetries = OperationRetrier.DEFAULT_NUMBER_OF_RETRIES
@@ -69,20 +70,20 @@ class NexusStagingPlugin implements Plugin<Project> {
     }
 
     private void createAndConfigureGetStagingProfileTask(Project project) {
-        GetStagingProfileTask task = project.tasks.create(GET_STAGING_PROFILE_TASK_NAME, GetStagingProfileTask)
+        GetStagingProfileTask task = project.tasks.create(GET_STAGING_PROFILE_TASK_NAME, GetStagingProfileTask, project, extension)
         setTaskDescriptionAndGroup(task, "Gets a staging profile id in Nexus - a diagnostic task")
         setTaskDefaultsAndDescription(task)
     }
 
     private CloseRepositoryTask createAndConfigureCloseRepositoryTask(Project project) {
-        CloseRepositoryTask task = project.tasks.create(CLOSE_REPOSITORY_TASK_NAME, CloseRepositoryTask)
+        CloseRepositoryTask task = project.tasks.create(CLOSE_REPOSITORY_TASK_NAME, CloseRepositoryTask, project, extension)
         setTaskDescriptionAndGroup(task, "Closes an open artifacts repository in Nexus")
         setTaskDefaultsAndDescription(task)
         return task
     }
 
     private ReleaseRepositoryTask createAndConfigureReleaseRepositoryTask(Project project) {
-        ReleaseRepositoryTask task = project.tasks.create(RELEASE_REPOSITORY_TASK_NAME, ReleaseRepositoryTask)
+        ReleaseRepositoryTask task = project.tasks.create(RELEASE_REPOSITORY_TASK_NAME, ReleaseRepositoryTask, project, extension)
         setTaskDescriptionAndGroup(task, "Releases a closed artifacts repository in Nexus")
         setTaskDefaultsAndDescription(task)
         return task

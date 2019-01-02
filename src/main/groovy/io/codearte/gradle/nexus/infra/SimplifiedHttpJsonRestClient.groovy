@@ -36,8 +36,8 @@ class SimplifiedHttpJsonRestClient {
         return (Map) sendRequestHandlingErrors(uri, null, restClient.&get, RequestType.GET).data
     }
 
-    void post(String uri, Map content) {
-        sendRequestHandlingErrors(uri, content, restClient.&post, RequestType.POST)
+    Map post(String uri, Map content) {
+        return (Map) sendRequestHandlingErrors(uri, content, restClient.&post, RequestType.POST).data
     }
 
     private HttpResponseDecorator sendRequestHandlingErrors(String uri, Map content, Closure<Object> clientMethodHandler, RequestType requestTypeName) {

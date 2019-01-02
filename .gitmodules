@@ -1,3 +1,7 @@
 [submodule "src/funcTest/resources/sampleProjects/nexus-at-minimal"]
 	path = src/funcTest/resources/sampleProjects/nexus-at-minimal
 	url = https://gitlab.com/nexus-at/nexus-at-minimal.git
+[submodule "src/funcTest/resources/sampleProjects/nexus-at-minimal-publish"]
+	path = src/funcTest/resources/sampleProjects/nexus-at-minimal-publish
+	url = https://gitlab.com/nexus-at/nexus-at-minimal.git
+	branch = publish

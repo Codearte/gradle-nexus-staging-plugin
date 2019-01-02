@@ -2,9 +2,11 @@ package io.codearte.gradle.nexus.functional.e2e
 
 import io.codearte.gradle.nexus.functional.BaseNexusStagingFunctionalSpec
 import nebula.test.functional.ExecutionResult
+import spock.lang.Ignore
 import spock.lang.Stepwise
 
 @Stepwise
+@Ignore("Temporary to verify staging repository uplaod from travis in exploratory e2e tests")
 class BasicSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESpecHelperTrait {
 
     def "should get staging profile"() {
@@ -39,5 +41,7 @@ class BasicSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESpe
             result.wasExecuted("closeAndReleaseRepository")
         and:
             result.standardOutput.contains('has been effectively released')
+        and:
+            result.standardOutput.contains("Reusing staging repository id: iogitlabnexus-at")   //at least in release
     }
 }

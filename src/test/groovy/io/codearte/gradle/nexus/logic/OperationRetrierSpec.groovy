@@ -6,6 +6,8 @@ import spock.lang.Specification
 
 class OperationRetrierSpec extends Specification {
 
+    private static final String TEST_PROFILE_ID = "profileId"
+
     private OperationRetrier<String> retrier
 
     void setup() {
@@ -17,9 +19,11 @@ class OperationRetrierSpec extends Specification {
             RepositoryFetcher fetcherMock = Mock()
             int counter = 0
         when:
-            String returnedValue = retrier.doWithRetry { fetcherMock.getClosedRepositoryIdForStagingProfileId("profileId") }
+            String returnedValue = retrier.doWithRetry {
+                fetcherMock.getRepositoryIdWithGivenStateForStagingProfileId(TEST_PROFILE_ID, RepositoryState.CLOSED)
+            }
         then:
-            2 * fetcherMock.getClosedRepositoryIdForStagingProfileId(_) >> {
+            2 * fetcherMock.getRepositoryIdWithGivenStateForStagingProfileId(TEST_PROFILE_ID, RepositoryState.CLOSED) >> {
                 if (counter++ == 0) {
                     throw exceptionToThrow
                 } else {
@@ -37,10 +41,10 @@ class OperationRetrierSpec extends Specification {
         given:
             RepositoryFetcher fetcherMock = Mock()
         when:
-            retrier.doWithRetry { fetcherMock.getClosedRepositoryIdForStagingProfileId("profileId") }
+            retrier.doWithRetry { fetcherMock.getRepositoryIdWithGivenStateForStagingProfileId(TEST_PROFILE_ID, RepositoryState.CLOSED) }
         then:
-            3 * fetcherMock.getClosedRepositoryIdForStagingProfileId(_) >> {
-                throw new WrongNumberOfRepositories(0, "open")
+            3 * fetcherMock.getRepositoryIdWithGivenStateForStagingProfileId(TEST_PROFILE_ID, RepositoryState.CLOSED) >> {
+                throw new WrongNumberOfRepositories(0, "closed")
             }
         and:
             thrown(WrongNumberOfRepositories)
@@ -50,9 +54,9 @@ class OperationRetrierSpec extends Specification {
         given:
             RepositoryFetcher fetcherMock = Mock()
         when:
-            retrier.doWithRetry { fetcherMock.getClosedRepositoryIdForStagingProfileId("profileId") }
+            retrier.doWithRetry { fetcherMock.getRepositoryIdWithGivenStateForStagingProfileId(TEST_PROFILE_ID, RepositoryState.CLOSED) }
         then:
-            1 * fetcherMock.getClosedRepositoryIdForStagingProfileId(_) >> {
+            1 * fetcherMock.getRepositoryIdWithGivenStateForStagingProfileId(TEST_PROFILE_ID, RepositoryState.CLOSED) >> {
                 throw new NullPointerException()
             }
         and:
@@ -66,13 +70,13 @@ class OperationRetrierSpec extends Specification {
             def fetcherMock = Mock(RepositoryFetcher)
             int counter = 0
         when:
-            String returnedValue = spiedRetrier.doWithRetry { fetcherMock.getClosedRepositoryIdForStagingProfileId("profileId") }
+            String returnedValue = spiedRetrier.doWithRetry { fetcherMock.getRepositoryIdWithGivenStateForStagingProfileId(TEST_PROFILE_ID, RepositoryState.CLOSED) }
         then:
             1 * spiedRetrier.waitBeforeNextAttempt() >> { /* do nothing */ }
         and:
-            2 * fetcherMock.getClosedRepositoryIdForStagingProfileId(_) >> {
+            2 * fetcherMock.getRepositoryIdWithGivenStateForStagingProfileId(TEST_PROFILE_ID, RepositoryState.CLOSED) >> {
                 if (counter++ == 0) {
-                    throw new WrongNumberOfRepositories(0, "open")
+                    throw new WrongNumberOfRepositories(0, "closed")
                 } else {
                     return "repoId"
                 }
