@@ -15,8 +15,7 @@ import java.util.regex.Pattern
  */
 class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements FunctionalSpecHelperTrait {
 
-    //https://github.com/gradle/gradle/issues/2992#issuecomment-332869508
-    private static final GradleVersion MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.2.1")
+    private static final GradleVersion MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("5.0")
 
     def "should not fail on plugin logic initialization issue with Gradle #requestedGradleVersion"() {
         given:
@@ -59,7 +58,7 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
     } as Predicate<URL>
 
     private List<String> resolveRequestedGradleVersions() {
-        return ["3.5.1", "4.10.2"]
+        return ["4.7", "5.1"]
     }
 
     //Java 9 testing mechanism taken after pitest-gradle-plugin - https://github.com/szpak/gradle-pitest-plugin
@@ -70,16 +69,16 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
             //All supported versions should be Java 8 compatible
             return requestedGradleVersions
         }
-        return leaveJava9CompatibleGradleVersionsOnly(requestedGradleVersions)
+        return leaveJava11CompatibleGradleVersionsOnly(requestedGradleVersions)
     }
 
-    private List<String> leaveJava9CompatibleGradleVersionsOnly(List<String> requestedGradleVersions) {
-        List<String> java9CompatibleGradleVersions = requestedGradleVersions.findAll {
-            GradleVersion.version(it) >= MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION
+    private List<String> leaveJava11CompatibleGradleVersionsOnly(List<String> requestedGradleVersions) {
+        List<String> java11CompatibleGradleVersions = requestedGradleVersions.findAll {
+            GradleVersion.version(it) >= MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION
         }
-        if (java9CompatibleGradleVersions.size() < 1) {
-            java9CompatibleGradleVersions.add(MINIMAL_STABLE_JAVA9_COMPATIBLE_GRADLE_VERSION.version)
+        if (java11CompatibleGradleVersions.size() < 1) {
+            java11CompatibleGradleVersions.add(MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION.version)
         }
-        return java9CompatibleGradleVersions
+        return java11CompatibleGradleVersions
     }
 }
