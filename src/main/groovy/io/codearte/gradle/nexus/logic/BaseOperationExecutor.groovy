@@ -16,6 +16,6 @@ abstract class BaseOperationExecutor {
     }
 
     private String removeTrailingSlashIfAvailable(String nexusUrl) {
-        nexusUrl.endsWith("/") ? nexusUrl[0..-2] : nexusUrl
+        return nexusUrl.endsWith("/") ? nexusUrl[0..-2] : nexusUrl
     }
 }

@@ -16,7 +16,6 @@ class RepositoryCreator extends BaseOperationExecutor {
         Map responseAsMap = client.post(nexusUrl + "/staging/profiles/${stagingProfileId}/start",
             [data: [description: "Explicitly created by gradle-nexus-staging-plugin"]])
 
-        log.info("Raw response as map: $responseAsMap")
         String repositoryId = getStagingRepositoryIdFromResponseMap(responseAsMap)
         log.info("Created staging repository with id: $repositoryId")
         return repositoryId
