@@ -77,6 +77,8 @@ task funcTest(type: Test) {
     reports.html {
         destination = file("${reporting.baseDir}/funcTests")
     }
+
+    systemProperty("ignoreDeprecations", "true") //TODO: Remove once Gradle 5 deprecation warnings are fixed - https://github.com/Codearte/gradle-nexus-staging-plugin/issues/81
 }
 
 funcTest.shouldRunAfter test
