@@ -16,7 +16,8 @@ import java.util.regex.Pattern
  */
 class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements FunctionalSpecHelperTrait {
 
-    private static final GradleVersion MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("5.0")
+    //Officially 5.0, but 4.10.2 works fine with that plugin
+    private static final GradleVersion MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.10.2")
 
     def "should not fail on plugin logic initialization issue with Gradle #requestedGradleVersion"() {
         given:
@@ -59,7 +60,7 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
     } as Predicate<URL>
 
     private List<String> resolveRequestedGradleVersions() {
-        return [NexusStagingPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION, "5.1"].unique()
+        return [NexusStagingPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION, MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION.version, "5.1"].unique()
     }
 
     //Java 9 testing mechanism taken after pitest-gradle-plugin - https://github.com/szpak/gradle-pitest-plugin
