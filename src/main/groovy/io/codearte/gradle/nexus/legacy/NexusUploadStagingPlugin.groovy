@@ -32,10 +32,14 @@ class NexusUploadStagingPlugin implements Plugin<Project> {
     private static final String UPLOAD_TO_NEXUS_STAGING_TASK_NAME = "uploadArchivesStaging"
     private static final String POINT_UPLOAD_ARCHIVES_TO_EXPLICIT_REPOSITORY = "pointUploadArchivesToExplicitRepository"
 
+    private static final String DISABLE_LEGACY_WARNING_PROPERTY_NAME = "gnsp.disableLegacyWarning"
+
     @Override
     void apply(@Nonnull Project project) {
         project.getPluginManager().apply(MavenPlugin)
         project.getPluginManager().apply(NexusStagingPlugin)
+
+        displayVerboseWarningMessage(project)
 
         TaskProvider<PointUploadArchivesToExplicitRepositoryTask> pointUploadArchivesToExplicitRepository = project.tasks
             .register(POINT_UPLOAD_ARCHIVES_TO_EXPLICIT_REPOSITORY, PointUploadArchivesToExplicitRepositoryTask, project,
@@ -51,6 +55,19 @@ class NexusUploadStagingPlugin implements Plugin<Project> {
         }
 
         configureTaskDependencies(project, pointUploadArchivesToExplicitRepository, uploadStagingTask)
+    }
+
+    private void displayVerboseWarningMessage(Project project) {
+        if (project.hasProperty(DISABLE_LEGACY_WARNING_PROPERTY_NAME) && project.findProperty(DISABLE_LEGACY_WARNING_PROPERTY_NAME) != "false") {
+            return
+        }
+
+        log.warn("""
+            WARNING. The 'io.codearte.nexus-upload-staging' (sub)plugin was created only
+                     for internal usage to support releasing with CDeliveryBoy from Travis.
+                     It is completely not supported and it is recommended to upgrade your
+                     project to use 'maven-publish' plugin with `nexus-publish-plugin`.
+        """.stripIndent())
     }
 
     @CompileDynamic
