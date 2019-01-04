@@ -2,6 +2,7 @@ package io.codearte.gradle.nexus.functional
 
 import com.google.common.base.Predicate
 import com.google.common.base.Predicates
+import io.codearte.gradle.nexus.NexusStagingPlugin
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
 import org.gradle.internal.jvm.Jvm
@@ -58,7 +59,7 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
     } as Predicate<URL>
 
     private List<String> resolveRequestedGradleVersions() {
-        return ["4.8", "5.1"]
+        return [NexusStagingPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION, "5.1"].unique()
     }
 
     //Java 9 testing mechanism taken after pitest-gradle-plugin - https://github.com/szpak/gradle-pitest-plugin

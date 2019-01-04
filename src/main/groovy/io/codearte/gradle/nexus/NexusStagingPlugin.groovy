@@ -10,15 +10,18 @@ import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.Upload
+import org.gradle.util.GradleVersion
 
 import java.lang.invoke.MethodHandles
 
 @SuppressWarnings("UnstableApiUsage")
 class NexusStagingPlugin implements Plugin<Project> {
 
+    public static final String MINIMAL_SUPPORTED_GRADLE_VERSION = "4.8" //public as used also in regression tests
+
     private final static Logger log =  Logging.getLogger(MethodHandles.lookup().lookupClass())
 
-    private static final String GET_STAGING_PROFILE_TASK_NAME = "getStagingProfile"
+    private static final String GET_STAGING_PROFILE_TASK_NAME = "getStagingProfile" //TODO: Move to classes with task?
     private static final String CREATE_REPOSITORY_TASK_NAME = "createRepository"
     private static final String CLOSE_REPOSITORY_TASK_NAME = "closeRepository"
     private static final String RELEASE_REPOSITORY_TASK_NAME = "releaseRepository"
@@ -33,13 +36,20 @@ class NexusStagingPlugin implements Plugin<Project> {
     private static final String DEFAULT_BASE_NEXUS_SERVER_URL = 'https://oss.sonatype.org/service/local/'
     private static final String DEFAULT_REPOSITORY_DESCRIPTION = 'Automatically released/promoted with gradle-nexus-staging-plugin!'
 
+    private final GradleVersionEnforcer gradleVersionEnforcer
+
     private Project project
     private NexusStagingExtension extension
+
+    NexusStagingPlugin() {
+        this.gradleVersionEnforcer = GradleVersionEnforcer.defaultEnforcer(GradleVersion.version(MINIMAL_SUPPORTED_GRADLE_VERSION))
+    }
 
     @Override
     void apply(Project project) {
         this.project = project
         this.extension = createAndConfigureExtension(project)
+        gradleVersionEnforcer.failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(project)
         failBuildWithMeaningfulErrorIfAppliedNotOnRootProject(project)
         createAndConfigureGetStagingProfileTask(project)
         createAndConfigureCreateRepositoryTask(project)

@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import io.codearte.gradle.nexus.CloseRepositoryTask
 import io.codearte.gradle.nexus.CreateRepositoryTask
+import io.codearte.gradle.nexus.GradleVersionEnforcer
 import io.codearte.gradle.nexus.NexusStagingExtension
 import io.codearte.gradle.nexus.NexusStagingPlugin
 import org.gradle.api.Incubating
@@ -17,6 +18,7 @@ import org.gradle.api.tasks.TaskCollection
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.Upload
 import org.gradle.plugins.signing.Sign
+import org.gradle.util.GradleVersion
 
 import javax.annotation.Nonnull
 
@@ -34,8 +36,18 @@ class NexusUploadStagingPlugin implements Plugin<Project> {
 
     private static final String DISABLE_LEGACY_WARNING_PROPERTY_NAME = "gnsp.disableLegacyWarning"
 
+    private static final String MINIMAL_SUPPORTED_GRADLE_VERSION = NexusStagingPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION
+
+    private final GradleVersionEnforcer gradleVersionEnforcer
+
+    NexusUploadStagingPlugin() {
+        this.gradleVersionEnforcer = GradleVersionEnforcer.defaultEnforcer(GradleVersion.version(MINIMAL_SUPPORTED_GRADLE_VERSION))
+    }
+
     @Override
     void apply(@Nonnull Project project) {
+        gradleVersionEnforcer.failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(project)
+
         project.getPluginManager().apply(MavenPlugin)
         project.getPluginManager().apply(NexusStagingPlugin)
 
