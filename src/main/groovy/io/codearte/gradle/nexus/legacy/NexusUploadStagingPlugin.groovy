@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import io.codearte.gradle.nexus.CloseRepositoryTask
 import io.codearte.gradle.nexus.CreateRepositoryTask
+import io.codearte.gradle.nexus.GradleUtil
 import io.codearte.gradle.nexus.GradleVersionEnforcer
 import io.codearte.gradle.nexus.NexusStagingExtension
 import io.codearte.gradle.nexus.NexusStagingPlugin
@@ -70,16 +71,14 @@ class NexusUploadStagingPlugin implements Plugin<Project> {
     }
 
     private void displayVerboseWarningMessage(Project project) {
-        if (project.hasProperty(DISABLE_LEGACY_WARNING_PROPERTY_NAME) && project.findProperty(DISABLE_LEGACY_WARNING_PROPERTY_NAME) != "false") {
-            return
+        if (GradleUtil.isPropertyNotDefinedOrFalse(project, DISABLE_LEGACY_WARNING_PROPERTY_NAME)) {
+            log.warn("""
+                WARNING. The 'io.codearte.nexus-upload-staging' (sub)plugin was created only
+                         for internal usage to support releasing with CDeliveryBoy from Travis.
+                         It is completely not supported and it is recommended to upgrade your
+                         project to use 'maven-publish' plugin with `nexus-publish-plugin`.
+            """.stripIndent())
         }
-
-        log.warn("""
-            WARNING. The 'io.codearte.nexus-upload-staging' (sub)plugin was created only
-                     for internal usage to support releasing with CDeliveryBoy from Travis.
-                     It is completely not supported and it is recommended to upgrade your
-                     project to use 'maven-publish' plugin with `nexus-publish-plugin`.
-        """.stripIndent())
     }
 
     @CompileDynamic
