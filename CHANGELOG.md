@@ -1,6 +1,6 @@
 # gradle-nexus-staging-plugin changelog
 
-## 0.20.0 - Unreleased
+## 0.20.0 - 2019-01-05
 
  - Reuse explicitly created staging repository ID if provided by external plugin - [#77](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/77)
  - Fix releasing from Travis - workaround Gradle limitation with Nexus stating repositories with external plugin - [nexus-publish-plugin](https://github.com/marcphilipp/nexus-publish-plugin/) [#76](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/76) 
