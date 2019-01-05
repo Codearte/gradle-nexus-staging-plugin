@@ -3,7 +3,7 @@
 ## 0.20.0 - Unreleased
 
  - Reuse explicitly created staging repository ID if provided by external plugin - [#77](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/77)
- - Workaround Gradle limitation with Nexus stating repositories with external plugin - [nexus-publish-plugin](https://github.com/marcphilipp/nexus-publish-plugin/) [#76](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/76) 
+ - Fix releasing from Travis - workaround Gradle limitation with Nexus stating repositories with external plugin - [nexus-publish-plugin](https://github.com/marcphilipp/nexus-publish-plugin/) [#76](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/76) 
  - Raise minimal required Gradle version to 4.8 due to internals modernisation
  - Runtime compatibility with Gradle 5.0 and 5.1
  
