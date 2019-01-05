@@ -46,7 +46,11 @@ before_cache:
   - rm -fr $HOME/.gradle/caches/*/scripts/
   - rm -fr $HOME/.gradle/caches/*/scripts-remapped/
   - rm -fr $HOME/.gradle/caches/*/fileHashes/
+  - rm -fr $HOME/.gradle/caches/*/fileContent/*.lock
+  - rm -fr $HOME/.gradle/caches/*/javaCompile/*.lock
   - rm -fr $HOME/.gradle/caches/transforms-1/transforms-1.lock
+  - rm -fr $HOME/.gradle/caches/journal-1/file-access.bin
+  - rm -fr $HOME/.gradle/caches/journal-1/*.lock
 cache:
   directories:
     - $HOME/.gradle/caches/
