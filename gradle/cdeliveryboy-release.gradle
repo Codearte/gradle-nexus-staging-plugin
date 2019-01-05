@@ -85,6 +85,12 @@ if (hasProperty('pluginPortal')) {
                 description = 'Releasing to Maven Central from Gradle without dealing with Nexus UI'
                 tags = ['maven-central', 'nexus', 'release', 'binary', 'repository', 'staging', 'codearte']
             }
+            uploadStagingPlugin {
+                id = 'io.codearte.nexus-upload-staging'
+                displayName = 'gradle-nexus-upload-staging-plugin'
+                description = 'Internal technical plugin for gradle-nexus-staging-plugin - see: io.codearte.nexus-staging'
+                tags = ['internal']
+            }
         }
 
         mavenCoordinates {
