@@ -125,7 +125,30 @@ parameters.
 to track/manage staging repository where the artifacts are being uploaded. Therefore, it is hard to distinguish on closing the own/current repository
 from the one created by our another project. There is an [idea](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/29) how it could be
 handled using the Nexus API. Please comment in that [issue](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/29) if you are in that
-situation. 
+situation.
+
+4. You are releasing from Travis. See the next point.
+
+### 2. Why my release build on Travis suddenly started to fail with `wrong number of received repositories...`'?
+ 
+If your Travis build started to fail around autumn 2018 it's probably a problem reported in [#76](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/76).
+To cut a long story short:
+ - Gradle does [not support](https://github.com/gradle/gradle/issues/5711) uploading/publishing to explicitly created staging repositories in Nexus
+ - gradle-nexus-staging-plugin had been using heuristics to find the right implicitly created staging repository in Nexus (which - with some limitations -
+worked fine in most cases)
+ - Travis changed their infrastructure in autumn 2018 which [resulted](https://github.com/travis-ci/travis-ci/issues/9555#issuecomment-428799836)
+in using different IP addresses for the same build and - as a result - creation of multiple implicitly created staging repositories on upload/publishing for the same build
+ - Marc Philipp created [nexus-publish-plugin](https://github.com/marcphilipp/nexus-publish-plugin/) to enhance publishing in Gradle which seamlessly
+integrates with gradle-nexus-staging-plugin and "fixes" a problem
+
+For releasing from Travis (and in general) it's recommended to add [nexus-publish-plugin](https://github.com/marcphilipp/nexus-publish-plugin/) to your project
+and use its `publishToNexus` task to upload/publish artifacts to Nexus (instead of vanilla `publish...` from Gradle). It integrates seamlessly with
+gradle-nexus-staging-plugin to release to Maven Central (especially with 0.20.0+) - noother changes are required. What's more, with that
+[enhancement](https://github.com/marcphilipp/nexus-publish-plugin/issues/11) implemented the releasing to Nexus will be even more reliable
+(e.g. an ability to run multiple releases for the same staging profile).
+
+However, there is one caveat. `uploadArchives` from the `maven` plugin is [not supported](https://github.com/marcphilipp/nexus-publish-plugin/issues/8)
+by nexus-publish-plugin (only `publish...` from `maven-publish`).
 
 ## Notable users
 
