@@ -14,7 +14,7 @@ buildscript {
         classpath 'info.solidsoft.gradle:cdeliveryboy:0.8.0'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.20.0'
         classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.4.6'
-        classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
+        classpath 'com.gradle.publish:plugin-publish-plugin:0.10.0'
         classpath 'com.toomuchcoding:uptodate-gradle-plugin:1.0.1'
     }
 }
