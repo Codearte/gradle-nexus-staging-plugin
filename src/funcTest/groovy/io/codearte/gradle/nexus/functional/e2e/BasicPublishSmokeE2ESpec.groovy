@@ -20,25 +20,19 @@ class BasicPublishSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements
             result.standardOutput.contains("Received staging profile id: $E2E_STAGING_PROFILE_ID")
     }
 
-    def "should publish artifacts to explicitly created stating repository"() {
+    def "should publish artifacts to explicitly created stating repository and close and release that particular repository reusing set ID"() {
         given:
             copyResources("sampleProjects//nexus-at-minimal-publish", "")
         when:
-            ExecutionResult result = runTasksSuccessfully('clean', 'publishToNexus')
+            ExecutionResult result = runTasksSuccessfully('clean', 'publishToNexus', 'closeAndReleaseRepository')
         then:
+            //TODO: How to verify task execution in order?
             result.wasExecuted("initializeNexusStagingRepository")
             result.wasExecuted("publishMavenJavaPublicationToNexusRepository")
             result.wasExecuted("publishToNexus")
         and:
             result.standardOutput.contains('to repository remote at https://oss.sonatype.org/service/local/staging/deployByRepositoryId/iogitlabnexus-at-')
-    }
-
-    def "should close and release repository"() {
-        given:
-            copyResources("sampleProjects//nexus-at-minimal-publish", "")
-        when:
-            ExecutionResult result = runTasksSuccessfully('closeAndReleaseRepository')
-        then:
+        and:
             result.wasExecuted("closeRepository")
             result.wasExecuted("releaseRepository")
             result.wasExecuted("closeAndReleaseRepository")
@@ -47,7 +41,6 @@ class BasicPublishSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements
 
         and: "reuse provided staging profile in both close and release"
             result.standardOutput.contains("Reusing staging repository id: iogitlabnexus-at")
-//            //Uncomment once bumped nexus-publish-plugin dependency to version implementing https://github.com/marcphilipp/nexus-publish-plugin/issues/11
-//            !result.standardOutput.contains("DEPRECATION WARNING. The staging repository ID is not provided.")
+            !result.standardOutput.contains("DEPRECATION WARNING. The staging repository ID is not provided.")
     }
 }
