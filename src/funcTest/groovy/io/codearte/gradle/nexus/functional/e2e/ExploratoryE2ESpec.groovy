@@ -72,6 +72,7 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
     }
 
     //TODO: Adjust to (optionally) just get repository ID in getNonTransitioningRepositoryStateById()
+    @Ignore("Not executed by default as explicit stagingRepositoryId should used for parallel test execution on CI")
     def "should get open repository id from server e2e"() {
         given:
             RepositoryFetcher fetcher = new RepositoryFetcher(client, E2E_SERVER_BASE_PATH)
