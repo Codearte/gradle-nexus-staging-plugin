@@ -56,6 +56,10 @@ Buildscript and `apply plugin` sections can be ommited in that case.
 
 The plugin itself does not upload any artifacts. It only closes/promotes a repository with all already uploaded using the `maven` or `maven-publish` plugin artifacts (in the same or previous Gradle execution). Therefore it is enough to apply `io.codearte.nexus-staging` only on the root project in a multi-project build.
 
+### Travis configuration
+
+Struggling with errors while releasing from Travis? See [this FAQ point](#2-why-my-release-build-on-travis-suddenly-started-to-fail-with-wrong-number-of-received-repositories) for explaination and [my blog post](https://solidsoft.wordpress.com/2019/02/22/reliable-releasing-to-maven-central-from-travis-using-gradle-2019-edition/) for sample configuration.
+
 ## Tasks
 
 The plugin provides three main tasks:
@@ -148,7 +152,7 @@ For releasing from Travis (and in general) it's recommended to add [nexus-publis
 and use its `publishToNexus` task to upload/publish artifacts to Nexus (instead of vanilla `publish...` from Gradle). It integrates seamlessly with
 gradle-nexus-staging-plugin to release to Maven Central (especially with 0.20.0+) - noother changes are required. What's more, with that
 [enhancement](https://github.com/marcphilipp/nexus-publish-plugin/issues/11) implemented the releasing to Nexus will be even more reliable
-(e.g. an ability to run multiple releases for the same staging profile).
+(e.g. an ability to run multiple releases for the same staging profile). See [my blog post](https://solidsoft.wordpress.com/2019/02/22/reliable-releasing-to-maven-central-from-travis-using-gradle-2019-edition/) for sample configuration.
 
 However, there is one caveat. `uploadArchives` from the `maven` plugin is [not supported](https://github.com/marcphilipp/nexus-publish-plugin/issues/8)
 by nexus-publish-plugin (only `publish...` from `maven-publish`).
