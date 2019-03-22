@@ -81,6 +81,9 @@ matrix:
     - os: linux
       jdk: openjdk11
       env: SKIP_RELEASE=true NEXUS_AT_ENABLE_E2E_TESTS_IN_VARIANT=true
+    - os: linux
+      jdk: openjdk12
+      env: SKIP_RELEASE=true
     - os: osx
       jdk: openjdk11
       env: SKIP_RELEASE=true
