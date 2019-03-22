@@ -88,7 +88,7 @@ if (hasProperty('pluginPortal')) {
             uploadStagingPlugin {
                 id = 'io.codearte.nexus-upload-staging'
                 displayName = 'gradle-nexus-upload-staging-plugin'
-                description = 'Internal technical plugin for gradle-nexus-staging-plugin - see: io.codearte.nexus-staging'
+                description = 'DO NOT USE. Internal technical plugin for gradle-nexus-staging-plugin - see: io.codearte.nexus-staging'
                 tags = ['internal']
             }
         }
