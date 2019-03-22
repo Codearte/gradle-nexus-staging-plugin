@@ -1,4 +1,4 @@
-language: groovy
+language: java
 
 before_install:
   # Secrets (including encrypted PGP key) are not available in PR builds - skip release configuration to do not fail build
