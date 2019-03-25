@@ -9,13 +9,12 @@ buildscript {
         maven {
             url 'https://plugins.gradle.org/m2/'    //for plugin-publish-plugin
         }
-        maven { url "http://oss.sonatype.org/content/repositories/snapshots/" } //TODO: Temporary
     }
     dependencies {
         classpath 'info.solidsoft.gradle:cdeliveryboy:0.8.0'
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.12.1-SNAPSHOT'    //TODO: Temporary. Hack to release plugin version to fix releasing :)
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.20.0'
         classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.4.6'
-        classpath 'com.gradle.publish:plugin-publish-plugin:0.9.7'
+        classpath 'com.gradle.publish:plugin-publish-plugin:0.10.1'
         classpath 'com.toomuchcoding:uptodate-gradle-plugin:1.0.1'
     }
 }
@@ -45,7 +44,7 @@ dependencies {
     }
     testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
     testCompile 'org.objenesis:objenesis:3.0.1' //for mocking classes with Spock
-    testCompile 'net.bytebuddy:byte-buddy:1.9.5'   //for Spying with Spock
+    testCompile 'net.bytebuddy:byte-buddy:1.9.10'   //for Spying with Spock
 
     testCompile 'junit:junit:4.12'
 
@@ -53,7 +52,7 @@ dependencies {
     funcTestCompile sourceSets.test.output  //to depends on common unit and integration helper classes
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:7.1.6') {
+    funcTestCompile('com.netflix.nebula:nebula-test:7.1.8') {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     funcTestCompile 'com.github.tomakehurst:wiremock:1.50' //1.54+ makes GroovyBuilder to fail with parsing empty response on POST

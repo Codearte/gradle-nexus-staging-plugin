@@ -26,7 +26,7 @@ before_install:
   - ruby --version
   - rvm install 2.4.1
   - ruby --version
-  - gem install --no-document chandler
+  - gem install --no-document chandler -v 0.7.0
   - |
     if [[ "$TRAVIS_JDK_VERSION" == "openjdk9" || "$TRAVIS_JDK_VERSION" == "openjdk10" ]]; then
       # https://bugs.openjdk.java.net/browse/JDK-8196141 - fixed in Java 11
@@ -46,7 +46,11 @@ before_cache:
   - rm -fr $HOME/.gradle/caches/*/scripts/
   - rm -fr $HOME/.gradle/caches/*/scripts-remapped/
   - rm -fr $HOME/.gradle/caches/*/fileHashes/
+  - rm -fr $HOME/.gradle/caches/*/fileContent/*.lock
+  - rm -fr $HOME/.gradle/caches/*/javaCompile/*.lock
   - rm -fr $HOME/.gradle/caches/transforms-1/transforms-1.lock
+  - rm -fr $HOME/.gradle/caches/journal-1/file-access.bin
+  - rm -fr $HOME/.gradle/caches/journal-1/*.lock
 cache:
   directories:
     - $HOME/.gradle/caches/
@@ -76,7 +80,9 @@ matrix:
       env: SKIP_RELEASE=true
     - os: linux
       jdk: openjdk11
-      #TODO: Enable e2e tests also for Java 11 - https://github.com/Codearte/gradle-nexus-staging-plugin/issues/74
+      env: SKIP_RELEASE=true NEXUS_AT_ENABLE_E2E_TESTS_IN_VARIANT=true
+    - os: linux
+      jdk: openjdk12
       env: SKIP_RELEASE=true
     - os: osx
       jdk: openjdk11
