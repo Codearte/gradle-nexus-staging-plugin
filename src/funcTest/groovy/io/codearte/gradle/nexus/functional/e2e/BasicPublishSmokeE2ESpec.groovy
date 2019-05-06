@@ -24,7 +24,7 @@ class BasicPublishSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements
         given:
             copyResources("sampleProjects//nexus-at-minimal-publish", "")
         when:
-            ExecutionResult result = runTasksSuccessfully('clean', 'publishToNexus', 'closeAndReleaseRepository')
+            ExecutionResult result = runTasksSuccessfully('clean', 'publish', 'closeAndReleaseRepository')
         then:
             with(result) {
                 verifyAll {
