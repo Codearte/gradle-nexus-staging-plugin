@@ -26,21 +26,23 @@ class BasicPublishSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements
         when:
             ExecutionResult result = runTasksSuccessfully('clean', 'publishToNexus', 'closeAndReleaseRepository')
         then:
-            //TODO: How to verify task execution in order?
-            result.wasExecuted("initializeNexusStagingRepository")
-            result.wasExecuted("publishMavenJavaPublicationToNexusRepository")
-            result.wasExecuted("publishToNexus")
-        and:
-            result.standardOutput.contains('to repository remote at https://oss.sonatype.org/service/local/staging/deployByRepositoryId/iogitlabnexus-at-')
-        and:
-            result.wasExecuted("closeRepository")
-            result.wasExecuted("releaseRepository")
-            result.wasExecuted("closeAndReleaseRepository")
-        and:
-            result.standardOutput.contains('has been effectively released')
-
-        and: "reuse provided staging profile in both close and release"
-            result.standardOutput.contains("Reusing staging repository id: iogitlabnexus-at")
-            !result.standardOutput.contains("DEPRECATION WARNING. The staging repository ID is not provided.")
+            with(result) {
+                verifyAll {
+                    //TODO: How to verify task execution in order?
+                    wasExecuted("initializeNexusStagingRepository")
+                    wasExecuted("publishMavenJavaPublicationToNexusRepository")
+                    //and
+                    standardOutput.contains('to repository remote at https://oss.sonatype.org/service/local/staging/deployByRepositoryId/iogitlabnexus-at-')
+                    //and
+                    wasExecuted("closeRepository")
+                    wasExecuted("releaseRepository")
+                    wasExecuted("closeAndReleaseRepository")
+                    //and
+                    standardOutput.contains('has been effectively released')
+                    //and reuse provided staging profile in both close and release
+                    standardOutput.contains("Reusing staging repository id: iogitlabnexus-at")
+                    !standardOutput.contains("DEPRECATION WARNING. The staging repository ID is not provided.")
+                }
+            }
     }
 }
