@@ -1,6 +1,6 @@
 language: groovy
 
-before_install:
+install:
   # Secrets (including encrypted PGP key) are not available in PR builds - skip release configuration to do not fail build
   # Also skip on MacOS as there is problem with gpg1 and secring.gpg
   - |
@@ -34,10 +34,8 @@ before_install:
       ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
     fi
 
-install:
-  - ./gradlew assemble -s
-
 script:
+  - ./gradlew assemble -s
   - ./gradlew prepareForCiBuild -s -i -Prelease.disableChecks && ./gradlew funcTest ciBuild -s -i -Pcompatibility -Prelease.disableChecks -PpluginPortal -PchangelogSync
 
 before_cache:
@@ -81,6 +79,11 @@ matrix:
     - os: linux
       jdk: openjdk11
       env: SKIP_RELEASE=true NEXUS_AT_ENABLE_E2E_TESTS_IN_VARIANT=true
+    - os: linux
+      env: SKIP_RELEASE=true JDK="OpenJ9 11"
+      before_install:
+        - . gradle/install-jdk.sh -W ~/custom-java --url "https://api.adoptopenjdk.net/v2/binary/releases/openjdk11?openjdk_impl=openj9&os=linux&arch=x64&release=latest&type=jdk&heap_size=normal"
+        - ./gradlew --version
     - os: linux
       jdk: openjdk12
       env: SKIP_RELEASE=true
