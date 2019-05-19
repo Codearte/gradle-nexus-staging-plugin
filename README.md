@@ -99,7 +99,7 @@ one additional request is send to the Nexus server to determine the value using 
 requires external mechanism (e.g. [nexus-publish-plugin](https://github.com/marcphilipp/nexus-publish-plugin/)) to enhance a Gradle task
 to use it for uploading/publishing artifacts (see [#77](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/77))  
 
-For the sensible configuration example see the plugin's own release configuration in [build.gradle](build.gradle).
+For the sensible configuration example see the plugin's own release [configuration](gradle/cdeliveryboy-release.gradle).
 
 ## Server credentials
 
