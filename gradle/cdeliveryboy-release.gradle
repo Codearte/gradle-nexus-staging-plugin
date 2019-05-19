@@ -19,7 +19,7 @@ nexusStaging {
 }
 
 scmVersion {
-    versionIncrementer 'incrementPatch'
+    versionIncrementer 'incrementMinor'
     hooks {
         pre 'fileUpdate', [file       : 'README.md', pattern: { previousVersion, context -> /"io\.codearte\.gradle\.nexus:gradle-nexus-staging-plugin:$previousVersion"/ },
                            replacement: { currentVersion, context -> "\"io.codearte.gradle.nexus:gradle-nexus-staging-plugin:$currentVersion\"" }]
