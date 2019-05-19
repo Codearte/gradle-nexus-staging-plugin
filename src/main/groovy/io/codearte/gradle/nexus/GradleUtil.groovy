@@ -7,6 +7,6 @@ import org.gradle.api.Project
 class GradleUtil {
 
     static boolean isPropertyNotDefinedOrFalse(Project project, String propertyName) {
-        return !project.hasProperty(propertyName) || project.findProperty(propertyName) == "false"
+        return !project.hasProperty(propertyName) || project.findProperty(propertyName) == "false" || project.findProperty(propertyName) == false
     }
 }

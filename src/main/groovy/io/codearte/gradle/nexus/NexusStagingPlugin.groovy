@@ -37,12 +37,14 @@ class NexusStagingPlugin implements Plugin<Project> {
     private static final String DEFAULT_REPOSITORY_DESCRIPTION = 'Automatically released/promoted with gradle-nexus-staging-plugin!'
 
     private final GradleVersionEnforcer gradleVersionEnforcer
+    private final ApplyOnRootProjectEnforcer applyOnRootProjectEnforcer
 
     private Project project
     private NexusStagingExtension extension
 
     NexusStagingPlugin() {
         this.gradleVersionEnforcer = GradleVersionEnforcer.defaultEnforcer(GradleVersion.version(MINIMAL_SUPPORTED_GRADLE_VERSION))
+        this.applyOnRootProjectEnforcer = new ApplyOnRootProjectEnforcer()
     }
 
     @Override
@@ -50,7 +52,7 @@ class NexusStagingPlugin implements Plugin<Project> {
         this.project = project
         this.extension = createAndConfigureExtension(project)
         gradleVersionEnforcer.failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(project)
-        failBuildWithMeaningfulErrorIfAppliedNotOnRootProject(project)
+        applyOnRootProjectEnforcer.failBuildWithMeaningfulErrorIfAppliedNotOnRootProject(project)
         createAndConfigureGetStagingProfileTask(project)
         createAndConfigureCreateRepositoryTask(project)
         def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)
@@ -61,28 +63,6 @@ class NexusStagingPlugin implements Plugin<Project> {
         tryToDetermineCredentials(project, extension)
         //just during the transition period - see https://github.com/Codearte/gradle-nexus-staging-plugin/issues/50
         new LegacyTasksCreator().createAndConfigureLegacyTasks(project)
-    }
-
-    private void failBuildWithMeaningfulErrorIfAppliedNotOnRootProject(Project project) {
-        if ((project != project.rootProject) && !isPartOfDeterminingPrecompiledScriptPluginAccessorsBuild(project)) {
-            throw new GradleException("Nexus staging plugin should ONLY be applied on the ROOT project in a build. " +
-                "See https://github.com/Codearte/gradle-nexus-staging-plugin/issues/47 for explanation. Feel free to comment there if you really" +
-                "need to have it applied on subproject.")
-        }
-    }
-
-    /**
-     * For precompiled Kotlin script plugins the plugin is automatically applied to a non-root project to
-     * determine which extensions and conventions it adds to a project. This needs to be allowed and
-     * currently cannot controlled by some project property as those are not forwarded to this build.
-     *
-     * https://github.com/Codearte/gradle-nexus-staging-plugin/issues/47
-     *
-     * @param project the project to test
-     * @return whether the given project is part of a build to determine the precompiled script plugin accessors
-     */
-    private isPartOfDeterminingPrecompiledScriptPluginAccessorsBuild(Project project) {
-        project.projectDir.absolutePath =~ '([\\\\/])build\\1tmp\\1generatePrecompiledScriptPluginAccessors\\1'
     }
 
     private NexusStagingExtension createAndConfigureExtension(Project project) {
