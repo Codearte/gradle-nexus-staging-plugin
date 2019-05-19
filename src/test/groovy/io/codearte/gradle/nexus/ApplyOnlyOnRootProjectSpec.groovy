@@ -10,7 +10,7 @@ import spock.lang.Specification
 import spock.util.Exceptions
 
 @Issue("https://github.com/Codearte/gradle-nexus-staging-plugin/issues/116")
-class ApplyOnSubprojectSpec extends Specification { //ProjectSpec from nebula could be used if moved to funcTest
+class ApplyOnlyOnRootProjectSpec extends Specification { //ProjectSpec from nebula could be used if moved to funcTest
 
     @Rule
     public TemporaryFolder tmpProjectDir = new TemporaryFolder()
@@ -47,14 +47,14 @@ class ApplyOnSubprojectSpec extends Specification { //ProjectSpec from nebula co
             String rootCauseMessage = Exceptions.getRootCause(e).message
             rootCauseMessage.contains("Nexus staging plugin should ONLY be applied on the ROOT project in a build.")
         and:
-            rootCauseMessage.contains(ApplyOnRootProjectEnforcer.DISABLE_APPLY_ON_ROOT_PROJECT_ENFORCEMENT_PROPERTY_NAME)
+            rootCauseMessage.contains(ApplyOnlyOnRootProjectEnforcer.DISABLE_APPLY_ONLY_ON_ROOT_PROJECT_ENFORCEMENT_PROPERTY_NAME)
     }
 
     def "not fail if applied on subproject project with override switch turned on (#propertyValue)"() {
         given:
             Project subproject = createAddAndReturnSubproject(project)
         and:
-            project.extensions.extraProperties.set(ApplyOnRootProjectEnforcer.DISABLE_APPLY_ON_ROOT_PROJECT_ENFORCEMENT_PROPERTY_NAME, propertyValue)
+            project.extensions.extraProperties.set(ApplyOnlyOnRootProjectEnforcer.DISABLE_APPLY_ONLY_ON_ROOT_PROJECT_ENFORCEMENT_PROPERTY_NAME, propertyValue)
         when:
             subproject.apply(plugin: NexusStagingPlugin)
         then:
@@ -68,7 +68,7 @@ class ApplyOnSubprojectSpec extends Specification { //ProjectSpec from nebula co
         given:
             Project subproject = createAddAndReturnSubproject(project)
         and:
-            project.extensions.extraProperties.set(ApplyOnRootProjectEnforcer.DISABLE_APPLY_ON_ROOT_PROJECT_ENFORCEMENT_PROPERTY_NAME, propertyValue)
+            project.extensions.extraProperties.set(ApplyOnlyOnRootProjectEnforcer.DISABLE_APPLY_ONLY_ON_ROOT_PROJECT_ENFORCEMENT_PROPERTY_NAME, propertyValue)
         when:
             subproject.apply(plugin: NexusStagingPlugin)
         then:

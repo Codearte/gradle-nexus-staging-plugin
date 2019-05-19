@@ -1,7 +1,6 @@
 package io.codearte.gradle.nexus
 
 import io.codearte.gradle.nexus.logic.OperationRetrier
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -37,14 +36,14 @@ class NexusStagingPlugin implements Plugin<Project> {
     private static final String DEFAULT_REPOSITORY_DESCRIPTION = 'Automatically released/promoted with gradle-nexus-staging-plugin!'
 
     private final GradleVersionEnforcer gradleVersionEnforcer
-    private final ApplyOnRootProjectEnforcer applyOnRootProjectEnforcer
+    private final ApplyOnlyOnRootProjectEnforcer applyOnlyOnRootProjectEnforcer
 
     private Project project
     private NexusStagingExtension extension
 
     NexusStagingPlugin() {
         this.gradleVersionEnforcer = GradleVersionEnforcer.defaultEnforcer(GradleVersion.version(MINIMAL_SUPPORTED_GRADLE_VERSION))
-        this.applyOnRootProjectEnforcer = new ApplyOnRootProjectEnforcer()
+        this.applyOnlyOnRootProjectEnforcer = new ApplyOnlyOnRootProjectEnforcer()
     }
 
     @Override
@@ -52,7 +51,7 @@ class NexusStagingPlugin implements Plugin<Project> {
         this.project = project
         this.extension = createAndConfigureExtension(project)
         gradleVersionEnforcer.failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(project)
-        applyOnRootProjectEnforcer.failBuildWithMeaningfulErrorIfAppliedNotOnRootProject(project)
+        applyOnlyOnRootProjectEnforcer.failBuildWithMeaningfulErrorIfAppliedNotOnRootProject(project)
         createAndConfigureGetStagingProfileTask(project)
         createAndConfigureCreateRepositoryTask(project)
         def closeRepositoryTask = createAndConfigureCloseRepositoryTask(project)

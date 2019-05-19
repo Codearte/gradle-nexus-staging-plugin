@@ -10,7 +10,7 @@ import org.gradle.util.GradleVersion
 @CompileStatic
 @Slf4j
 @Incubating
-//TODO: Improve testability
+//TODO: Improve testability - current Gradle version cannot be easily mocked
 class GradleVersionEnforcer {
 
     private static final String DISABLE_GRADLE_VERSION_ENFORCEMENT_PROPERTY_NAME = 'gnsp.disableGradleVersionEnforcement'
@@ -18,6 +18,7 @@ class GradleVersionEnforcer {
     private final GradleVersion minimalSupportedVersion
     private final String propertyNameToDisable
 
+    //TODO: Switch to @TuppleConstructor(defaults = false) while completely migrated to Gradle 5.x (with Groovy 2.5)
     private GradleVersionEnforcer(GradleVersion minimalSupportedVersion, String propertyNameToDisable) {
         this.minimalSupportedVersion = minimalSupportedVersion
         this.propertyNameToDisable = propertyNameToDisable
@@ -28,7 +29,6 @@ class GradleVersionEnforcer {
     }
 
     void failBuildWithMeaningfulErrorIfAppliedOnTooOldGradleVersion(Project project) {
-        project.gradle.gradleVersion
         if (GradleVersion.current() < minimalSupportedVersion) {
             log.warn("WARNING. The 'io.codearte.nexus-staging' plugin requires ${minimalSupportedVersion.version} to run properly " +
                 "(detected: ${GradleVersion.current()}). Please upgrade your Gradle or downgrade the plugin version.")
