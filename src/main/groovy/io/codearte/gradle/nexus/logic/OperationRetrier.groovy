@@ -42,8 +42,7 @@ class OperationRetrier<T> {
                     throw e
                 } else {
                     if (counter == 1) {
-                        //TODO: Switch to Gradle logger and use lifecycle level
-                        log.warn("Requested operation wasn't successful in first try. ${formatMaximumRetryingPeriodMessage()}.")
+                        log.info("Requested operation wasn't successful in first try. ${formatMaximumRetryingPeriodMessage()}.")
                     }
                     log.info("$message. Waiting $delayBetweenRetriesInMillis ms before next retry.")
                     waitBeforeNextAttempt()
