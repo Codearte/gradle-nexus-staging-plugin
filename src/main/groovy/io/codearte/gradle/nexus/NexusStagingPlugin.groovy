@@ -61,6 +61,7 @@ class NexusStagingPlugin implements Plugin<Project> {
         closeAndReleaseRepositoryTask.dependsOn(closeRepositoryTask, releaseRepositoryTask)
         tryToDetermineCredentials(project, extension)
         //just during the transition period - see https://github.com/Codearte/gradle-nexus-staging-plugin/issues/50
+        //noinspection GrDeprecatedAPIUsage
         new LegacyTasksCreator().createAndConfigureLegacyTasks(project)
     }
 
