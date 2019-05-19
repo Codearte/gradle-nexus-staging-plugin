@@ -5,6 +5,8 @@
  - Restore ability to override ban on applying plugin on subprojects - [#116](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/116)
  - Workaround Gradle [limitations](https://github.com/gradle/gradle/issues/9386) with precompiled script plugin accessors in Kotlin - [#117](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/117) - contribution by [@Vampire](https://github.com/Vampire)
  - Decrease retrying messages verbosity - [#82](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/82)
+ - Execute e2e tests on Travis also for Java 11 - [#74](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/74)
+ - Automatically upgrade dependencies with Dependabot - [#79](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/79)
  - CI server sanity check for Java 12 compatibility
  - CI server sanity check for OpenJ9 11 compatibility
 
