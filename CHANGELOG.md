@@ -1,5 +1,11 @@
 # gradle-nexus-staging-plugin changelog
 
+## 0.21.0 - 2019-05-19
+
+ - Restore ability to override ban on applying plugin on subprojects - [#116](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/116)
+ - Workaround Gradle [limitations](https://github.com/gradle/gradle/issues/9386) with precompiled script plugin accessors in Kotlin - [#117](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/117) - contribution by [@Vampire](https://github.com/Vampire)
+ - CI server sanity check for Java 12 compatibility
+
 ## 0.20.0 - 2019-01-05
 
  - Reuse explicitly created staging repository ID if provided by external plugin - [#77](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/77)
