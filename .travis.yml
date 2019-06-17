@@ -70,7 +70,7 @@ env:
 matrix:
   include:
     - os: linux
-      jdk: oraclejdk8
+      jdk: openjdk8
       env: NEXUS_AT_ENABLE_E2E_TESTS_IN_VARIANT=true
     - os: linux
       jdk: openjdk11
