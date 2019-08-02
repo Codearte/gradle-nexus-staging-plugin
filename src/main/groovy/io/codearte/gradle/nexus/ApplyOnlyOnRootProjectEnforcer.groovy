@@ -27,7 +27,7 @@ class ApplyOnlyOnRootProjectEnforcer {
             if (GradleUtil.isPropertyNotDefinedOrFalse(project, propertyNameToDisable)) {   //See https://github.com/Codearte/gradle-nexus-staging-plugin/issues/116
                 throw new GradleException("Nexus staging plugin should ONLY be applied on the ROOT project in a build. " +
                     "See https://github.com/Codearte/gradle-nexus-staging-plugin/issues/47 for explanation. If you really know what you are doing" +
-                    "it can be overridden with setting '${DISABLE_APPLY_ONLY_ON_ROOT_PROJECT_ENFORCEMENT_PROPERTY_NAME}' property.")
+                    " it can be overridden with setting '${DISABLE_APPLY_ONLY_ON_ROOT_PROJECT_ENFORCEMENT_PROPERTY_NAME}' property.")
             } else {
                 log.info("Overriding protection against applying on non-root project. It may cause execution errors if used improperly.")
             }
