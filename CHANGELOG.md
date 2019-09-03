@@ -1,5 +1,11 @@
 # gradle-nexus-staging-plugin changelog
 
+## 0.21.1 - UNRELEASED
+
+ - Fix incompatibility of unsupported releasing with legacy upload task with Gradle 5
+ - Precise minimal supported Gradle version to 4.9
+ - Improve error message when applying on root project - [#122](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/122/) - PR by [Patrik Greco](https://github.com/sikevux)
+
 ## 0.21.0 - 2019-05-19
 
  - Restore ability to override ban on applying plugin on subprojects - [#116](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/116)

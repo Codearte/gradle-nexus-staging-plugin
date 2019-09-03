@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles
 class NexusStagingPlugin implements Plugin<Project> {
 
     @Internal   //TODO: Switch type to GradleVersion
-    public static final String MINIMAL_SUPPORTED_GRADLE_VERSION = "4.8" //public as used also in regression tests
+    public static final String MINIMAL_SUPPORTED_GRADLE_VERSION = "4.9" //public as used also in regression tests
 
     private final static Logger log =  Logging.getLogger(MethodHandles.lookup().lookupClass())
 
