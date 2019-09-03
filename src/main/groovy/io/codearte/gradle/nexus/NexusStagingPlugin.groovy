@@ -1,6 +1,7 @@
 package io.codearte.gradle.nexus
 
 import io.codearte.gradle.nexus.logic.OperationRetrier
+import org.gradle.api.Incubating
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -8,6 +9,7 @@ import org.gradle.api.artifacts.maven.MavenDeployer
 import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Upload
 import org.gradle.util.GradleVersion
 
@@ -16,6 +18,7 @@ import java.lang.invoke.MethodHandles
 @SuppressWarnings("UnstableApiUsage")
 class NexusStagingPlugin implements Plugin<Project> {
 
+    @Internal   //TODO: Switch type to GradleVersion
     public static final String MINIMAL_SUPPORTED_GRADLE_VERSION = "4.8" //public as used also in regression tests
 
     private final static Logger log =  Logging.getLogger(MethodHandles.lookup().lookupClass())

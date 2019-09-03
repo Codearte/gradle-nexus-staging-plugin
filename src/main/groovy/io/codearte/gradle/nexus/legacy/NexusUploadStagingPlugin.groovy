@@ -95,7 +95,10 @@ class NexusUploadStagingPlugin implements Plugin<Project> {
                 .configureEach { Upload uploadTask ->
                     log.info("Creating extra stating dependencies for task ${uploadTask}")
                     uploadTask.mustRunAfter(pointUploadArchivesToExplicitRepositoryTask)
-                    uploadStagingTask.configure { task -> task.dependsOn(uploadTask) }
+//                    //Eager evaluation as TaskProvider.configure() doesn't work with Gradle 5+ in the embedded way:
+//                    //  > DefaultTaskContainer#NamedDomainObjectProvider.configure(Action) on task set cannot be executed in the current context.
+//                    uploadStagingTask.configure { task -> task.dependsOn(uploadTask) }
+                    uploadStagingTask.get().dependsOn(uploadTask)
                 }
 
             //TODO: createRepository should be executed right before uploadArchives - not before compileJava...
