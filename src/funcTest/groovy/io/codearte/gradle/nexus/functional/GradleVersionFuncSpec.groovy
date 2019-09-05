@@ -42,7 +42,6 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
                 getClass() == ConnectException
                 message.contains("Connection refused")
             }
-            println result.standardOutput
         where:
             [requestedGradleVersion, isInLegacyMode] << [applyJavaCompatibilityAdjustment(resolveRequestedGradleVersions()).unique(), [false, true]].combinations()
             legacyModeMessage = isInLegacyMode ? "(legacy)" : ""
