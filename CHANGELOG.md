@@ -1,6 +1,6 @@
 # gradle-nexus-staging-plugin changelog
 
-## 0.21.1 - UNRELEASED
+## 0.21.1 - 2019-09-05
 
  - Fix incompatibility of unsupported releasing with legacy upload task with Gradle 5
  - Precise minimal supported Gradle version to 4.9
