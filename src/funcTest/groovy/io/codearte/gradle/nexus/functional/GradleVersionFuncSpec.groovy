@@ -5,8 +5,11 @@ import com.google.common.base.Predicates
 import io.codearte.gradle.nexus.NexusStagingPlugin
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
+import org.gradle.api.GradleException
 import org.gradle.internal.jvm.Jvm
 import org.gradle.util.GradleVersion
+import spock.lang.Issue
+import spock.lang.PendingFeature
 import spock.util.Exceptions
 
 import java.util.regex.Pattern
@@ -18,7 +21,8 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
 
     //Officially 5.0, but 4.10.2 works fine with that plugin
     private static final GradleVersion MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.10.2")
-    private static final GradleVersion LATEST_GRADLE_VERSION = GradleVersion.version("5.6.1")
+    private static final GradleVersion LATEST_GRADLE5_VERSION = GradleVersion.version("5.6.3")
+    private static final GradleVersion LATEST_GRADLE_VERSION = GradleVersion.version("6.0.1")
 
     def "should not fail on #legacyModeMessage plugin logic initialization issue with Gradle #requestedGradleVersion"() {
         given:
@@ -31,6 +35,9 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
                 ${getPluginConfigurationWithNotExistingNexusServer()}
 
                 ${getLegacyModeConfigurationIfRequested(isInLegacyMode as boolean)} //"as" for Idea
+
+                //following to cover regression in @ToString on Extension - https://github.com/Codearte/gradle-nexus-staging-plugin/issues/141
+                println nexusStaging
             """.stripIndent()
         when:
             ExecutionResult result = runTasksWithFailure('getStagingProfile')
@@ -45,6 +52,44 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
         where:
             [requestedGradleVersion, isInLegacyMode] << [applyJavaCompatibilityAdjustment(resolveRequestedGradleVersions()).unique(), [false, true]].combinations()
             legacyModeMessage = isInLegacyMode ? "(legacy)" : ""
+    }
+
+    @Issue("https://github.com/Codearte/gradle-nexus-staging-plugin/issues/141")
+    @PendingFeature(exceptions = GradleException,   //StackOverflowError as root cause would be better
+                    reason = "Bug in Gradle 6.x - https://github.com/gradle/gradle/issues/11466")
+    def "should not fail on @ToString for extension class in Gradle 6.x"() {
+        given:
+            gradleVersion = LATEST_GRADLE_VERSION.version
+        and:
+            buildFile << """
+                import groovy.transform.ToString
+
+                @ToString(includeFields = true, includeNames = true, includePackage = false)
+                class ToStringBugDemonstrationExtension {
+                    final Property<String> bugId
+
+                    ToStringBugDemonstrationExtension(Project project) {
+                        bugId = project.getObjects().property(String)
+                    }
+                }
+
+                class ToStringBugDemonstrationPlugin implements Plugin<Project> {
+                    void apply(Project project) {
+                        def extension = project.extensions.create("toStringExtension", ToStringBugDemonstrationExtension, project)
+                        project.task("printBugId") {
+                            doLast {
+                                println "Bug ID: \${extension.bugId}"
+                            }
+                        }
+                    }
+                }
+
+                apply plugin: ToStringBugDemonstrationPlugin
+
+                println "ToString: " + toStringExtension    //in fact not needed in that case
+            """
+        expect:
+            runTasksSuccessfully("printBugId")
     }
 
     private String getPluginConfigurationWithNotExistingNexusServer() {
@@ -78,7 +123,7 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
 
     private List<GradleVersion> resolveRequestedGradleVersions() {
         return [GradleVersion.version(NexusStagingPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION), MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION,
-                LATEST_GRADLE_VERSION].unique()
+                LATEST_GRADLE5_VERSION, LATEST_GRADLE_VERSION].unique()
     }
 
     //Java 9 testing mechanism taken after pitest-gradle-plugin - https://github.com/szpak/gradle-pitest-plugin
