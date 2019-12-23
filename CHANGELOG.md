@@ -1,6 +1,6 @@
 # gradle-nexus-staging-plugin changelog
 
-## 0.21.2 - Unreleased
+## 0.21.2 - 2019-12-23
 
  - Workaround incompatibility with Gradle 6.0 caused by a Gradle bug ([#11466](https://github.com/gradle/gradle/issues/11466)) - [#141](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/141) - PR by [Lars Grefer](https://github.com/larsgrefer)
 
