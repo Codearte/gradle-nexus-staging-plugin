@@ -43,7 +43,7 @@ dependencies {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
     testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
-    testCompile 'org.objenesis:objenesis:3.0.1' //for mocking classes with Spock
+    testCompile 'org.objenesis:objenesis:3.1' //for mocking classes with Spock
     testCompile 'net.bytebuddy:byte-buddy:1.10.6'   //for Spying with Spock
 
     testCompile 'junit:junit:4.12'
