@@ -5,8 +5,11 @@ import com.google.common.base.Predicates
 import io.codearte.gradle.nexus.NexusStagingPlugin
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
+import org.gradle.api.GradleException
 import org.gradle.internal.jvm.Jvm
 import org.gradle.util.GradleVersion
+import spock.lang.Issue
+import spock.lang.PendingFeature
 import spock.util.Exceptions
 
 import java.util.regex.Pattern
@@ -31,6 +34,9 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
                 ${getPluginConfigurationWithNotExistingNexusServer()}
 
                 ${getLegacyModeConfigurationIfRequested(isInLegacyMode as boolean)} //"as" for Idea
+
+                //following to cover regression in @ToString on Extension - https://github.com/Codearte/gradle-nexus-staging-plugin/issues/141
+                println nexusStaging
             """.stripIndent()
         when:
             ExecutionResult result = runTasksWithFailure('getStagingProfile')
@@ -47,27 +53,42 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
             legacyModeMessage = isInLegacyMode ? "(legacy)" : ""
     }
 
-    def "should not fail on #legacyModeMessage toString issue with Gradle #requestedGradleVersion"() {
+    @Issue("https://github.com/Codearte/gradle-nexus-staging-plugin/issues/141")
+    @PendingFeature(exceptions = GradleException,   //StackOverflowError as root cause would be better
+                    reason = "Bug in Gradle 6.x - https://github.com/gradle/gradle/issues/11466")
+    def "should not fail on @ToString for extension class in Gradle 6.x"() {
         given:
-            gradleVersion = requestedGradleVersion.version
-            classpathFilter = Predicates.and(GradleRunner.CLASSPATH_DEFAULT, FILTER_SPOCK_JAR)
-            memorySafeMode = true   //shutdown Daemon after a few seconds of inactivity
+            gradleVersion = LATEST_GRADLE_VERSION.version
         and:
             buildFile << """
-                ${getApplyPluginBlock()}
-                ${getPluginConfigurationWithNotExistingNexusServer()}
+                import groovy.transform.ToString
 
-                ${getLegacyModeConfigurationIfRequested(isInLegacyMode as boolean)} //"as" for Idea
+                @ToString(includeFields = true, includeNames = true, includePackage = false)
+                class ToStringBugDemonstrationExtension {
+                    final Property<String> bugId
 
-                println nexusStaging
-            """.stripIndent()
-        when:
-            ExecutionResult result = runTasksSuccessfully("help")
-        then:
-            result.wasExecuted(':help')
-        where:
-            [requestedGradleVersion, isInLegacyMode] << [applyJavaCompatibilityAdjustment(resolveRequestedGradleVersions()).unique(), [false, true]].combinations()
-            legacyModeMessage = isInLegacyMode ? "(legacy)" : ""
+                    ToStringBugDemonstrationExtension(Project project) {
+                        bugId = project.getObjects().property(String)
+                    }
+                }
+
+                class ToStringBugDemonstrationPlugin implements Plugin<Project> {
+                    void apply(Project project) {
+                        def extension = project.extensions.create("toStringExtension", ToStringBugDemonstrationExtension, project)
+                        project.task("printBugId") {
+                            doLast {
+                                println "Bug ID: \${extension.bugId}"
+                            }
+                        }
+                    }
+                }
+
+                apply plugin: ToStringBugDemonstrationPlugin
+
+                println "ToString: " + toStringExtension    //in fact not needed in that case
+            """
+        expect:
+            runTasksSuccessfully("printBugId")
     }
 
     private String getPluginConfigurationWithNotExistingNexusServer() {

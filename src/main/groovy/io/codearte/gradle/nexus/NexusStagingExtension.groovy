@@ -10,6 +10,8 @@ import org.gradle.api.provider.Property
 @SuppressWarnings("UnstableApiUsage")
 @CompileStatic
 @Slf4j
+//TODO: Re-enable once https://github.com/gradle/gradle/issues/11466 is fixed in Gradle
+//@ToString(includeFields = true, includeNames = true, includePackage = false)
 class NexusStagingExtension {
 
     String serverUrl

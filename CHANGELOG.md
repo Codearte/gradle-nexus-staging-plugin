@@ -1,5 +1,9 @@
 # gradle-nexus-staging-plugin changelog
 
+## 0.21.2 - Unreleased
+
+ - Workaround incompatibility with Gradle 6.0 caused by a Gradle bug ([#11466](https://github.com/gradle/gradle/issues/11466)) - [#141](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/141) - PR by [Lars Grefer](https://github.com/larsgrefer)
+
 ## 0.21.1 - 2019-09-05
 
  - Fix incompatibility of unsupported releasing with legacy upload task with Gradle 5
@@ -19,10 +23,10 @@
 ## 0.20.0 - 2019-01-05
 
  - Reuse explicitly created staging repository ID if provided by external plugin - [#77](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/77)
- - Fix releasing from Travis - workaround Gradle limitation with Nexus stating repositories with external plugin - [nexus-publish-plugin](https://github.com/marcphilipp/nexus-publish-plugin/) [#76](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/76) 
+ - Fix releasing from Travis - workaround Gradle limitation with Nexus stating repositories with external plugin - [nexus-publish-plugin](https://github.com/marcphilipp/nexus-publish-plugin/) [#76](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/76)
  - Raise minimal required Gradle version to 4.8 due to internals modernisation
  - Runtime compatibility with Gradle 5.0 and 5.1
- 
+
 **Deprecation note**. Support for implicitly created staging repositories is deprecated. It has been always problematic, slow and error prone
 to find a proper staging repository and the recent [changes](https://github.com/travis-ci/travis-ci/issues/9555) in Travis just emphasised that.
 Thanks to the new [nexus-publish-plugin](https://github.com/marcphilipp/nexus-publish-plugin/) plugin by
@@ -31,24 +35,24 @@ explicitly created staging repositories in Nexus. At least in a case of using `m
 plugin (the `uploadArchives` task) please refer to [that issue](https://github.com/marcphilipp/nexus-publish-plugin/issues/8).
 
 The original code has not been removed and *should* still work for the time being (if you don't use Travis), but it is no longer officially
-supported (e.g. the E2E tests has been switched to the new approach).   
+supported (e.g. the E2E tests has been switched to the new approach).
 
 ## 0.12.0 - 2018-09-29
 
  - Java 11 compatibility (basic path verified by e2e tests) - [#73](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/73)
  - Fix crash on non-upload task named 'uploadArchives' - [#67](https://github.com/szpak/CDeliveryBoy/issues/#67)
  - Drop support for Java 7
- - Drop Gradle 2.x support (not supported by used plugins) 
+ - Drop Gradle 2.x support (not supported by used plugins)
  - Upgrade project dependencies
  - Upgrade Gradle to 4.10.2
 
 ## 0.11.0 - 2017-08-18
 
  - Fail when applied on non-root project - [#47](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/47)
- - Less confusing log output without "info" logging enabled - [#60](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/60) 
+ - Less confusing log output without "info" logging enabled - [#60](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/60)
  - Upgrade project dependencies
  - Upgrade Gradle to 4.1 (compatibility with Gradle 2.0+ should be still maintained)
- 
+
 ## 0.10.0 - 2017-08-18
 
  - Configurable repository description in close/release operation - [#63](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/63) - contribution by [akomakom](https://github.com/akomakom)
@@ -56,7 +60,7 @@ supported (e.g. the E2E tests has been switched to the new approach).
 ## 0.9.0 - 2017-06-05
 
 This release provides no new features or bugfixes. It is focused on acceptance E2E testing and Continuous Delivery
-with [CDeliveryBoy](https://travis-ci.org/szpak/CDeliveryBoy). 
+with [CDeliveryBoy](https://travis-ci.org/szpak/CDeliveryBoy).
 
  - Acceptance tests at Gradle level run before release against real Nexus - [#40](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/40)
  - Automatic `CHANGELOG.md` synchronization with GitHub releases - [#52](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/52)
@@ -71,14 +75,14 @@ with [CDeliveryBoy](https://travis-ci.org/szpak/CDeliveryBoy).
  - Make functional tests work also on Windows - [#39](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/39)
 
 **Deprecation note**. The ~~promoteRepository~~ and ~~closeAndPromoteRepository~~ tasks are marked as deprecated and will be removed
-in one of the future versions. `releaseRepository` and `closeAndReleaseRepository` can be used as drop-in replacements. 
+in one of the future versions. `releaseRepository` and `closeAndReleaseRepository` can be used as drop-in replacements.
 
 ## 0.7.0 - 2017-03-27
 
  - Verify that repository has been really closed - [#21](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/21)
  - Re-enable sharing stagingRepositoryId between close and promote - [#46](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/46)
  - Basic functional tests with different Gradle versions - [#41](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/41)
- - Suggest longer timeout if failed on time related operations even without `--info` enabled - [#34](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/34) 
+ - Suggest longer timeout if failed on time related operations even without `--info` enabled - [#34](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/34)
  - Longer default retry period  - [#12](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/12)
 
 ## 0.6.1 - 2017-03-20
