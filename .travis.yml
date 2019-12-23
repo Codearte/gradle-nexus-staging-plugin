@@ -24,6 +24,9 @@ install:
   - git config user.name "Codearte Continuous Delivery Bot"
   # Chandler for release notes synchronization
   - ruby --version
+  # Workaround for "RVM version <notify>1.29.3 (latest)</notify> is installed, yet version <error>1.29.8 (latest)</error> is loaded." on Travis on Mac:
+  # https://travis-ci.org/Codearte/gradle-nexus-staging-plugin/jobs/628513971#L138
+  - rvm reload
   - rvm install 2.4.1
   - ruby --version
   - gem install --no-document chandler -v 0.7.0
