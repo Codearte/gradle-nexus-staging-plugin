@@ -31,7 +31,7 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
     def setup() {
         client = new SimplifiedHttpJsonRestClient(new RESTClient(), nexusUsernameAT, nexusPasswordAT)
         repoStateFetcher = new RepositoryStateFetcher(client, E2E_SERVER_BASE_PATH)
-        retrier = new OperationRetrier<>()
+        retrier = new OperationRetrier<>(30, 3000)
     }
 
     @NotYetImplemented
