@@ -80,9 +80,3 @@ matrix:
     - os: osx
       jdk: openjdk11
       env: SKIP_RELEASE=true
-    - os: linux
-      jdk: openjdk9
-      env: SKIP_RELEASE=true
-    - os: linux
-      jdk: openjdk10
-      env: SKIP_RELEASE=true
