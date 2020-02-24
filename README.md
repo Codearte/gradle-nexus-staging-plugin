@@ -169,6 +169,7 @@ Just to mention a few FOSS projects which leverage the plugin to automatize rele
 [Javers](https://github.com/javers/javers), 
 [JSON Assert](https://github.com/marcingrzejszczak/jsonassert), 
 [logback-android](https://github.com/tony19/logback-android), 
+[Micronaut](https://github.com/micronaut-projects/micronaut-aws),
 [mini2Dx](https://github.com/mini2Dx/minibus), 
 [Nextflow](https://github.com/nextflow-io/nextflow) and 
 [TestNG](https://github.com/cbeust/testng).
