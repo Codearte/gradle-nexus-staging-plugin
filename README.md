@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/Codearte/gradle-nexus-staging-plugin.svg?branch=master)](https://travis-ci.org/Codearte/gradle-nexus-staging-plugin)
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/Codearte/gradle-nexus-staging-plugin?branch=master&svg=true)](https://ci.appveyor.com/project/szpak/gradle-nexus-staging-plugin/)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.codearte.gradle.nexus/gradle-nexus-staging-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.codearte.gradle.nexus/gradle-nexus-staging-plugin)
+[![Plugin Portal](https://img.shields.io/maven-metadata/v?label=Plugin&color=blue&metadataUrl=https://plugins.gradle.org/m2/io/codearte/nexus-staging/io.codearte.nexus-staging.gradle.plugin/maven-metadata.xml)](https://plugins.gradle.org/plugin/io.codearte.nexus-staging)
 
 A gradle plugin providing tasks to close and promote/release staged repositories. It allows to do a full artifacts release to Maven Central through
 [Sonatype OSSRH](http://central.sonatype.org/pages/ossrh-guide.html) (Open Source Software Repository Hosting) without the need to use Nexus GUI (to close and release
@@ -168,6 +169,7 @@ Just to mention a few FOSS projects which leverage the plugin to automatize rele
 [Javers](https://github.com/javers/javers), 
 [JSON Assert](https://github.com/marcingrzejszczak/jsonassert), 
 [logback-android](https://github.com/tony19/logback-android), 
+[Micronaut](https://github.com/micronaut-projects/micronaut-aws),
 [mini2Dx](https://github.com/mini2Dx/minibus), 
 [Nextflow](https://github.com/nextflow-io/nextflow) and 
 [TestNG](https://github.com/cbeust/testng).
