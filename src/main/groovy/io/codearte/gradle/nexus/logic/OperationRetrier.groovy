@@ -8,8 +8,8 @@ import io.codearte.gradle.nexus.infra.WrongNumberOfRepositories
 @Slf4j
 class OperationRetrier<T> {
 
-    public static final int DEFAULT_NUMBER_OF_RETRIES = 20
-    public static final int DEFAULT_DELAY_BETWEEN_RETRIES_IN_MILLIS = 2000
+    public static final int DEFAULT_NUMBER_OF_RETRIES = 100
+    public static final int DEFAULT_DELAY_BETWEEN_RETRIES_IN_MILLIS = 6000
 
     private final int numberOfRetries
     private final int delayBetweenRetriesInMillis
