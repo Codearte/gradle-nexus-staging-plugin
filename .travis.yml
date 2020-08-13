@@ -30,7 +30,8 @@ install:
 
 script:
   - ./gradlew assemble -s
-  - ./gradlew prepareForCiBuild -s -i -Prelease.disableChecks && ./gradlew funcTest ciBuild -s -i -Pcompatibility -Prelease.disableChecks -PpluginPortal -PchangelogSync
+  # Temporarily disable animal sniffer due to: https://github.com/mojohaus/animal-sniffer/issues/76
+  - ./gradlew prepareForCiBuild -s -i -Prelease.disableChecks && ./gradlew funcTest ciBuild -s -i -PcompatibilityDISABLED -Prelease.disableChecks -PpluginPortal -PchangelogSync
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
