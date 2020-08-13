@@ -21,8 +21,8 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
 
     //Officially 5.0, but 4.10.2 works fine with that plugin
     private static final GradleVersion MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.10.2")
-    private static final GradleVersion LATEST_GRADLE5_VERSION = GradleVersion.version("5.6.3")
-    private static final GradleVersion LATEST_GRADLE_VERSION = GradleVersion.version("6.0.1")
+    private static final GradleVersion LATEST_GRADLE5_VERSION = GradleVersion.version("5.6.4")
+    private static final GradleVersion LATEST_GRADLE_VERSION = GradleVersion.version("6.5")
 
     def "should not fail on #legacyModeMessage plugin logic initialization issue with Gradle #requestedGradleVersion"() {
         given:
@@ -54,9 +54,7 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
             legacyModeMessage = isInLegacyMode ? "(legacy)" : ""
     }
 
-    @Issue("https://github.com/Codearte/gradle-nexus-staging-plugin/issues/141")
-    @PendingFeature(exceptions = GradleException,   //StackOverflowError as root cause would be better
-                    reason = "Bug in Gradle 6.x - https://github.com/gradle/gradle/issues/11466")
+    @Issue("https://github.com/Codearte/gradle-nexus-staging-plugin/issues/141")    //Gradle bug https://github.com/gradle/gradle/issues/11466 - fixed in 6.4
     def "should not fail on @ToString for extension class in Gradle 6.x"() {
         given:
             gradleVersion = LATEST_GRADLE_VERSION.version
