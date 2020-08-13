@@ -40,7 +40,7 @@ dependencies {
 
     testCompile('org.spockframework:spock-core:1.3-groovy-2.5') {
         //groovy 2.3.x or 2.4.x is already provided by Gradle itself
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+        exclude group: 'org.codehaus.groovy'
     }
     testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
     testCompile 'org.objenesis:objenesis:3.1' //for mocking classes with Spock
@@ -52,8 +52,8 @@ dependencies {
     funcTestCompile sourceSets.test.output  //to depends on common unit and integration helper classes
     funcTestCompile configurations.testCompile
     funcTestRuntime configurations.testRuntime
-    funcTestCompile('com.netflix.nebula:nebula-test:7.2.5') {
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+    funcTestCompile('com.netflix.nebula:nebula-test:7.8.6') {
+        exclude group: 'org.codehaus.groovy'
     }
     funcTestCompile 'com.github.tomakehurst:wiremock:1.50' //1.54+ makes GroovyBuilder to fail with parsing empty response on POST
 

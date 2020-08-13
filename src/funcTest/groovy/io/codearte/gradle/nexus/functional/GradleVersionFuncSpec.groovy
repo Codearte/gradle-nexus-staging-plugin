@@ -5,11 +5,9 @@ import com.google.common.base.Predicates
 import io.codearte.gradle.nexus.NexusStagingPlugin
 import nebula.test.functional.ExecutionResult
 import nebula.test.functional.GradleRunner
-import org.gradle.api.GradleException
 import org.gradle.internal.jvm.Jvm
 import org.gradle.util.GradleVersion
 import spock.lang.Issue
-import spock.lang.PendingFeature
 import spock.util.Exceptions
 
 import java.util.regex.Pattern
@@ -21,8 +19,9 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
 
     //Officially 5.0, but 4.10.2 works fine with that plugin
     private static final GradleVersion MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.10.2")
+    private static final GradleVersion MINIMAL_STABLE_JAVA14_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.3")
     private static final GradleVersion LATEST_GRADLE5_VERSION = GradleVersion.version("5.6.4")
-    private static final GradleVersion LATEST_GRADLE_VERSION = GradleVersion.version("6.5")
+    private static final GradleVersion LATEST_GRADLE_VERSION = GradleVersion.version("6.6")
 
     def "should not fail on #legacyModeMessage plugin logic initialization issue with Gradle #requestedGradleVersion"() {
         given:
@@ -121,7 +120,7 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
 
     private List<GradleVersion> resolveRequestedGradleVersions() {
         return [GradleVersion.version(NexusStagingPlugin.MINIMAL_SUPPORTED_GRADLE_VERSION), MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION,
-                LATEST_GRADLE5_VERSION, LATEST_GRADLE_VERSION].unique()
+                MINIMAL_STABLE_JAVA14_COMPATIBLE_GRADLE_VERSION, LATEST_GRADLE5_VERSION, LATEST_GRADLE_VERSION].unique()
     }
 
     //Java 9 testing mechanism taken after pitest-gradle-plugin - https://github.com/szpak/gradle-pitest-plugin
@@ -132,16 +131,22 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
             //All supported versions should be Java 8 compatible
             return requestedGradleVersions
         }
-        return leaveJava11CompatibleGradleVersionsOnly(requestedGradleVersions)
+        if ((Jvm.current().javaVersion.getMajorVersion() as Integer) >= 14) {
+            return leaveCurrentJavaCompatibleGradleVersionsOnly(requestedGradleVersions, MINIMAL_STABLE_JAVA14_COMPATIBLE_GRADLE_VERSION)
+        } else {
+            return leaveCurrentJavaCompatibleGradleVersionsOnly(requestedGradleVersions, MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION)
+        }
+
     }
 
-    private List<GradleVersion> leaveJava11CompatibleGradleVersionsOnly(List<GradleVersion> requestedGradleVersions) {
-        List<GradleVersion> java11CompatibleGradleVersions = requestedGradleVersions.findAll {
-            it >= MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION
+    private List<GradleVersion> leaveCurrentJavaCompatibleGradleVersionsOnly(List<GradleVersion> requestedGradleVersions,
+                                                                             GradleVersion minimalSupportedGradleVersion) {
+        List<GradleVersion> currentJavaCompatibleGradleVersions = requestedGradleVersions.findAll {
+            it >= minimalSupportedGradleVersion
         }
-        if (java11CompatibleGradleVersions.size() < 1) {
-            java11CompatibleGradleVersions.add(MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION)
+        if (currentJavaCompatibleGradleVersions.size() < 1) {
+            currentJavaCompatibleGradleVersions.add(minimalSupportedGradleVersion)
         }
-        return java11CompatibleGradleVersions
+        return currentJavaCompatibleGradleVersions
     }
 }
