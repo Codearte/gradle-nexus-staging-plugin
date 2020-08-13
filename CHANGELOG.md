@@ -1,5 +1,12 @@
 # gradle-nexus-staging-plugin changelog
 
+## 0.22.0 - Unreleased
+
+ - Change default retrying time to 5 minutes - a value recommended by Sonatype (suggestion by [Mikhail Yakushin](https://github.com/driver733))
+ - Switch build to Gradle 6.6
+ - Bump some dependencies
+ - Check basic compatibility with Gradle up to 6.6
+
 ## 0.21.2 - 2019-12-23
 
  - Workaround incompatibility with Gradle 6.0 caused by a Gradle bug ([#11466](https://github.com/gradle/gradle/issues/11466)) - [#141](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/141) - PR by [Lars Grefer](https://github.com/larsgrefer)
