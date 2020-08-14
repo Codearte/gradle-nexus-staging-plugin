@@ -11,7 +11,8 @@ build_script:
   - gradlew.bat assemble -s
 
 test_script:
-  - gradlew.bat check funcTest -Pcompatibility -i -s --continue
+  # Temporarily disable animal sniffer due to: https://github.com/mojohaus/animal-sniffer/issues/76
+  - gradlew.bat check funcTest -PcompatibilityDISABLED -i -s --continue
 
 environment:
   matrix:
