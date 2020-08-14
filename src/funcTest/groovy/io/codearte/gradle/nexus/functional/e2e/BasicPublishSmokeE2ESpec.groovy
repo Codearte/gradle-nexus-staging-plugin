@@ -32,7 +32,7 @@ class BasicPublishSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements
                     wasExecuted("initializeNexusStagingRepository")
                     wasExecuted("publishMavenJavaPublicationToNexusRepository")
                     //and
-                    standardOutput.contains('to repository remote at https://oss.sonatype.org/service/local/staging/deployByRepositoryId/iogitlabnexus-at-')
+                    standardOutput.contains("to repository 'nexus' (https://oss.sonatype.org/service/local/staging/deployByRepositoryId/iogitlabnexus-at-")
                     //and
                     wasExecuted("closeRepository")
                     wasExecuted("releaseRepository")
