@@ -29,10 +29,10 @@ class BasicPublishSmokeE2ESpec extends BaseNexusStagingFunctionalSpec implements
             with(result) {
                 verifyAll {
                     //TODO: How to verify task execution in order?
-                    wasExecuted("initializeNexusStagingRepository")
-                    wasExecuted("publishMavenJavaPublicationToNexusRepository")
+                    wasExecuted("initializeSonatypeStagingRepository")
+                    wasExecuted("publishMavenJavaPublicationToSonatypeRepository")
                     //and
-                    standardOutput.contains("to repository 'nexus' (https://oss.sonatype.org/service/local/staging/deployByRepositoryId/iogitlabnexus-at-")
+                    standardOutput.contains("to repository 'sonatype' (https://oss.sonatype.org/service/local/staging/deployByRepositoryId/iogitlabnexus-at-")
                     //and
                     wasExecuted("closeRepository")
                     wasExecuted("releaseRepository")
