@@ -16,6 +16,8 @@ cDeliveryBoy {
 nexusStaging {
     packageGroup = "io.codearte"
     stagingProfileId = "93c08fdebde1ff"
+    numberOfRetries = 60
+    delayBetweenRetriesInMillis = 5000
 }
 
 scmVersion {
