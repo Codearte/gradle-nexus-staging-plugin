@@ -1,6 +1,6 @@
 # gradle-nexus-staging-plugin changelog
 
-## 0.22.0 - Unreleased
+## 0.22.0 - 2020-08-17
 
  - Change default retrying time to 5 minutes - a value recommended by Sonatype (suggestion by [Mikhail Yakushin](https://github.com/driver733))
  - Switch build to Gradle 6.6
