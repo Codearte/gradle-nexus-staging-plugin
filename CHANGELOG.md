@@ -6,6 +6,7 @@
  - Switch build to Gradle 6.6
  - Bump some dependencies
  - Check basic compatibility with Gradle up to 6.6
+ - CI server sanity check for Java 14 compatibility
 
 ## 0.21.2 - 2019-12-23
 
