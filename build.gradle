@@ -44,7 +44,7 @@ dependencies {
     }
     testCompile 'info.solidsoft.spock:spock-global-unroll:0.5.1'
     testCompile 'org.objenesis:objenesis:3.1' //for mocking classes with Spock
-    testCompile 'net.bytebuddy:byte-buddy:1.10.14'   //for Spying with Spock
+    testCompile 'net.bytebuddy:byte-buddy:1.10.15'   //for Spying with Spock
 
     testCompile 'junit:junit:4.13'
 
