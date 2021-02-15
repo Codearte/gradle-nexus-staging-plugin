@@ -2,7 +2,6 @@ package io.codearte.gradle.nexus
 
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
-import groovyx.net.http.RESTClient
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.logic.OperationRetrier
 import io.codearte.gradle.nexus.logic.RepositoryCloser
@@ -11,6 +10,7 @@ import io.codearte.gradle.nexus.logic.RepositoryReleaser
 import io.codearte.gradle.nexus.logic.RepositoryState
 import io.codearte.gradle.nexus.logic.RepositoryStateFetcher
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
+import okhttp3.OkHttpClient
 import org.gradle.api.DefaultTask
 import org.gradle.api.Incubating
 import org.gradle.api.Project
@@ -57,6 +57,8 @@ abstract class BaseStagingTask extends DefaultTask {
     @Incubating
     final Property<String> stagingRepositoryId
 
+    private SimplifiedHttpJsonRestClient restClient
+
     @Inject
     BaseStagingTask(Project project, NexusStagingExtension extension) {
         ObjectFactory objectFactory = project.getObjects();
@@ -65,8 +67,11 @@ abstract class BaseStagingTask extends DefaultTask {
     }
 
     @PackageScope
-    SimplifiedHttpJsonRestClient createClient() {
-        return new SimplifiedHttpJsonRestClient(new RESTClient(), getUsername(), getPassword())
+    synchronized SimplifiedHttpJsonRestClient createClient() {
+        if (restClient == null) {
+            restClient = new SimplifiedHttpJsonRestClient(new OkHttpClient(), getUsername(), getPassword())
+        }
+        return restClient
     }
 
     protected StagingProfileFetcher createProfileFetcherWithGivenClient(SimplifiedHttpJsonRestClient client) {

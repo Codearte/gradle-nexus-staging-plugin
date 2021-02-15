@@ -2,11 +2,10 @@ package io.codearte.gradle.nexus.functional
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import groovy.transform.NotYetImplemented
-import groovyx.net.http.HttpResponseException
-import groovyx.net.http.RESTClient
 import io.codearte.gradle.nexus.infra.NexusHttpResponseException
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.logic.RepositoryCloser
+import okhttp3.OkHttpClient
 import org.junit.Rule
 import spock.lang.Specification
 
@@ -40,7 +39,7 @@ class MockedResponseErrorHandlingSpec extends Specification {
 
     def "should present response body on 500 server error"() {
         given:
-            SimplifiedHttpJsonRestClient client = new SimplifiedHttpJsonRestClient(new RESTClient(), TEST_MOCKED_USERNAME, TEST_MOCKED_PASSWORD)
+            SimplifiedHttpJsonRestClient client = new SimplifiedHttpJsonRestClient(new OkHttpClient(), TEST_MOCKED_USERNAME, TEST_MOCKED_PASSWORD)
             RepositoryCloser closer = new RepositoryCloser(client, getMockedUrl(), TEST_MOCKED_REPOSITORY_DESCRIPTION)
         and:
             stubFor(post(urlEqualTo("/staging/bulk/close"))
@@ -56,7 +55,6 @@ class MockedResponseErrorHandlingSpec extends Specification {
             NexusHttpResponseException e = thrown()
             e.statusCode == 500
             e.message.contains("Missing staging repository: $TEST_MOCKED_NOT_EXISTING_REPOSITORY_ID")
-            e.cause instanceof HttpResponseException
     }
 
     private String getMockedUrl() {

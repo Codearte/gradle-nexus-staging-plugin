@@ -42,7 +42,7 @@ class RepositoryStateFetcherSpec extends BaseOperationExecutorSpec implements Fe
     def "should map 404 error from server to NOT_FOUND state"() {
         given:
             client.get(getGetRepositoryStateFullUrlForRepoId(TEST_REPOSITORY_ID)) >> {
-                throw new NexusHttpResponseException(404, "404: Not Found, body: ${aNotFoundRepo(TEST_REPOSITORY_ID)}", null)
+                throw new NexusHttpResponseException(404, "404: Not Found, body: ${aNotFoundRepo(TEST_REPOSITORY_ID)}")
             }
         when:
             RepositoryState repoState = repoStateFetcher.getNonTransitioningRepositoryStateById(TEST_REPOSITORY_ID)
