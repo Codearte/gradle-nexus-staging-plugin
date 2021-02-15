@@ -46,7 +46,7 @@ dependencies {
     testCompile 'org.objenesis:objenesis:3.1' //for mocking classes with Spock
     testCompile 'net.bytebuddy:byte-buddy:1.10.14'   //for Spying with Spock
 
-    testCompile 'junit:junit:4.13'
+    testCompile 'junit:junit:4.13.2'
 
     funcTestCompile sourceSets.main.output  //to make production plugin classes visible in functional tests (it's not in testCompile configuration)
     funcTestCompile sourceSets.test.output  //to depends on common unit and integration helper classes
