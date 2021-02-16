@@ -30,7 +30,7 @@ class SimplifiedHttpJsonRestClient {
 
     SimplifiedHttpJsonRestClient(OkHttpClient restClient, String username, String password) {
         OkHttpClient.Builder clientBuilder = restClient.newBuilder()
-        if (username != null) {
+        if (username != null && password != null) {
             clientBuilder.addInterceptor(new Interceptor() {
                 @Override
                 Response intercept(@NotNull Interceptor.Chain chain) throws IOException {
