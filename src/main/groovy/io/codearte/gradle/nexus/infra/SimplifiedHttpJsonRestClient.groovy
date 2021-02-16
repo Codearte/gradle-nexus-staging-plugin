@@ -6,7 +6,6 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import okhttp3.Credentials
 import okhttp3.Interceptor
-import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -20,8 +19,6 @@ import org.jetbrains.annotations.NotNull
 @Slf4j
 class SimplifiedHttpJsonRestClient {
 
-    private static final MediaType JSON = MediaType.parse("application/json")
-
     private enum RequestType {
         GET, POST
     }
@@ -30,17 +27,20 @@ class SimplifiedHttpJsonRestClient {
 
     SimplifiedHttpJsonRestClient(OkHttpClient restClient, String username, String password) {
         OkHttpClient.Builder clientBuilder = restClient.newBuilder()
-        if (username != null && password != null) {
-            clientBuilder.addInterceptor(new Interceptor() {
-                @Override
-                Response intercept(@NotNull Interceptor.Chain chain) throws IOException {
-                    Request.Builder request = chain.request().newBuilder()
-                        .addHeader("Authorization", Credentials.basic(username, password))
+        clientBuilder.addInterceptor(new Interceptor() {
+            @Override
+            Response intercept(@NotNull Interceptor.Chain chain) throws IOException {
+                Request.Builder request = chain.request().newBuilder()
+                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json")
 
-                    return chain.proceed(request.build())
+                if (username != null && password != null) {
+                    request.header("Authorization", Credentials.basic(username, password))
                 }
-            })
-        }
+
+                return chain.proceed(request.build())
+            }
+        })
         this.restClient = clientBuilder.build()
     }
 
@@ -53,7 +53,7 @@ class SimplifiedHttpJsonRestClient {
 
     Map post(String uri, Map content) {
         Request request = new Request.Builder()
-            .method("POST", RequestBody.create(JsonOutput.toJson(content), JSON))
+            .method("POST", RequestBody.create(JsonOutput.toJson(content), null))
             .url(uri)
             .build()
         return sendRequestHandlingErrors(request, RequestType.POST)
@@ -68,7 +68,11 @@ class SimplifiedHttpJsonRestClient {
                     log.warn("$requestTypeName request failed. ${message}")
                     throw new NexusHttpResponseException(it.code(), message)
                 }
-                (Map) new JsonSlurper().parse(it.body().byteStream())
+                if (it.body().contentLength() == 0) {
+                    return [:]
+                } else {
+                    (Map) new JsonSlurper().parse(it.body().byteStream())
+                }
             }
         } catch(IOException e) {
             throw new NexusStagingException("Could not connect to Nexus.", e)
