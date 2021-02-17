@@ -4,6 +4,8 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import java.util.concurrent.TimeUnit
+import javax.annotation.concurrent.ThreadSafe
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -17,16 +19,17 @@ import org.jetbrains.annotations.NotNull
  */
 @CompileStatic
 @Slf4j
+@ThreadSafe
 class SimplifiedHttpJsonRestClient {
-
-    private enum RequestType {
-        GET, POST
-    }
 
     private final OkHttpClient restClient
 
     SimplifiedHttpJsonRestClient(OkHttpClient restClient, String username, String password) {
         OkHttpClient.Builder clientBuilder = restClient.newBuilder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .callTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
         clientBuilder.addInterceptor(new Interceptor() {
             @Override
             Response intercept(@NotNull Interceptor.Chain chain) throws IOException {
@@ -48,24 +51,24 @@ class SimplifiedHttpJsonRestClient {
         Request request = new Request.Builder()
             .url(uri)
             .build()
-        return sendRequestHandlingErrors(request, RequestType.GET)
+        return sendRequestHandlingErrors(request)
     }
 
     Map post(String uri, Map content) {
         Request request = new Request.Builder()
-            .method("POST", RequestBody.create(JsonOutput.toJson(content), null))
+            .post(RequestBody.create(JsonOutput.toJson(content), null))
             .url(uri)
             .build()
-        return sendRequestHandlingErrors(request, RequestType.POST)
+        return sendRequestHandlingErrors(request)
     }
 
-    private Map sendRequestHandlingErrors(Request request, RequestType requestTypeName) {
+    private Map sendRequestHandlingErrors(Request request) {
         try {
             return restClient.newCall(request).execute().withCloseable {
                 if (!it.successful) {
                     String message = "${it.code()}: ${it.message()}, body: ${it.body().string() ?: '<empty>'}"
                     //TODO: Suppress error message on 404 if waiting for drop?
-                    log.warn("$requestTypeName request failed. ${message}")
+                    log.warn("${request.method()} request failed. ${message}")
                     throw new NexusHttpResponseException(it.code(), message)
                 }
                 if (it.body().contentLength() == 0) {
