@@ -22,6 +22,8 @@ import org.jetbrains.annotations.NotNull
 @ThreadSafe
 class SimplifiedHttpJsonRestClient {
 
+    private static final String CONTENT_TYPE_JSON = "application/json"
+
     private final OkHttpClient restClient
 
     SimplifiedHttpJsonRestClient(OkHttpClient restClient, String username, String password) {
@@ -34,8 +36,8 @@ class SimplifiedHttpJsonRestClient {
             @Override
             Response intercept(@NotNull Interceptor.Chain chain) throws IOException {
                 Request.Builder request = chain.request().newBuilder()
-                    .header("Content-Type", "application/json")
-                    .header("Accept", "application/json")
+                    .header("Content-Type", CONTENT_TYPE_JSON)
+                    .header("Accept", CONTENT_TYPE_JSON)
 
                 if (username != null && password != null) {
                     request.header("Authorization", Credentials.basic(username, password))
