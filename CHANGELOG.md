@@ -3,6 +3,7 @@
 ## 0.30.0 - Unreleased
 
  - Replace from old unsupported HTTP Builder to OkHttp 4 - [#188](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/188) - PR by [anuraaga](https://github.com/anuraaga)
+ - Switch build to Gradle 6.8.3
 
 **Backward compatibility note**. Due to the internal HTTP client library change, the plugin might start behaving slightly different in certain situations.
 
