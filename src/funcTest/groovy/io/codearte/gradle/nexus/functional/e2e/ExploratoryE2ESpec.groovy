@@ -1,7 +1,6 @@
 package io.codearte.gradle.nexus.functional.e2e
 
 import groovy.transform.NotYetImplemented
-import groovyx.net.http.RESTClient
 import io.codearte.gradle.nexus.functional.BaseNexusStagingFunctionalSpec
 import io.codearte.gradle.nexus.infra.SimplifiedHttpJsonRestClient
 import io.codearte.gradle.nexus.logic.OperationRetrier
@@ -15,6 +14,7 @@ import io.codearte.gradle.nexus.logic.RepositoryStateFetcher
 import io.codearte.gradle.nexus.logic.RetryingRepositoryTransitioner
 import io.codearte.gradle.nexus.logic.StagingProfileFetcher
 import nebula.test.functional.ExecutionResult
+import okhttp3.OkHttpClient
 import spock.lang.Ignore
 import spock.lang.Stepwise
 
@@ -29,7 +29,7 @@ class ExploratoryE2ESpec extends BaseNexusStagingFunctionalSpec implements E2ESp
     private static String resolvedStagingRepositoryId
 
     def setup() {
-        client = new SimplifiedHttpJsonRestClient(new RESTClient(), nexusUsernameAT, nexusPasswordAT)
+        client = new SimplifiedHttpJsonRestClient(new OkHttpClient(), nexusUsernameAT, nexusPasswordAT)
         repoStateFetcher = new RepositoryStateFetcher(client, E2E_SERVER_BASE_PATH)
         retrier = new OperationRetrier<>()
     }

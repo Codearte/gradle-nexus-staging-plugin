@@ -5,7 +5,7 @@ import groovy.transform.CompileStatic
 /**
  * Custom exception to propagate server errors.
  *
- * Created as groovyx.net.http.HttpResponseException contains in a message only a reason phrase (e.g. Server Error) without response body
+ * Created as OkHttp does not throw exceptions for HTTP errors (e.g. Server Error)
  * which in many cases is crucial to determine the resons why error was returned.
  *
  * It may be made redundant once migrated to other HTTP library.
@@ -15,8 +15,8 @@ class NexusHttpResponseException extends NexusStagingException {
 
     final int statusCode
 
-    NexusHttpResponseException(int statusCode, String message, Throwable cause) {
-        super(message, cause)
+    NexusHttpResponseException(int statusCode, String message) {
+        super(message)
         this.statusCode = statusCode
     }
 }
