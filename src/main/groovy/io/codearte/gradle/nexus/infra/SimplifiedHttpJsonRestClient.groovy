@@ -27,26 +27,31 @@ class SimplifiedHttpJsonRestClient {
     private final OkHttpClient restClient
 
     SimplifiedHttpJsonRestClient(OkHttpClient restClient, String username, String password) {
-        OkHttpClient.Builder clientBuilder = restClient.newBuilder()
+        OkHttpClient.Builder clientBuilder = createClientBuilderWithDefaultTimeout(restClient)
+            .addInterceptor(new Interceptor() {
+                @Override
+                Response intercept(@NotNull Interceptor.Chain chain) throws IOException {
+                    Request.Builder request = chain.request().newBuilder()
+                        .header("Content-Type", CONTENT_TYPE_JSON)
+                        .header("Accept", CONTENT_TYPE_JSON)
+
+                    if (username != null && password != null) {
+                        request.header("Authorization", Credentials.basic(username, password))
+                    }
+
+                    return chain.proceed(request.build())
+                }
+            })
+        this.restClient = clientBuilder.build()
+    }
+
+    private OkHttpClient.Builder createClientBuilderWithDefaultTimeout(OkHttpClient restClient) {
+        //Could be made parameterized if needed
+        return restClient.newBuilder()
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .callTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS)
-        clientBuilder.addInterceptor(new Interceptor() {
-            @Override
-            Response intercept(@NotNull Interceptor.Chain chain) throws IOException {
-                Request.Builder request = chain.request().newBuilder()
-                    .header("Content-Type", CONTENT_TYPE_JSON)
-                    .header("Accept", CONTENT_TYPE_JSON)
-
-                if (username != null && password != null) {
-                    request.header("Authorization", Credentials.basic(username, password))
-                }
-
-                return chain.proceed(request.build())
-            }
-        })
-        this.restClient = clientBuilder.build()
     }
 
     Map get(String uri) {
@@ -79,7 +84,7 @@ class SimplifiedHttpJsonRestClient {
                     (Map) new JsonSlurper().parse(it.body().byteStream())
                 }
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new NexusStagingException("Could not connect to Nexus.", e)
         }
     }

@@ -1,5 +1,11 @@
 # gradle-nexus-staging-plugin changelog
 
+## 0.30.0 - Unreleased
+
+ - Replace from old unsupported HTTP Builder to OkHttp 4 - [#188](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/188) - PR by [anuraaga](https://github.com/anuraaga)
+
+**Backward compatibility note**. Due to the internal HTTP client library change, the plugin might start behaving slightly different in certain situations.
+
 ## 0.22.0 - 2020-08-17
 
  - Change default retrying time to 5 minutes - a value recommended by Sonatype (suggestion by [Mikhail Yakushin](https://github.com/driver733))
