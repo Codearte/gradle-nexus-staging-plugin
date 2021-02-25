@@ -48,10 +48,10 @@ class SimplifiedHttpJsonRestClient {
     private OkHttpClient.Builder createClientBuilderWithDefaultTimeout(OkHttpClient restClient) {
         //Could be made parameterized if needed
         return restClient.newBuilder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .callTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(300, TimeUnit.SECONDS)
+            .readTimeout(300, TimeUnit.SECONDS)
+            .callTimeout(300, TimeUnit.SECONDS)
+            .writeTimeout(300, TimeUnit.SECONDS)
     }
 
     Map get(String uri) {
