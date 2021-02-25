@@ -21,7 +21,7 @@ class GradleVersionFuncSpec extends BaseNexusStagingFunctionalSpec implements Fu
     private static final GradleVersion MINIMAL_STABLE_JAVA11_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("4.10.2")
     private static final GradleVersion MINIMAL_STABLE_JAVA14_COMPATIBLE_GRADLE_VERSION = GradleVersion.version("6.3")
     private static final GradleVersion LATEST_GRADLE5_VERSION = GradleVersion.version("5.6.4")
-    private static final GradleVersion LATEST_GRADLE_VERSION = GradleVersion.version("6.6")
+    private static final GradleVersion LATEST_GRADLE_VERSION = GradleVersion.version("6.8.3")
 
     def "should not fail on #legacyModeMessage plugin logic initialization issue with Gradle #requestedGradleVersion"() {
         given:
