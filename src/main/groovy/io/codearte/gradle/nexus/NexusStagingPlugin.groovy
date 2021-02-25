@@ -1,7 +1,6 @@
 package io.codearte.gradle.nexus
 
 import io.codearte.gradle.nexus.logic.OperationRetrier
-import org.gradle.api.Incubating
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -63,9 +62,6 @@ class NexusStagingPlugin implements Plugin<Project> {
         def closeAndReleaseRepositoryTask = createAndConfigureCloseAndReleaseRepositoryTask(project)
         closeAndReleaseRepositoryTask.dependsOn(closeRepositoryTask, releaseRepositoryTask)
         tryToDetermineCredentials(project, extension)
-        //just during the transition period - see https://github.com/Codearte/gradle-nexus-staging-plugin/issues/50
-        //noinspection GrDeprecatedAPIUsage
-        new LegacyTasksCreator().createAndConfigureLegacyTasks(project)
     }
 
     private NexusStagingExtension createAndConfigureExtension(Project project) {
@@ -195,35 +191,6 @@ class NexusStagingPlugin implements Plugin<Project> {
         if (extension.password == null && project.hasProperty(NEXUS_PASSWORD_PROPERTY)) {
             extension.password = project.property(NEXUS_PASSWORD_PROPERTY)
             project.logger.info("Using password '*****' from Gradle property '${NEXUS_PASSWORD_PROPERTY}'")
-        }
-    }
-
-    /**
-     * See https://github.com/Codearte/gradle-nexus-staging-plugin/issues/50 for more details.
-     */
-    @Deprecated
-    private static class LegacyTasksCreator {
-
-        private static final String RELEASE_REPOSITORY_OLD_TASK_NAME = "promoteRepository"
-        private static final String CLOSE_AND_RELEASE_REPOSITORY_OLD_TASK_NAME = "closeAndPromoteRepository"
-
-        void createAndConfigureLegacyTasks(Project project) {
-            createDeprecatedTaskDependingOnNewOne(project, RELEASE_REPOSITORY_OLD_TASK_NAME, RELEASE_REPOSITORY_TASK_NAME)
-            createDeprecatedTaskDependingOnNewOne(project, CLOSE_AND_RELEASE_REPOSITORY_OLD_TASK_NAME, CLOSE_AND_RELEASE_REPOSITORY_TASK_NAME)
-        }
-
-        private void createDeprecatedTaskDependingOnNewOne(Project project, String deprecatedTaskName, String newTaskName) {
-            project.tasks.create(deprecatedTaskName).with { task ->
-                description = "DEPRECATION WARNING. This task is DEPRECATED. Use '$newTaskName' instead."
-                group = "release"
-                dependsOn project.tasks.getByName(newTaskName)
-
-                project.gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
-                    if (taskGraph.hasTask(task)) {
-                        log.warn("DEPRECATION WARNING. Task '$deprecatedTaskName' is deprecated. Switch to '$newTaskName'.")
-                    }
-                }
-            }
         }
     }
 }
