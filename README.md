@@ -8,6 +8,12 @@ A gradle plugin providing tasks to close and promote/release staged repositories
 [Sonatype OSSRH](http://central.sonatype.org/pages/ossrh-guide.html) (Open Source Software Repository Hosting) without the need to use Nexus GUI (to close and release
 artifacts/repository).
 
+## MAINTENANCE MODE
+
+**IMPORTANT. To make releasing to Maven Central even easier, I and Marc Phillip (the author of nexus-publish-plugin) combined forces to create a next generation, unified, 2-in-1 plugin - [gradle-nexus-publish-plugin](https://github.com/gradle-nexus/publish-plugin/). It is a recommended solution, as our development effort will be put in that new plugin. See my [blog post](https://blog.solidsoft.pl/2021/02/26/unified-gradle-projects-releasing-to-maven-central-in-2021-migration-guide/) and the official [migration guide](https://github.com/gradle-nexus/publish-plugin/wiki/Migration-from-gradle_nexus_staging-plugin---nexus_publish-plugin-duo).**
+
+Thank you for over 5 years of releasing with my plugin!
+
 ## Quick start
 
 Add gradle-nexus-staging-plugin to the `buildscript` dependencies in your build.gradle file for root project:
@@ -34,8 +40,8 @@ Configure it:
         stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
     }
 
-After successful archives upload (with [`maven`](https://gradle.org/docs/current/userguide/maven_plugin.html), 
-[`maven-publish`](https://gradle.org/docs/current/userguide/publishing_maven.html) or 
+After successful archives upload (with [`maven`](https://gradle.org/docs/current/userguide/maven_plugin.html),
+[`maven-publish`](https://gradle.org/docs/current/userguide/publishing_maven.html) or
 [`nexus`](https://github.com/bmuschko/gradle-nexus-plugin/) plugin) to Sonatype OSSRH call:
 
     ./gradlew closeAndReleaseRepository
@@ -69,7 +75,7 @@ The plugin provides three main tasks:
  profile (possible old/broken repositories can be dropped with Nexus GUI)
  - `releaseRepository` - releases a closed repository (required to put artifacts to Maven Central aka The Central Repository)
  - `closeAndReleaseRepository` - closes and releases a repository (an equivalent to `closeRepository releaseRepository`)
- 
+
 And one additional:
 
  - `getStagingProfile` - gets and displays a staging profile id for a given package group. This is a diagnostic task to get the value and put it
@@ -98,7 +104,7 @@ one additional request is send to the Nexus server to determine the value using 
  - `repositoryDescription` (optional) - staging repository description in close/release operations (see [#63](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/63) for more information)
  - `stagingRepositoryId` (optional, since 0.20.0) - the explicitly created staging repository with artifacts to improve build reliability -
 requires external mechanism (e.g. [nexus-publish-plugin](https://github.com/marcphilipp/nexus-publish-plugin/)) to enhance a Gradle task
-to use it for uploading/publishing artifacts (see [#77](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/77))  
+to use it for uploading/publishing artifacts (see [#77](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/77))
 
 For the sensible configuration example see the plugin's own release [configuration](gradle/cdeliveryboy-release.gradle).
 
@@ -125,8 +131,8 @@ drop them suing the UI and try again. This is quite common during the initial ex
 2. It takes some time to close and/or promote a staging repository in Nexus, especially with multiple artifacts. The plugin has a built-in retry
 mechanism, however, the default value can be too [low](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/12), especially for
 the multiproject build. To confirm that enable logging at the info level in Gradle (using the `--info` or `-i` build parameter). You should see log
-messages similar to `Attempt 8/8 failed.`. If yes, increase the timeout using the `numberOfRetries` or `delayBetweenRetriesInMillis` configuration 
-parameters. 
+messages similar to `Attempt 8/8 failed.`. If yes, increase the timeout using the `numberOfRetries` or `delayBetweenRetriesInMillis` configuration
+parameters.
 
 3. An another reason to get the aforementioned error is releasing more than one project using the same Nexus staging repository simultaneously
 (usually automatically from a Continuous Delivery pipeline from a Continuous Integration server). Unfortunately Gradle does not provide a mechanism
@@ -138,7 +144,7 @@ situation.
 4. You are releasing from Travis. See the next point.
 
 ### 2. Why my release build on Travis suddenly started to fail with `wrong number of received repositories...`'?
- 
+
 If your Travis build started to fail around autumn 2018 it's probably a problem reported in [#76](https://github.com/Codearte/gradle-nexus-staging-plugin/issues/76).
 To cut a long story short:
  - Gradle does [not support](https://github.com/gradle/gradle/issues/5711) uploading/publishing to explicitly created staging repositories in Nexus
@@ -163,35 +169,35 @@ by nexus-publish-plugin (only `publish...` from `maven-publish`).
 The plugin is used by [hundreds of projects](https://github.com/search?q=io.codearte.nexus-staging&type=Code&utf8=%E2%9C%93) around the web.
 
 Just to mention a few FOSS projects which leverage the plugin to automatize releasing and Continuous Delivery:
-[Frege](https://github.com/Frege/frege-interpreter), 
-[Geb](https://github.com/geb/geb), 
-[Grails](https://github.com/grails/grails-core), 
-[Javers](https://github.com/javers/javers), 
-[JSON Assert](https://github.com/marcingrzejszczak/jsonassert), 
-[logback-android](https://github.com/tony19/logback-android), 
+[Frege](https://github.com/Frege/frege-interpreter),
+[Geb](https://github.com/geb/geb),
+[Grails](https://github.com/grails/grails-core),
+[Javers](https://github.com/javers/javers),
+[JSON Assert](https://github.com/marcingrzejszczak/jsonassert),
+[logback-android](https://github.com/tony19/logback-android),
 [Micronaut](https://github.com/micronaut-projects/micronaut-aws),
-[mini2Dx](https://github.com/mini2Dx/minibus), 
-[Nextflow](https://github.com/nextflow-io/nextflow) and 
+[mini2Dx](https://github.com/mini2Dx/minibus),
+[Nextflow](https://github.com/nextflow-io/nextflow) and
 [TestNG](https://github.com/cbeust/testng).
 
 The plugin is also used by the tools and the libraries created by various more or less known companies including:
-[Allegro](https://github.com/allegro/hermes), 
-[Braintree](https://github.com/braintree/braintree_android), 
-[Google](https://github.com/google/FreeBuilder), 
-[IBM](https://github.com/IBM-UrbanCode/groovy-plugin-utils), 
-[PayPal](https://github.com/paypal/PayPal-Java-SDK), 
-[Schibsted Spain](https://github.com/scm-spain/karyon-rest-router), 
-[TouK](https://github.com/TouK/bubble) and 
+[Allegro](https://github.com/allegro/hermes),
+[Braintree](https://github.com/braintree/braintree_android),
+[Google](https://github.com/google/FreeBuilder),
+[IBM](https://github.com/IBM-UrbanCode/groovy-plugin-utils),
+[PayPal](https://github.com/paypal/PayPal-Java-SDK),
+[Schibsted Spain](https://github.com/scm-spain/karyon-rest-router),
+[TouK](https://github.com/TouK/bubble) and
 [Zalando](https://github.com/zalando-incubator/straw).
 
-## Additional information 
+## Additional information
 
 [gradle-nexus-staging-plugin](https://github.com/Codearte/gradle-nexus-staging-plugin) was written by Marcin Zajączkowski
 with the help of the [contributors](https://github.com/Codearte/gradle-nexus-staging-plugin/graphs/contributors).
 The author can be contacted directly via email: `mszpak ATT wp DOTT pl`.
 There is also Marcin's blog available: [Solid Soft](http://blog.solidsoft.info) - working code is not enough.
 
-The PoC leading to the initial version of the plugin was brought to life during one of the hackathons held at [Codearte](http://codearte.io/). 
+The PoC leading to the initial version of the plugin was brought to life during one of the hackathons held at [Codearte](http://codearte.io/).
 
 The first version of the project has been released in 2015 and the plugin seems to be quite stable. Nevertheless, documentation for the Nexus
 staging REST API and in addition Gradle support for uploading artifacts to selected Nexus staging repositories leaves much to be desired.

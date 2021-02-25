@@ -3,10 +3,15 @@
 ## 0.30.0 - Unreleased
 
  - Replace from old unsupported HTTP Builder to OkHttp 4 - [#188](https://github.com/Codearte/gradle-nexus-staging-plugin/pull/188) - PR by [anuraaga](https://github.com/anuraaga)
+ - **Switch project development to maintenance mode** - see below
  - Switch build to Gradle 6.8.3
  - Remove deprecated since 0.8.0 `promoteRepository` and `closeAndPromoteRepository` tasks
 
 **Backward compatibility note**. Due to the internal HTTP client library change, the plugin might start behaving slightly different in certain situations.
+
+**PROJECT DEVELOPMENT SWITCHED TO THE MAINTENANCE MODE**. To make releasing to Maven Central even easier, I and Marc Phillip (the author of nexus-publish-plugin) combined forces to create a next generation, unified 2-in-1 plugin - [gradle-nexus-publish-plugin](https://github.com/gradle-nexus/publish-plugin/). It is a recommended solution, as our development effort will be put in that new plugin. See my [blog post](https://blog.solidsoft.pl/2021/02/26/unified-gradle-projects-releasing-to-maven-central-in-2021-migration-guide/) and the official [migration guide](https://github.com/gradle-nexus/publish-plugin/wiki/Migration-from-gradle_nexus_staging-plugin---nexus_publish-plugin-duo).
+
+Thank you for over 5 years of releasing with my plugin!
 
 ## 0.22.0 - 2020-08-17
 
