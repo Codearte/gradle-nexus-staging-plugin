@@ -25,7 +25,7 @@ Add gradle-nexus-staging-plugin to the `buildscript` dependencies in your build.
             //maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
         }
         dependencies {
-            classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.22.0"
+            classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
         }
     }
 
@@ -54,7 +54,7 @@ automatically appear into Maven Central within several minutes.
 In addition to Maven Central the plugin is available also from the [Plugin Portal](https://plugins.gradle.org/plugin/io.codearte.nexus-staging) and (in most cases) can be applied in a simplified way:
 
     plugins {
-        id 'io.codearte.nexus-staging' version '0.22.0'
+        id 'io.codearte.nexus-staging' version '0.30.0'
     }
 
 Buildscript and `apply plugin` sections can be ommited in that case.
