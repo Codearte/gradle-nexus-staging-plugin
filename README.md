@@ -10,7 +10,7 @@ artifacts/repository).
 
 ## MAINTENANCE MODE
 
-**IMPORTANT. To make releasing to Maven Central even easier, I and Marc Phillip (the author of nexus-publish-plugin) combined forces to create a next generation, unified, 2-in-1 plugin - [gradle-nexus-publish-plugin](https://github.com/gradle-nexus/publish-plugin/). It is a recommended solution, as our development effort will be put in that new plugin. See my [blog post](https://blog.solidsoft.pl/2021/02/26/unified-gradle-projects-releasing-to-maven-central-in-2021-migration-guide/) and the official [migration guide](https://github.com/gradle-nexus/publish-plugin/wiki/Migration-from-gradle_nexus_staging-plugin---nexus_publish-plugin-duo).**
+**IMPORTANT. To make releasing to Maven Central even easier, I and Marc Phillip (the author of nexus-publish-plugin) combined forces to create a next generation, unified, 2-in-1 plugin - [gradle-nexus-publish-plugin](https://github.com/gradle-nexus/publish-plugin/). It is a recommended solution, as our development effort will be put in that new plugin. See my [blog post](https://blog.solidsoft.pl/2021/02/26/unified-gradle-projects-releasing-to-maven-central-in-2021-migration-guide/) and the official [migration guide](https://github.com/gradle-nexus/publish-plugin/wiki/Migration-from-gradle_nexus_staging-plugin---nexus_publish-plugin-duo)**.
 
 Thank you for over 5 years of releasing with my plugin!
 
