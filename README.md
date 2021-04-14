@@ -36,6 +36,7 @@ Apply the plugin:
 Configure it:
 
     nexusStaging {
+        serverUrl = "https://s01.oss.sonatype.org/service/local/" //required only for projects registered in Sonatype after 2021-02-24
         packageGroup = "org.mycompany.myproject" //optional if packageGroup == project.getGroup()
         stagingProfileId = "yourStagingProfileId" //when not defined will be got from server using "packageGroup"
     }
