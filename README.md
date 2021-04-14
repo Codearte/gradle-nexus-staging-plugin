@@ -93,6 +93,10 @@ change can be found in the corresponding [issue](https://github.com/Codearte/gra
 The plugin defines the following configuration properties in the `nexusStaging` closure:
 
  - `serverUrl` (optional) - the stable release repository URL - by default Sonatype OSSRH - `https://oss.sonatype.org/service/local/`
+
+> **Important** - Users registered in Sonatype after 24 February 2021 need to customize the server URL:
+``serverUrl = "https://s01.oss.sonatype.org/service/local/"``
+
  - `username` (optional) - the username to the server
  - `password` (optional) - the password to the server (an auth token [can be used](https://solidsoft.wordpress.com/2015/09/08/deploy-to-maven-central-using-api-key-aka-auth-token/) instead)
  - `packageGroup` (optional) - the package group as registered in Nexus staging profile - by default set to a project group (has to be overridden
@@ -163,6 +167,14 @@ gradle-nexus-staging-plugin to release to Maven Central (especially with 0.20.0+
 
 However, there is one caveat. `uploadArchives` from the `maven` plugin is [not supported](https://github.com/marcphilipp/nexus-publish-plugin/issues/8)
 by nexus-publish-plugin (only `publish...` from `maven-publish`).
+
+### 3. Why do I get the error ``403: Forbidden`` when trying to close or release the repository?
+
+First thing is to make sure that your credentials are correctly set, using one of the methods explained in the `Server Credentials` section.
+
+If your credentials are correct and you still get this error, most likely it is happenning because the repository server for you account is different. As of 24 February 2021, accounts created after this date are assigned to a new nexus repository server (https://s01.oss.sonatype.org/).
+
+To fix this, you need to set `serverUrl = "https://s01.oss.sonatype.org/service/local/"` on the ``nexusStaging`` block on your gradle build file.
 
 ## Notable users
 
