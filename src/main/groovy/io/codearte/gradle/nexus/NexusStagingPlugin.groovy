@@ -140,14 +140,21 @@ class NexusStagingPlugin implements Plugin<Project> {
 
     //TODO: Extract to separate class
     private void tryToDetermineCredentials(Project project, NexusStagingExtension extension) {
-        project.afterEvaluate {
-            project.gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
+        def configure = { Project evaluatedProject ->
+            evaluatedProject.gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
                 if (isAnyOfStagingTasksInTaskGraph(taskGraph)) {
                     tryToGetCredentialsFromUploadArchivesTask(project, extension)
                     tryToGetCredentialsFromGradleProperties(project, extension)
                 } else {
-                    project.logger.debug("No staging task will be executed - skipping determination of Nexus credentials")
+                    evaluatedProject.logger.debug("No staging task will be executed - skipping determination of Nexus credentials")
                 }
+            }
+        }
+        if (project.state.executed) {
+            configure(project)
+        } else {
+            project.afterEvaluate {
+                configure(project)
             }
         }
     }

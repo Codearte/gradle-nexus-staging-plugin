@@ -85,7 +85,7 @@ class NexusUploadStagingPlugin implements Plugin<Project> {
     void configureTaskDependencies(@Nonnull Project project, TaskProvider<PointUploadArchivesToExplicitRepositoryTask> pointUploadArchivesToExplicitRepositoryTask,
                                    TaskProvider<Task> uploadStagingTask) {
 
-        project.afterEvaluate { Project evaluatedProject ->
+        def configure = { Project evaluatedProject
             TaskCollection<CreateRepositoryTask> createRepositoryTasks = project.tasks.withType(CreateRepositoryTask)
 
             project.tasks
@@ -113,6 +113,11 @@ class NexusUploadStagingPlugin implements Plugin<Project> {
             createRepositoryTasks*.mustRunAfter(project.tasks.withType(Sign))   //to prevent it's execute before compilation where things can easily fail. Sign is not perfect
             createRepositoryTasks*.onlyIf { isInNonSnapshotVersion(project) }
             pointUploadArchivesToExplicitRepositoryTask.configure { task -> task.onlyIf { isInNonSnapshotVersion(project) } }
+        }
+        if (project.state.executed) {
+            configure(project)
+        } else {
+            project.afterEvaluate(configure)
         }
     }
 
